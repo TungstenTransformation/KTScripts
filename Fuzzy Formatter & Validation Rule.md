@@ -38,7 +38,7 @@ Yukon|YT|Yuk|Yn
 1. **Select**, **Copy** and **Show Script**  
     ![image](https://user-images.githubusercontent.com/47416964/76403778-b82d5400-6385-11ea-98fe-e61151a44dad.png)
 1. Paste the script at the end of the script window.
-1. Make sure that the first two lines of the script are. **Explict** forces you to define variables and the second line is a [compiler predirective](https://www.winwrap.com/web2/basic/#!/ref/WWB-doc_language_def.htm) to support extra keywords like **return**, **andalso**
+1. Make sure that the first **two** lines of the script are as shown. **Explict** forces you to define variables and the  [Language Comment](https://www.winwrap.com/web2/basic/#!/ref/WWB-doc_language_def.htm) supports extra keywords like **return** and **andalso**.
 ```VBA
 Option Explicit
 '#Language "WWB-COM"
