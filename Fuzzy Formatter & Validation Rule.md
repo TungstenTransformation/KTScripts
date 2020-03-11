@@ -71,7 +71,8 @@ Private Sub Province_FormatField(ByVal FieldText As String, FormattedText As Str
    End If
 End Sub
 ```
-2. Test the Field Formatter with various options
+2. You will need to add the script for [Database_FuzzySearch](https://github.com/KofaxRPA/KTScripts/blob/master/Database_FuzzySearch.vb)
+2. Test the Field Formatter with various options  
 ![image](https://user-images.githubusercontent.com/47416964/76406397-f0369600-6389-11ea-9d7e-64136be9feee.png)
 
 
