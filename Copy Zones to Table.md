@@ -3,13 +3,13 @@ This is useful on documents where text is handwritten into a grid on the page. Y
 The subfields in the Advanced Zone Locator need to be of the form **SF_R05C25** (for row 5, column 25).  
 
 This script customizes the Table Locator, so that you can use the **Test** button in the Locator to test it.
-* Make a Advanced Zone Locator called **AZL**
+* Make an Advanced Zone Locator called **AZL**
 * Give it Zones called **R01C01**, etc.
 * Make a Table Locator called **TL**
 * Give the Table Locator a table model that matches the "Columns" in the AZL.
 * Copy the Script into the Class Script
 * Test the AZL.
-* Test the Table Locator. *if you don't **directly** test the Table Locator after the AZL, the designer may "forget" the AZL results.*
+* Test the Table Locator. *If you don't **directly** test the Table Locator after the AZL, the designer may "forget" the AZL results.*
 
 *Note: Both the Table Locator and the Advanced Zone Locator store their results within Alternatives(0)*
 
