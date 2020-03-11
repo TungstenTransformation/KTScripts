@@ -38,7 +38,12 @@ Yukon|YT|Yuk|Yn
 1. **Select**, **Copy** and **Show Script**  
     ![image](https://user-images.githubusercontent.com/47416964/76403778-b82d5400-6385-11ea-98fe-e61151a44dad.png)
 1. Paste the script at the end of the script window.
-1. Replace the script with the following
+1. Make sure that the first two lines of the script are. **Explict** forces you to define variables and the second line is a [compiler predirective](https://www.winwrap.com/web2/basic/#!/ref/WWB-doc_language_def.htm) to support extra keywords like **return**, **andalso**
+```VBA
+Option Explicit
+'#Language "WWB-COM"
+````
+2. Replace the script with the following
 ```VBA
 Private Sub Province_FormatField(ByVal FieldText As String, FormattedText As String, ErrDescription As String, ValidFormat As Boolean)
    Dim results As CscXDocFieldAlternatives, R As Long
