@@ -2,10 +2,20 @@
 This is useful on documents where text is handwritten into a grid on the page. You need to use the Advanced Zone Locator to read the cells of the table, but you want the results put into a table locator.  
 The subfields in the Advanced Zone Locator need to be of the form **SF_R05C25** (for row 5, column 25).  
 
+This script customizes the Table Locator, so that you can use the **Test** button in the Locator to test it.
+* Make a Advanced Zone Locator called **AZL**
+* Give it Zones called **R01C01**, etc.
+* Make a Table Locator called **TL**
+* Give the Table Locator a table model that matches the "Columns" in the AZL.
+* Copy the Script into the Class Script
+* Test the AZL.
+* Test the Table Locator. *if you don't **directly** test the Table Locator after the AZL, the designer my "forget" the AZL results.*
+
+*Note: Both the Table Locator and the Advanced Zone Locator store their results within Alternatives(0)*
 
 ```VBA
 Private Sub Document_AfterLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal LocatorName As String)
-   If LocatorName = "TL" Then Table_CopySubfields(pXDoc.Locators.ItemByName("TL").Alternatives(0).Table,pXDoc.Locators.ItemByName("AZL").Alternatives(0).SubFields)
+   If LocatorName = "TL" Then Table_CopySubfields(pXDoc.Locators.ItemByName(LocatorName).Alternatives(0).Table,pXDoc.Locators.ItemByName("AZL").Alternatives(0).SubFields)
 End Sub
 
 Public Sub Table_CopySubfields(Table As CscXDocTable, Zones As CscXDocSubFields)
