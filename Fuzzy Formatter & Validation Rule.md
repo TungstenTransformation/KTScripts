@@ -1,11 +1,15 @@
-# Fuzzy Field Formatter and Fuzzy Validation Rule
+# Fuzzy Field Formatter and Validation Method
 
 Use this to spell-check and auto-spell-check field values. Useful for correcting OCR errors in names, cities, provinces, job titles, etc
+
+Formatters **can** change a field value, Validation Methods **cannot**.    
+The Fuzzy Field Formatter uses a fuzzy database to find matches and can auto-correct a field or make suggestions to the user.  
+The Validation Method does a non-fuzzy search in the fuzzy database to check that the value is perfect.
 
 ## Example: Canadian Provinces.
 
 ### Create Database
-1. Create a database in Notepad with Canadian Provinces and all possible abbreviations. You can have as many columns as you like. Put the correct value in the first column
+1. Create a database in Notepad with Canadian Provincenames and all possible abbreviations. You can have as many columns as you like. Put the correct value in the first column. *it doens't matter if you have duplicates in the abbreviations. If they are ambiguous they will product options for the user*.
 
 Province|Post|English|French
 --------|----|--|--
@@ -28,7 +32,7 @@ Yukon|YT|Yuk|Yn
 ** *Automatic update from import file* is required if the database updates frequently. This one doesn't so don't select this.**
 1. Make sure **Load database in memory** is selected for speed, and make sure **Advanced** is selected for **Database processing**
 1. Press **Ok**.
-### Create Field Formatter
+### Create Fuzzy Field Formatter
 1. Create Field Formatter called **Provinces** in **ProjectSettings/Formatting/Add..**  
     ![image](https://user-images.githubusercontent.com/47416964/76403678-8c11d300-6385-11ea-92ba-446a5ea5be9f.png)
 1. **Select**, **Copy** and **Show Script**  
@@ -75,4 +79,23 @@ End Sub
 2. Test the Field Formatter with various options  
 ![image](https://user-images.githubusercontent.com/47416964/76406397-f0369600-6389-11ea-9d7e-64136be9feee.png)
 
-
+### Create Fuzzy Validation Rule
+*Validation Rules are not called directly from Total Agilty, but they are still available for use in scripts and locators.*
+1. Add a new Validation Method in **ProjectSettings/Validation/SingleFieldScriptValidation** and call it **Province**
+1. **Select**, **Copy** and **Show Script**.
+1. Paste the script into the script window underneath your field formatter.
+1. Replace the script with
+```VBA
+Private Sub Province_Validate(ByVal pValItem As CASCADELib.ICscXDocValidationItem, ByRef ErrDescription As String, ByRef ValidField As Boolean)
+   Dim results As CscXDocFieldAlternatives
+   'A Validation Rule CANNOT change a fieldl value, it only checks if it is valid or not
+   If pValItem.Text="" Then ValidField=True : Exit Sub
+   'Perform a fuzzy search, but require 100% match and return only one result.
+   Set results=Database_FuzzySearch("Provinces","Province",pValItem.Text,1,1.00,True)
+   If results.Count>0 AndAlso pValItem.Text=results(0).SubFields.ItemByName("Province").Text Then ValidField=True : Exit Sub
+   ErrDescription = pValItem.Text & " is not a valid province"
+   ValidField=False
+End Sub
+```
+2. test your Validation Rule  
+![image](https://user-images.githubusercontent.com/47416964/76409371-91bfe680-638e-11ea-99eb-f78f36b5ad06.png)
