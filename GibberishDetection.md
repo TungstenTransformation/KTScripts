@@ -17,7 +17,7 @@ This fast script detects whether the document contains "readable language".
 *This script can process 100 documents in about 10 seconds. It removes punctation, ignores numbers and stores words that are 2 or more characters long*
  * Copy the dictionary file **c:\temp\english.dict**  into your project's dictionary folder.
  * Add the dictionary to your project.  Delimiter=comma, and select **replacement values**.  
- *in this example you see that the dictionary contains the word "contra", which has a length of 6 and appears in 41.1% of the documents*
+ *in this example you see that the dictionary contains the word "contra", which has a length of 6 and appears in 41.1% of the documents*  
  ![image](https://user-images.githubusercontent.com/47416964/77314236-8ad99200-6d05-11ea-8e73-6a754a81d968.png)
  ## Create locators to test a document with the dictionary.
   * At the project level add a Format Locator **FL_English** and a script locator **SL_English**.
