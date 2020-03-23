@@ -32,15 +32,13 @@ This fast script detects whether the document contains "readable language".
  * The Script Locator **SL_English** then sums the length of all words found (multiplied by their frequency) and then divides by the number of characters in the document. This should return a number above 100% for meaningful words and a number close to zero for gibberish.  
  ![image](https://user-images.githubusercontent.com/47416964/77315923-b9a53780-6d08-11ea-82ee-6a875ab2b644.png)
  * Use a benchmark set of real language documents and gibberish documents to find the best confidence threshhold for your project.
+ ## Ways to extend this further
+* Make multiple dictionaries for different document sets.
+* test each page individually for gibberish.
+* Find areas on a page where particular language is - eg doctor's diagnosis text inside a larger document.
+* Change the scoring method - eg ignore frequency and only use word length.
 
-
-
-
-
-
-
-
- 
+___
 ```VBA
 Const digits="0123456789"
 Const punc="!£$%^&*()<>,.;:'@[]#{}\|/"","
@@ -96,8 +94,3 @@ Private Sub SL_English_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument
       End With
 End Sub
 ```
-## Ways to extend this further
-* Make multiple dictionaries for different document sets.
-* test each page individually for gibberish.
-* Find areas on a page where particular language is - eg doctor's diagnosis text inside a larger document.
-* Change the scoring method - eg ignore frequency and only use word length.
