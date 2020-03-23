@@ -1,6 +1,6 @@
 # Gibberish Detection Script  
 Pages that are processed in Kofax Transformation may contain unintelligible gibberish because of scanning problems, image quality or obfuscation occuring in a pdf document.
-This script detects whether the document contains "readable language".   
+This fast script detects whether the document contains "readable language".   
 1. Create a Dictionary.  
 1. Create locators to test a document with the Dictionary.
 ## Create a Dictionary
@@ -27,9 +27,11 @@ This script detects whether the document contains "readable language".
   *this makes a **fuzzy dictionary** locator and does not use regular expressions.*  
 ![image](https://user-images.githubusercontent.com/47416964/77315562-0b998d80-6d08-11ea-89ca-0e304ec802f5.png)
  * Test the locator and you will see all *meaningful* words on the document highlighted and their text replaced with their length & frequency.  
+ *note in the example below that the 4th alternative is 8 characters long and appears on average 1.667 times per document.*
  ![image](https://user-images.githubusercontent.com/47416964/77315808-7cd94080-6d08-11ea-821c-b302dab76d50.png)
  * The Script Locator **SL_English** then sums the length of all words found (multiplied by their frequency) and then divides by the number of characters in the document. This should return a number above 100% for meaningful words and a number close to zero for gibberish.  
  ![image](https://user-images.githubusercontent.com/47416964/77315923-b9a53780-6d08-11ea-82ee-6a875ab2b644.png)
+ * Use a benchmark set of real language documents and gibberish documents to find the best confidence threshhold for your project.
 
 
 
@@ -87,16 +89,15 @@ Private Sub SL_English_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument
    With pLocator.Alternatives.Create
       .Text="English"
       For W=0 To Words.Count-1
+         'Add the length of each word found multiplied by its average frequency on documents
          .Confidence=.Confidence+ CInt(Split(Words(W).Text,"-")(0))*CDbl(Split(Words(W).Text,"-")(1))
       Next
-      For W=0 To pXDoc.Words.Count-1
-         .LongTag=.LongTag+Len(pXDoc.Words(W).Text)
-      Next
-      .Confidence=.Confidence/.LongTag
-   End With
+      .Confidence=.Confidence/(len(pxdoc.words.text)-pxdoc.words.count) ' divide by length of text minus the spaces between words
+      End With
 End Sub
 ```
 ## Ways to extend this further
 * Make multiple dictionaries for different document sets.
 * test each page individually for gibberish.
 * Find areas on a page where particular language is - eg doctor's diagnosis text inside a larger document.
+* Change the scoring method - eg ignore frequency and only use word length.
