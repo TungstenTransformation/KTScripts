@@ -1,5 +1,5 @@
 # Gibberish Detection Script  
-Pages that are processed in Kofax Transformation may not contain intelligible language because of scanning problems, image quality or obfuscation occuring in a pdf document.
+Pages that are processed in Kofax Transformation may contain unintelligible gibberish because of scanning problems, image quality or obfuscation occuring in a pdf document.
 This script detects whether the document contains "readable language".   
 1. Create a Dictionary.  
 1. Create locators to test a document with the Dictionary.
