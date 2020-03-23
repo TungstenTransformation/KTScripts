@@ -96,3 +96,7 @@ Private Sub SL_English_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument
    End With
 End Sub
 ```
+## Ways to extend this further
+* Make multiple dictionaries for different document sets.
+* test each page individually for gibberish.
+* Find areas on a page where particular language is - eg doctor's diagnosis text inside a larger document.
