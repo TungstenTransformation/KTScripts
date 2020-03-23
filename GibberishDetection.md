@@ -15,10 +15,24 @@ This script detects whether the document contains "readable language".
  * Execute the script by clicking the **Lightning** icon.  
  ![image](https://user-images.githubusercontent.com/47416964/77313939-0850d280-6d05-11ea-85d0-b1351fbc1731.png)  
 *This script can process 100 documents in about 10 seconds. It removes punctation, ignores numbers and stores words that are 2 or more characters long*
- * Copy the dictionary file **c:\tempenglish.dict**  into your project's dictionary folder.
+ * Copy the dictionary file **c:\temp\english.dict**  into your project's dictionary folder.
  * Add the dictionary to your project.  Delimiter= comma, and select **replacement values**
  *in this example you see that the dictionary contains the word "contra", which has a length of 6 and appears in 41.1% of the documents*
  ![image](https://user-images.githubusercontent.com/47416964/77314236-8ad99200-6d05-11ea-8e73-6a754a81d968.png)
+ ## Create locators to test a document with the dictionary
+  * At the project level add a Format Locator **FL_English** and a script locator **SL_English**
+  *you cannot use a **database locator** because a database locator only returns one result per document, we need to use a format locator to return **all** results*
+  ![image](https://user-images.githubusercontent.com/47416964/77314505-0dfae800-6d06-11ea-9989-bbb8661f91a1.png)
+  * Configure the format locator to use only the dictionary by selecting **Regular Expression** and adding a dictionary.
+  *this makes a **fuzzy dictionary** locator and does not use regular expressions*  
+![image](https://user-images.githubusercontent.com/47416964/77315562-0b998d80-6d08-11ea-89ca-0e304ec802f5.png)
+ * Test the locator and you will see all *meaningful* words on the document highlighted and their text replaced with their length & frequency.  
+ ![image](https://user-images.githubusercontent.com/47416964/77315808-7cd94080-6d08-11ea-821c-b302dab76d50.png)
+ * The Script Locator **SL_English** then sums the length of all words found (multiplied by their frequency) and then divides by the number of characters in the document. This should return a number above 100% for meaningful words and a number close to zero for gibberish.  
+ ![image](https://user-images.githubusercontent.com/47416964/77315923-b9a53780-6d08-11ea-82ee-6a875ab2b644.png)
+
+
+
 
 
 
