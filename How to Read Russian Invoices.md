@@ -257,7 +257,38 @@ Public Function XDocument_GetNextPhrase(ByVal pXDoc As CASCADELib.CscXDocument,S
    Return Phrase
 End Function
 ```
-
+## Split INN and KPP
+```vbscript
+Private Sub splitfield(pXDoc As CscXDocument,innName As String, kppName As String)
+   Dim inn,kpp As CscXDocField
+   Set inn=pXDoc.Fields.ItemByName(innName)
+   inn.Text=Trim(Replace(inn.Text," ",""))
+   Set kpp=pXDoc.Fields.ItemByName(kppName)
+   kpp.Text=Trim(Replace(kpp.Text," ",""))
+   Dim i,r As Long
+   Dim found As Boolean
+   For i = 6 To Len(inn.Text)
+      Select Case AscW(Mid(inn.Text,i,1))
+         Case &h030 To &h039
+         Case Else
+            found=True
+            Exit For
+      End Select
+   Next
+   If found AndAlso i>8 AndAlso Len(inn.Text)>15 AndAlso i<Len(inn.Text) Then
+         kpp.Text=Mid(inn.Text,i+1)
+         r=inn.Left+inn.Width
+         kpp.Left=inn.Left+inn.Width*((i+0)/Len(inn.Text))
+         kpp.Width=r-kpp.Left
+         inn.Width=inn.Width*(i-1)/Len(inn.Text)
+         kpp.Top=inn.Top
+         kpp.Height=inn.Height
+         kpp.PageIndex=inn.PageIndex
+         inn.Text=Left(inn.Text,i-1)
+         kpp.Confidence=inn.Confidence
+   End If
+End Sub
+```
 ## INN Checksum Algorithm
 TODO: This is poor quality code - clean it up and make it fit for a validation rule. Use Array v(12). get rid of On ERROR
 ```vbscript
