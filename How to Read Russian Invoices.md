@@ -1,7 +1,7 @@
 # How to Read Russian Invoices
-Russian invoice have some unique components, that are differnt from a typical European or American invoice.
+Russian invoice have some unique components, that are different from a typical European or American invoice.
 * INN and KPP Numbers for both vendor and customer.
-* very wide tables  for line items that have been 11 and 15 columns. These columns are very regular and well defined. The last row of the table header contains the column number.  
+* very wide tables  for line items that have between 11 and 15 columns. These columns are very regular and well defined. The last row of the table header contains the column number.  
 ![image](https://user-images.githubusercontent.com/47416964/80201852-0f7d4000-8625-11ea-96f6-e1343728dead.png)  
 * The table total and tax information is embedded inside the lat row of the table
 * Russian invoices can use **-** as a decimal separator and **=** as a negative sign. eg "=101-00" = "-100.00"
