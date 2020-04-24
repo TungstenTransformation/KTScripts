@@ -1,4 +1,4 @@
-# How to Read Russian Invoices
+# How to Read Russian Invoices in Kofax Transformation
 Russian invoice have some unique components, that are different from a typical European or American invoice.
 * INN and KPP Numbers for both vendor and customer.
 * very wide tables  for line items that have between 11 and 15 columns. These columns are very regular and well defined. The last row of the table header contains the column number.  
