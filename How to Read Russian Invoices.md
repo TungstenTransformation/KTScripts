@@ -12,14 +12,16 @@ The following script detects accuractely the Table header. It uses fuzzy logic t
 1. Detect the textline containing ""1 2 3 4 5 6 7 8 9 10 11 12" using fuzzy logic
 1. Assign the columns based on the words above the columns, using fuzzy logic.
 1. Detect the end of table with a dictionary fuzzily looking for *всего к оплате* (Total Payable) and it's variants.
-    * Итого
-    * Всего к оплате
-    * Итого по НДС
-    * Итого по листу
-    * Итого по ставке 
-    * Всего
-    * ВСЕГО ПО 
-2. Cluster textlines within the table into table rows to deal with line wrapping.
+```
+Итого
+Всего к оплате
+Итого по НДС
+Итого по листу
+Итого по ставке 
+Всего
+ВСЕГО ПО 
+```
+4. Cluster textlines within the table into table rows to deal with line wrapping.
 1. Insert all words in the table into the correct cells
 1. Repair OCR errors in numbers using the mathematical relationships
   * **Quantity** * **Unit Price** = **Net Price** (q*u=n)
