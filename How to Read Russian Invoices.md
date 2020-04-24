@@ -36,6 +36,83 @@ The following script detects accuractely the Table header. It uses fuzzy logic t
 |   |   | * | * |   | * | n*(1+r)=t    |
 |   |   |   | * | * | * | x(1+1/r)=t   |
 
+## Correcting Table Values
+This corrects all numerical values according to formuale above, along with spellchecking and correcting country names.
+```vbscript
+Private Sub CorrectCells(ByVal pXDoc As CscXDocument, ByVal Table As CscXDocTable)
+   Dim r As Integer
+   Dim c As Integer
+   Dim cf As ICscFieldFormatter
+   Dim uf As ICscFieldFormatter
+
+   Set cf = Project.FieldFormatters.ItemByName("CountryNameFormatter")
+   Set uf = Project.FieldFormatters.Item("UnitsFormatter")
+   For r = 0 To Table.Rows.Count - 1
+      TableRow_CorrectAmounts (Table.Rows(r), tolerance)
+      With Table.Rows(r)
+         uf.FormatTableCell (.Cells.ItemByName("Unit Measure"))
+         cf.FormatTableCell (.Cells.ItemByName("Country Of Origin"))
+         'Set all empty cells and error-free cells to valid
+         For c = 0 To Table.Columns.Count - 1
+            If Table.Rows(r).Cells(c).Text = "" Or Table.Rows(r).Cells(c).ErrorDescription = "" Then Table.Rows(r).Cells(c).ExtractionConfident = True
+         Next
+      End With
+   Next
+End Sub
+
+Public Sub TableRow_CorrectAmounts(row As CscXDocTableRow,tol As Double)
+   Dim afl As ICscFieldFormatter 'Amount Formatter
+   Dim pfl As ICscFieldFormatter 'Percent Formatter
+   Set afl=Project.FieldFormatters.ItemByName(Project.DefaultAmountFormatter)
+   Set pfl=Project.FieldFormatters.ItemByName("PercentageFormatter")
+   Dim q,u,n,r,x,t As CscXDocTableCell
+   Set q=row.Cells.ItemByName("Quantity")
+   Set u=row.Cells.ItemByName("Unit Price")
+   Set n=row.Cells.ItemByName("Net Amount")
+   Set r=row.Cells.ItemByName("Tax Rate")
+   Set x=row.Cells.ItemByName("Tax Amount")
+   Set t=row.Cells.ItemByName("Total Price")
+   afl.FormatTableCell(q)
+   afl.FormatTableCell(u)
+   afl.FormatTableCell(n)
+   pfl.FormatTableCell(r)
+   afl.FormatTableCell(x)
+   afl.FormatTableCell(t)
+   Dim qun,nxt,nrt,rxt,nxr,quxt,validTaxRate As Boolean
+   validTaxRate=(r.DoubleValue=10 Or r.DoubleValue=18)
+   If q.DoubleValue>0 And u.DoubleValue>0 And n.DoubleValue>0                     AndAlso Abs(q.DoubleValue*u.DoubleValue              -n.DoubleValue)<tol Then qun =True
+   If n.DoubleValue>0 And x.DoubleValue>0 And t.DoubleValue>0                     AndAlso Abs(n.DoubleValue+x.DoubleValue              -t.DoubleValue)<tol Then nxt =True
+   If n.DoubleValue>0 And validTaxRate    And t.DoubleValue>0                     AndAlso Abs(n.DoubleValue*(1+r.DoubleValue/100)      -t.DoubleValue)<tol Then nrt =True
+   If validTaxRate    And x.DoubleValue>0 And t.DoubleValue>0                     AndAlso Abs(x.DoubleValue*(1+100/r.DoubleValue)      -t.DoubleValue)<tol Then rxt =True
+   If n.DoubleValue>0 And x.DoubleValue>0 And validTaxRate                        AndAlso Abs(n.DoubleValue*r.DoubleValue/100          -x.DoubleValue)<tol Then nxr =True
+   If q.DoubleValue>0 And u.DoubleValue>0 And x.DoubleValue>0 And t.DoubleValue>0 AndAlso Abs(q.DoubleValue*u.DoubleValue+x.DoubleValue-t.DoubleValue)<tol Then quxt=True
+   If nxt And Not nxr Then
+      Dim rate As Double
+      rate=Round(x.DoubleValue/n.DoubleValue)
+      If rate=10 Or rate=18 Then
+         r.Text=Format(x.DoubleValue/n.DoubleValue,"00")
+         pfl.FormatTableCell(r)
+      End If
+   End If
+   If nrt And Not nxt Then
+      x.Text=Format(n.DoubleValue*r.DoubleValue/100,"0.00")
+      afl.FormatTableCell(x)
+   End If
+   If rxt And Not nrt Then
+      n.Text=Format(t.DoubleValue-x.DoubleValue,"0.00")
+      afl.FormatTableCell(n)
+   End If
+   If nxr And Not nrt Then
+      t.Text=Format(n.DoubleValue+x.DoubleValue,"0.00")
+      afl.FormatTableCell(t)
+   End If
+   If quxt And Not nrt Then
+       n.Text=Format(t.DoubleValue-x.DoubleValue,"0.00")
+       afl.FormatTableCell(n)
+   End If
+End Sub
+```
+
 ## Amount formatter for - and =
 
 
