@@ -93,3 +93,57 @@ Public Function Min(a,b)
    Return IIf(a<b,a,b)
 End Function
 ```
+
+## INN Checksum Algorithm
+TODO: This is poor quality code - clean it up and make it fit for a validation rule. Use Array v(12). get rid of On ERROR
+```vbscript
+'
+' INN Control Sum Check
+' http://kontragent.info/articles/view/id/1
+'
+Private Function CheckInnControlSum(ByVal inn As String) As Boolean
+
+On Error GoTo Err
+
+   If (Not IsNumeric(inn)) Or (Len(inn) < 10) Then
+      CheckInnControlSum = False
+      Exit Function
+   End If
+
+   Dim v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, ch As Integer
+   v1  = CInt(Mid(inn, Len(inn) - 0, 1))
+   v2  = CInt(Mid(inn, Len(inn) - 1, 1))
+   v3  = CInt(Mid(inn, Len(inn) - 2, 1))
+   v4  = CInt(Mid(inn, Len(inn) - 3, 1))
+   v5  = CInt(Mid(inn, Len(inn) - 4, 1))
+   v6  = CInt(Mid(inn, Len(inn) - 5, 1))
+   v7  = CInt(Mid(inn, Len(inn) - 6, 1))
+   v8  = CInt(Mid(inn, Len(inn) - 7, 1))
+   v9  = CInt(Mid(inn, Len(inn) - 8, 1))
+   v10 = CInt(Mid(inn, Len(inn) - 9, 1))
+   If (Len(inn) > 10) Then
+      v11 = CInt(Mid(inn, Len(inn) - 10, 1))
+      v12 = CInt(Mid(inn, Len(inn) - 11, 1))
+   End If
+
+   If (Len(inn) = 10) Then
+      ' 10 digits INN
+      ch = (v2 * 8 + v3 * 6 + v4 * 4 + v5 * 9 + v6 * 5 + v7 * 3 + v8 * 10 + v9 * 4 + v10 * 2) Mod 11
+      CheckInnControlSum = (ch = v1)
+
+   ElseIf (Len(inn) = 12) Then
+      ' 12 digits INN
+      ch = (v3 * 8 + v4 * 6 + v5 * 4 + v6 * 9 + v7 * 5 + v8 * 3 + v9 * 10 + v10 * 4 + v11 * 2 + v12 * 7) Mod 11
+      CheckInnControlSum = (ch = v2)
+      If (ch = v2) Then
+         ch = (v2 * 8 + v3 * 6 + v4 * 4 + v5 * 9 + v6 * 5 + v7 * 3 + v8 * 10 + v9 * 4 + v10 * 2 + v11 * 7 + v12 * 3) Mod 11
+         CheckInnControlSum = (ch = v1)
+      End If
+   End If
+
+Exit Function
+Err:
+   CheckInnControlSum = False
+
+End Function
+```
