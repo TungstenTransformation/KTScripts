@@ -355,6 +355,59 @@ Private Sub ValidationForm_AfterFieldChanged(ByVal pXDoc As CASCADELib.CscXDocum
    End Select
 End Sub
 ```
+
+## Check that the net, tax and total under the table actually match the sum of the table columns
+```vbscript
+Private Sub CheckTaxAndTotal_Validate(ByVal ValItems As CASCADELib.CscXDocValidationItems, ByVal pXDoc As CASCADELib.CscXDocument, ByRef ErrDescription As String, ByRef ValidField As Boolean)
+   Dim oTax As ICscXDocValidationItem
+   Dim oTot As ICscXDocValidationItem
+
+   'you have to assign an amount formatter for each field where you want to use the .DoubleValue property
+   Set oTax = ValItems.Item("Tax")
+   If oTax.DoubleFormatted = False Then
+      ValidField = False
+      ErrDescription = oTax.Text & " is not formatted"
+      Exit Sub
+   End If
+   Set oTot = ValItems.Item("Total")
+   If oTot.DoubleFormatted = False Then
+      ValidField = False
+      ErrDescription = oTot.Text & " is not formatted"
+      Exit Sub
+   End If
+
+   Dim sumNet, sumTax, sumTot As Double
+   Dim table As CscXDocTable
+   Set table=pXDoc.Fields.ItemByName("Table").Table
+   If table.Rows.Count=0 Then
+      ValidField=True
+      Exit Sub
+   End If
+   Dim daf As ICscFieldFormatter
+   Set daf=Project.FieldFormatters.ItemByName(Project.DefaultAmountFormatter)
+   Table_SumColumn(table,table.Columns.ItemByName("Net Amount").IndexInTable,daf,sumNet)
+   Table_SumColumn(table,table.Columns.ItemByName("Tax Amount").IndexInTable,daf,sumTax)
+   Table_SumColumn(table,table.Columns.ItemByName("Total Price").IndexInTable,daf,sumTot)
+
+   If Abs(sumTax-oTax.DoubleValue)>TOLERANCE Then
+      ValidField=False
+      ErrDescription="Table Tax " & Format(sumTax,"0.00") & " ≠ " & oTax.Text & " Total Tax"
+      Exit Sub
+   End If
+   If Abs(sumTot-oTot.DoubleValue)>TOLERANCE Then
+      ValidField=False
+      ErrDescription="Table Total " & Format(sumTot,"0.00") & " ≠ " & oTot.Text & " Total"
+      Exit Sub
+   End If
+   If sumNet>0 And Abs(sumNet+oTax.DoubleValue-oTot.DoubleValue)>TOLERANCE Then
+      ValidField=False
+      ErrDescription="Table Net + Table Tax = " & Format(sumNet,"0.00") & " + " & oTax.Text & " = " & Format(sumTot+oTax.DoubleValue,"0.00") & " ≠ " & oTot.Text & " Total"
+      Exit Sub
+   End If
+   pXDoc.Fields.ItemByName("NetAmount1").Text=Replace(Format(oTot.DoubleValue-oTax.DoubleValue,"0.00"),".",",")
+   ValidField=True
+End Sub
+```
 ## Useful functions
 ```vbscript
 Private Function Table_SumColumn(table As CscXDocTable, colID As Integer,amountFormatter As ICscFieldFormatter,ByRef sum As Double) As Boolean
