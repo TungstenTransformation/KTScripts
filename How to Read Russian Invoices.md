@@ -355,3 +355,47 @@ Private Sub ValidationForm_AfterFieldChanged(ByVal pXDoc As CASCADELib.CscXDocum
    End Select
 End Sub
 ```
+## Useful functions
+```vbscript
+Private Function Table_SumColumn(table As CscXDocTable, colID As Integer,amountFormatter As ICscFieldFormatter,ByRef sum As Double) As Boolean
+   'Sums a column in a database and returns false if any cell is invalid
+   Dim r As Integer
+   Dim cell As CscXDocTableCell
+   For r = 0 To table.Rows.Count-1
+      Set cell= table.Rows(r).Cells(colID)
+      amountFormatter.FormatTableCell(cell)
+      If Not cell.DoubleFormatted Then Return False
+      sum=sum+cell.DoubleValue
+   Next
+   Return True
+End Function
+
+Private Sub AisB_Validate(ByVal ValItems As CASCADELib.CscXDocValidationItems, ByVal pXDoc As CASCADELib.CscXDocument, ByRef ErrDescription As String, ByRef ValidField As Boolean)
+   Dim oA As ICscXDocValidationItem
+   Dim oB As ICscXDocValidationItem
+
+   'you have to assign an amount formatter for each field where you want to use the .DoubleValue property
+   Set oA = ValItems.Item("A")
+   If oA.DoubleFormatted = False Then
+      ValidField = False
+      ErrDescription = oA.Text & " not formatted"
+      Exit Sub
+   End If
+   Set oB = ValItems.Item("B")
+   If oB.DoubleFormatted = False Then
+      ValidField = False
+      ErrDescription = oB.Text & " not formatted"
+      Exit Sub
+   End If
+
+   ' enter your own validation rule here
+   ' Due to rounding of floating point numbers, it is recommended to compare double numbers as follows,
+   ' using e.g. "abs(a + b - c) < 0.01" instead of "a + b = c"
+   If (Abs(oA.DoubleValue - oB.DoubleValue) < 0.01) Then
+      ValidField = True
+   Else
+      ValidField = False
+      ErrDescription = "Table " & oA.Text & " ≠ " & oB.Text
+   End If
+End Sub
+```
