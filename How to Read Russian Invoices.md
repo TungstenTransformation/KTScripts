@@ -342,3 +342,27 @@ Err:
 
 End Function
 ```
+## Quick-Correct of Numerical fields.
+Press "?" in a numerical field to quickly correct it with a single key stroke buy calculating it from two other vlaues. This is quicker than correcting an OCR error.
+```vbscript
+Private Sub ValidationForm_AfterFieldChanged(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pField As CASCADELib.CscXDocField)
+   If InStr(pField.Text,"?")=0 Then Exit Sub
+   Dim afl As ICscFieldFormatter
+   Set afl=Project.FieldFormatters.ItemByName(Project.DefaultAmountFormatter)
+   Dim n,x,t As CscXDocField
+   Set n = pXDoc.Fields.ItemByName("NetAmount1")
+   Set x = pXDoc.Fields.ItemByName("TaxAmount1")
+   Set t = pXDoc.Fields.ItemByName("Total")
+   afl.FormatField(n)
+   afl.FormatField(x)
+   afl.FormatField(t)
+   Select Case pField.Name
+   Case "NetAmount1"
+      If x.DoubleValue>0 And t.DoubleValue>0 Then n.Text=Replace(Format(t.DoubleValue-x.DoubleValue,"0.00"),".",",")
+   Case "TaxAmount1"
+      If n.DoubleValue>0 And t.DoubleValue>0 Then x.Text=Replace(Format(t.DoubleValue-n.DoubleValue,"0.00"),".",",")
+   Case "Total"
+      If n.DoubleValue>0 And x.DoubleValue>0 Then t.Text=Replace(Format(n.DoubleValue+x.DoubleValue,"0.00"),".",",")
+   End Select
+End Sub
+```
