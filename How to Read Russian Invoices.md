@@ -93,6 +93,93 @@ Public Function Min(a,b)
    Return IIf(a<b,a,b)
 End Function
 ```
+## Locating INN & KPP
+The following database contains INN anchors. Make it a fuzzy database locator with substituion values
+```
+КПП покупателя;buyer
+КПП продавца;vendor
+Идентификационный номер покупателя;buyer 
+Идентификационный номер продавца;vendor
+```
+Create a multifield Script locator that finds the INN/KPP after these anchor words. It has two subfields **VendorINNKPP** and **BuyerINNKPP**. they will be split later
+```vbscript
+Private Sub SL_INNKPPfromAnchors_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
+   Dim Anchors As CscXDocFieldAlternatives
+   Set Anchors=pXDoc.Locators.ItemByName("DB_INNKPPAnchors").Alternatives
+   Dim Buyer As Long, Vendor As Long,A As Long,I As Long,W As Long,Digits As Long
+   Dim INNKPP As CscXDocWords
+   Dim Number As Boolean
+   Buyer=-1
+   Vendor=-1
+   For A = 0 To Anchors.Count-1
+      Select Case Anchors(A).SubFields(1).Text
+      Case "buyer"
+         If Buyer=-1 Then Buyer=A
+      Case "vendor"
+         If Vendor=-1 Then Vendor=A
+      End Select
+   Next
+   With pLocator.Alternatives.Create
+      .Confidence=1
+      .SubFields.Create("VendorINNKPP")
+      .SubFields.Create("BuyerINNKPP")
+      If Vendor>-1 Then
+         Set INNKPP =XDocument_GetNextPhrase(pXDoc,Anchors(Vendor).SubFields(0),400) ' 400 pixels max gap
+         Number = False
+         For W = 0 To INNKPP.Count-1
+            If Not Number AndAlso String_CountDigits(INNKPP(W).Text)/Len(INNKPP(W).Text)>0.5 Then Number=True
+            If Number Then .SubFields(0).Words.Append(INNKPP(W))
+         Next
+      End If
+      If Buyer>-1 Then
+         Set INNKPP =XDocument_GetNextPhrase(pXDoc,Anchors(Buyer).SubFields(0),400)
+         Number = False
+         For W = 0 To INNKPP.Count-1
+            If Not Number AndAlso String_CountDigits(INNKPP(W).Text)/Len(INNKPP(W).Text)>0.5 Then Number=True
+            If Number Then .SubFields(1).Words.Append(INNKPP(W))
+         Next
+      End If
+      For W = 0 To 1
+         If Len(.SubFields(W).Text)>5 Then .SubFields(W).Confidence=1
+      Next
+   End With
+End Sub
+
+Private Function String_CountDigits(A As String) As Integer
+   'Returns the number of digits in a word
+   Dim R As Long, C As Long
+   For R = 1 To Len(A)
+      Select Case AscW(Mid(A, R, 1))
+      Case &H30 To &H39
+         C = C + 1
+      End Select
+   Next
+   String_CountDigits = C
+End Function
+
+Public Function XDocument_GetNextPhrase(ByVal pXDoc As CASCADELib.CscXDocument,Subfield As CscXDocSubField,Pixels As Long) As CscXDocWords
+   'returns the words following the region subfield that are within so many pixels
+   Dim Result As CscXDocField
+   Dim Phrase As CscXDocWords, Anchor As CscXDocWords
+   Dim L As Long, X As Long,W As Long
+   Dim word As CscXDocWord
+   Set Result= New CscXDocField
+   Set Phrase=Result.Words
+   With Subfield
+      Set Anchor=pXDoc.GetWordsInRect(.PageIndex,.Left,.Top+.Height/2,.Width,2)
+      If Anchor.Count=0 Then Return Nothing
+      L=Anchor(0).LineIndex
+      X= Anchor(Anchor.Count-1).Left+Anchor(Anchor.Count-1).Width
+      For W = Anchor(Anchor.Count-1).IndexInTextLine+1  To pXDoc.TextLines(L).Words.Count-1
+         Set word=pXDoc.TextLines(L).Words(W)
+         If word.Left-X>Pixels And Phrase.Count>0 Then Exit For 'gap in line too big
+         Phrase.Append(word)
+         X=word.Left+word.Width
+      Next
+   End With
+   Return Phrase
+End Function
+```
 
 ## INN Checksum Algorithm
 TODO: This is poor quality code - clean it up and make it fit for a validation rule. Use Array v(12). get rid of On ERROR
