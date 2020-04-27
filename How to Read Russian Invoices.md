@@ -452,3 +452,18 @@ Private Sub AisB_Validate(ByVal ValItems As CASCADELib.CscXDocValidationItems, B
    End If
 End Sub
 ```
+## Format Invoice Number
+```vbscrpt
+Private Sub InvoiceNumber_FormatField(ByVal FieldText As String, FormattedText As String, ErrDescription As String, ValidFormat As Boolean)
+   If Len(FieldText) = 0 Then
+      ValidFormat = False
+      ErrDescription = "Invoice Number must not be empty"
+   Else
+      ' remove special characters "-/." from string
+      FormattedText = Replace(FieldText, "от", "")
+      FormattedText = Replace(FormattedText, "№", "")
+      FormattedText = Replace(FormattedText, " ", "")
+      ValidFormat = True
+   End If
+End Sub
+```
