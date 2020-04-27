@@ -1,3 +1,22 @@
+
+
+<!-- toc -->
+
+- [How to Read Russian Invoices in Kofax Transformation](#how-to-read-russian-invoices-in-kofax-transformation)
+  * [How to read Russian Tables.](#how-to-read-russian-tables)
+  * [Correcting Table Values](#correcting-table-values)
+  * [Amount formatter for - and =](#amount-formatter-for---and-)
+  * [Locating INN & KPP](#locating-inn--kpp)
+  * [Split INN and KPP](#split-inn-and-kpp)
+  * [INN Checksum Algorithm](#inn-checksum-algorithm)
+  * [Quick-Correct of Numerical fields.](#quick-correct-of-numerical-fields)
+  * [Check that the net, tax and total under the table actually match the sum of the table columns](#check-that-the-net-tax-and-total-under-the-table-actually-match-the-sum-of-the-table-columns)
+  * [Useful functions](#useful-functions)
+  * [Format Invoice Number](#format-invoice-number)
+  * [Spell Check Country Names](#spell-check-country-names)
+
+<!-- tocstop -->
+
 # How to Read Russian Invoices in Kofax Transformation
 Russian invoice have some unique components, that are different from a typical European or American invoice.
 * [INN](https://www.nalog.ru/eng/exchinf/inn/) (10 or 12 digit Taxpayer Personal Identification Number, with checksum) and KPP (9 digit Tax Registration Event Code) Numbers for both vendor and customer.
