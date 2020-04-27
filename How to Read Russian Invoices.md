@@ -1,6 +1,6 @@
 # How to Read Russian Invoices in Kofax Transformation
 Russian invoice have some unique components, that are different from a typical European or American invoice.
-* [INN](https://www.nalog.ru/eng/exchinf/inn/) (10 or 12 digit Taxpayer Personal Identification Number, with checksum)and KPP (9 digit Tax Registration Event Code) Numbers for both vendor and customer.
+* [INN](https://www.nalog.ru/eng/exchinf/inn/) (10 or 12 digit Taxpayer Personal Identification Number, with checksum) and KPP (9 digit Tax Registration Event Code) Numbers for both vendor and customer.
 * very wide tables  for line items that have between 11 and 15 columns. These columns are very regular and well defined. The last row of the table header contains the column number.  
 ![image](https://user-images.githubusercontent.com/47416964/80201852-0f7d4000-8625-11ea-96f6-e1343728dead.png)  
 * The table total and tax information is embedded inside the lat row of the table
