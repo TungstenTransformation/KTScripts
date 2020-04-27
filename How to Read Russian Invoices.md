@@ -60,6 +60,1195 @@ The following script detects accuractely the Table header. It uses fuzzy logic t
 |   |   | * | * |   | * | n*(1+r)=t    |
 |   |   |   | * | * | * | x(1+1/r)=t   |
 
+```vbscript
+'#Language "WWB-COM"
+Option Explicit
+'Add reference to Microsoft Scripting Runtime for Dictionary Class
+      Type alt
+        id As Long
+        conf As Double
+    End Type
+
+   Public Function Compare(ByVal a As alt, ByVal b As alt) As Long
+         Return a.Conf > b.Conf
+     End Function
+
+' Class script: del
+    Const TABLEHEADERTEXT As String = "1 2 3 4 5 6 7 8 9 10 11 12"
+    'the following is a typical pattern of a Russian table line - it doesn't need to be perfect, just provide a fuzzy baseline match-
+    'the lines that most resemble this will be the main line items.
+    Const LINEITEMPATTERN = "c c n c n d d p d d"  ' c=cyrrilic, a=latin, n=number, d=decimal, p = percentage
+    Const PUNCTUATION = ",;{}[]()|~=»>!™'*.¦"
+    Const ROWCONFIDENCE  = 0.9
+    Const MAXROWSINHEADER =12
+    Const DECIMALSYMBOL =","
+    Dim VerticalLines As CscXDocField
+    Dim HorizontalLines As CscXDocField
+    Dim Headers As CscXDocField
+    Dim TableEnd As CscXDocField
+    Dim EndOfTablePage As Long
+    Dim  EndOfTablePixel As Long
+    Dim HeaderDataBaseName As String
+    Dim tableModelName As String
+
+    Public Sub DetectLines(ByVal pXDoc As CscXDocLib.CscXDocument)
+        VerticalLines = New CscXDocLib.CscXDocField
+        HorizontalLines = New CscXDocLib.CscXDocField
+        Lines_FindBestCluster(pXDoc.Representations.ItemByName("TableLinesRep").Lines, CscXDocLib.CscXDocLineDirections.CscXDocLineDirectionVertical, VerticalLines.Alternatives)
+        Lines_FindBestCluster(pXDoc.Representations.ItemByName("TableLinesRep").Lines, CscXDocLib.CscXDocLineDirections.CscXDocLineDirectionHorizontal, HorizontalLines.Alternatives)
+    End Sub
+
+    Public Sub DetectHeader(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal table As CscXDocTable)
+      Headers = New CscXDocLib.CscXDocField
+      FindHeaderWords(pXDoc, table, Headers)
+      WidenHeaders(pXDoc, table, Headers.Alternatives)
+    End Sub
+
+    Public Sub DetectRows(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal EndOfTableLoc As CscXDocLib.CscXDocField, ByVal table As CscXDocTable)
+        TableEnd = New CscXDocField
+        If Headers.Alternatives.Count = 0 Then
+            Exit Sub
+        End If
+        EndOfTable(pXDoc, EndOfTableLoc, TableEnd)
+        RowDetection(pXDoc, table)
+    End Sub
+
+    Public Sub DetectTotals(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal table As CscXDocTable, ByVal pLocator As CscXDocLib.CscXDocField, ByVal agl As CscXDocLib.CscXDocField)
+        TableSum(pXDoc, table, pLocator, agl)
+    End Sub
+
+    Private Sub TableSum(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal table As CscXDocTable, ByVal pLocator As CscXDocLib.CscXDocField, ByVal agl As CscXDocLib.CscXDocField)
+        'we are looking For the Total And tax sums underneath the tables
+        Dim l, w As Long
+        Dim row As CscXDocTableRow
+        Dim cellTax As CscXDocLib.CscXDocTableCell
+        Dim cellTotal As CscXDocLib.CscXDocTableCell
+        Dim words As CscXDocWords
+
+        If table.Rows.Count = 0 Then Exit Sub
+
+        row = table.Rows(table.Rows.Count - 1)
+        cellTax = row.Cells.ItemByName("Tax Amount") 'find the cell in the bottom row
+        While cellTax.Text = "" And cellTax.RowIndex > 0
+            cellTax = table.Rows(cellTax.RowIndex - 1).Cells(cellTax.ColumnIndex)
+        Wend
+        cellTotal = row.Cells.ItemByName("Total Price") 'find the cell in the bottom row
+        While cellTotal.Text = "" And cellTotal.RowIndex > 0
+            cellTotal = table.Rows(cellTotal.RowIndex - 1).Cells(cellTotal.ColumnIndex)
+        Wend
+        Dim n, x, t As Double
+        Dim valid As Boolean
+        Dim daf As CASCADELib.ICscFieldFormatter
+        daf = Project.FieldFormatters(Project.DefaultAmountFormatter)
+        n = Table_SumColumn(table, table.Columns.ItemByName("Net Amount").IndexInTable, daf, valid)
+        x = Table_SumColumn(table, table.Columns.ItemByName("Tax Amount").IndexInTable, daf, valid)
+        t = Table_SumColumn(table, table.Columns.ItemByName("Total Price").IndexInTable, daf, valid)
+
+        If x > 0 And t > 0 And n = 0 Then
+            n = x - t
+        ElseIf x = 0 And t > 0 And n > 0 Then
+            x = n - t
+        ElseIf x = 0 And t > 0 And n > 0 Then
+            x = n - t
+        End If
+
+        Dim h As CscXDocFieldAlternatives
+        h = Headers.Alternatives
+        Dim taxheader, totalheader As Long
+        taxheader = -1
+        totalheader = -1
+        For l = 0 To h.Count - 1
+            Dim headername As String
+            headername = Trim(Split(h(l).Text, ";")(0))
+            If headername = "Total Price" Then totalheader = l
+            If headername = "Tax Amount" Then taxheader = l
+        Next
+        For l = row.TextlineIndexEnd + 1 To row.TextlineIndexEnd + 4
+            If l >= pXDoc.TextLines.Count Then Exit For
+            With pLocator.Alternatives.Create
+                .SubFields.Create("Tax")
+                .SubFields.Create("Total")
+                .SubFields.Create("NetAmount")
+                If cellTax.PageIndex > -1 Then
+                    words = pXDoc.GetWordsInRect(cellTax.PageIndex, h(taxheader).Left, pXDoc.TextLines(l).Top, h(taxheader).Width, pXDoc.TextLines(l).Height)
+                    For w = 0 To words.Count - 1
+                        If words(w).LineIndex = l Then
+                            .SubFields(0).Words.Append(words(w))
+                            .SubFields(0).Confidence = 0.5 'it gets 50% for existing
+                        End If
+                    Next
+                    If String_FormatAsDouble(.SubFields(0).Text) = x And x > 0 Then .SubFields(0).Confidence = 1
+                End If
+                If cellTotal.PageIndex > -1 Then
+                    words = pXDoc.GetWordsInRect(cellTotal.PageIndex, h(totalheader).Left, pXDoc.TextLines(l).Top, h(totalheader).Width, pXDoc.TextLines(l).Height)
+                    For w = 0 To words.Count - 1
+                        If words(w).LineIndex = l Then
+                            .SubFields(1).Words.Append(words(w))
+                            .SubFields(1).Confidence = 0.5 'it gets 50% for existing
+                        End If
+                    Next
+                    If String_FormatAsDouble(.SubFields(1).Text) = t And t > 0 Then .SubFields(0).Confidence = 1
+                End If
+            End With
+        Next
+        For l = pLocator.Alternatives.Count - 1 To 0 Step -1
+            With pLocator.Alternatives(l)
+                pLocator.Alternatives(l).Confidence = (.SubFields(0).Confidence + .SubFields(1).Confidence) / 2
+                If pLocator.Alternatives(l).Confidence = 0 Then pLocator.Alternatives.Remove(l)
+            End With
+        Next
+        For l = agl.Alternatives.Count - 1 To 0 Step -1
+            If Table_Overlap(table, agl.Alternatives(l).SubFields.ItemByName("Total")) Then
+                agl.Alternatives.Remove(l)
+            ElseIf Table_Overlap(table, agl.Alternatives(l).SubFields.ItemByName("TaxAmount1")) Then
+                agl.Alternatives.Remove(l)
+            End If
+        Next
+        If agl.Alternatives.Count = 0 Then
+            With pLocator.Alternatives.Create
+                .SubFields.Create("Tax")
+                .SubFields.Create("Total")
+                .SubFields.Create("NetAmount")
+                .SubFields(0).Text = Replace(Format(x, "0.00"), ".", DECIMALSYMBOL)
+                .SubFields(1).Text = Replace(Format(t, "0.00"), ".", DECIMALSYMBOL)
+                .SubFields(2).Text = Replace(Format(n, "0.00"), ".", DECIMALSYMBOL)
+            End With
+        End If
+    End Sub
+
+    Private Sub RowDetection(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal table As CscXDocTable)
+        'This inserts All the words In the table into the correct cells
+        'TODO - handle widow words with no headers above them
+        Dim p As Long
+        Dim r As Long
+        Dim firstpageoffset As Long
+        Dim offset As Long
+        Dim bestclusterIndexes() As Long
+        Dim stopLineIndex As Long
+        Dim startLineIndex As Long
+        Dim clusters As CscXDocLib.CscXDocField
+        Dim firstRowIndex As Long
+        Dim lastRowIndex As Long
+
+        clusters = New CscXDocLib.CscXDocField
+        table.Rows.Clear()
+        firstpageoffset = XDocument_FindLeftTextMargin(pXDoc, 0)
+
+        For p = 0 To pXDoc.Pages.Count - 1
+            stopLineIndex = pXDoc.Pages(p).TextLines(pXDoc.Pages(p).TextLines.Count - 1).IndexOnDocument
+            If EndOfTablePage > -1 Then 'we know where the end of table is
+                If p > EndOfTablePage Then 'We are on a page after the table
+                    stopLineIndex = 0
+                ElseIf p = EndOfTablePage Then
+                    'go back up the page to the line before endoftablepixel
+                    While pXDoc.TextLines(stopLineIndex).Top + pXDoc.TextLines(stopLineIndex).Height > EndOfTablePixel And stopLineIndex > startLineIndex
+                        stopLineIndex = stopLineIndex - 1
+                    Wend
+                End If
+            End If
+            If p = 0 Then 'I am assuming that the table starts on the first page
+                startLineIndex = Headers.Alternatives(p).LongTag + 1
+            Else 'I am assuming that the top of middle pages are in the table
+                startLineIndex = pXDoc.Pages(p).TextLines(0).IndexOnDocument
+            End If
+            ''dl.WriteLine("KTM: startlineindex=" & startLineIndex)
+            ''dl.WriteLine("KTM: stoplineindex=" & stopLineIndex)
+
+            'group by similarity all the textlines on the page underneath the table header. The largest group SHOULD be the table rows
+            Page_GroupTextLinesBySimilarity(pXDoc.TextLines, startLineIndex, stopLineIndex, ROWCONFIDENCE, clusters, IIf(p = 0, True, False))
+            ''dl.WriteLine("clustercount=" & clusters.Alternatives.Count)
+            bestclusterIndexes = Alternatives_GetSortOrder(clusters.Alternatives)
+            ''dl.WriteLine("BCL=" & bestclusterIndexes.Count)
+            'Now we need to count for table registration horizontal shifting on following pages
+            If p = 0 Then offset = 0 Else offset = XDocument_FindLeftTextMargin(pXDoc, p) - firstpageoffset
+            If UBound(bestclusterIndexes) > -1 Then 'we found some similar lines, and assume the the best similar group are the main table lines
+                'Now go and find where the best cluster ends, this should be near the bottom of the table
+                With clusters.Alternatives(bestclusterIndexes(0)).SubFields
+                    r = 0
+                    Do While r < .Count - 1
+                        If pXDoc.TextLines(.ItemByIndex(r).LongTag).PageIndex >= p Then Exit Do
+                        r = r + 1
+                    Loop
+                    firstRowIndex = .ItemByIndex(r).LongTag
+                    lastRowIndex = .ItemByIndex(.Count - 1).LongTag
+                End With
+                ' check for some trailing lines that appear above the end_of_table
+                If EndOfTablePage > -1 Then lastRowIndex = Max(lastRowIndex, stopLineIndex)
+                'dl.WriteLine("firstrowindex " & firstRowIndex)
+                'dl.WriteLine("lastrowindex " & lastRowIndex)
+                If p = 0 Then firstRowIndex = startLineIndex 'sometimes the first line of a table doesn't cluster - we need to include it anyway
+                'dl.WriteLine("firstrowindex " & firstRowIndex)
+                For r = firstRowIndex To lastRowIndex
+                    'Only insert a table line into a table if we cannot find the end of table, or if we are BEFORE the end of table
+                    If EndOfTablePage = -1 Then
+                        Table_InsertRow(pXDoc, Headers.Alternatives, r, table, offset)
+                    ElseIf p < EndOfTablePage Then
+                        Table_InsertRow(pXDoc, Headers.Alternatives, r, table, offset)
+                    ElseIf (p = EndOfTablePage And EndOfTablePixel > pXDoc.TextLines(r).Top) Then
+                        Table_InsertRow(pXDoc, Headers.Alternatives, r, table, offset)
+                    End If
+                Next
+            End If
+        Next
+    End Sub
+
+    Private Sub WidenHeaders(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal table As CscXDocTable, ByVal headers As CscXDocFieldAlternatives)
+        Dim i As Long
+        Dim r As Long
+        Dim lineIndex As Long
+
+        For i = headers.Count - 1 To 0 Step -1
+            If headers(i).Confidence = 0 Then headers.Remove(i)
+        Next
+        For i = 0 To headers.Count - 1
+            If i < headers.Count - 1 Then
+                r = headers(i + 1).Left
+            Else
+                r = pXDoc.CDoc.Pages(0).Width
+            End If
+            lineIndex = Alternatives_FindBetween(VerticalLines.Alternatives, headers(i).Left + headers(i).Width, r)
+            If lineIndex > -1 Then
+                headers(i).Width = VerticalLines.Alternatives(lineIndex).Left - 20 - headers(i).Left
+            End If
+        Next
+        'make the first column go to edge of page
+        If headers.Count > 0 Then
+            headers(0).Width = headers(0).Left + headers(0).Width
+            headers(0).Left = 0
+        End If
+    End Sub
+
+    Private Function Alternatives_FindBetween(ByVal alts As CscXDocFieldAlternatives, ByVal l As Long, ByVal r As Long) As Long
+        'Find the first alternative which is horizontally between the pixels l and r
+        Dim i As Long
+        For i = 0 To alts.Count - 1
+            If alts(i).Left > l And alts(i).Left + alts(i).Width < r Then Alternatives_FindBetween = i : Exit Function
+        Next
+        Alternatives_FindBetween = -1
+    End Function
+
+    Private Sub FindHeaderWords(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal table As CscXDocTable, ByVal pLocator As CscXDocLib.CscXDocField)
+
+        'we are only looking for table header on page 1
+        Dim p As Long
+        Dim headerLineIndex As Long
+        Dim conf As Double
+        Dim score As Double
+        Dim inHeader As Boolean
+        Dim tablemodel As CASCADELib.CscTableModel
+        Dim headerwords As New CscXDocLib.CscXDocField
+        Dim sortOrder() As Long
+        Dim out As CscXDocLib.CscXDocField
+        Dim db As CASCADELib.CscDatabase
+        db = Project.Databases.ItemByName(HeaderDataBaseName)
+        While pLocator.Alternatives.Count > 0
+            pLocator.Alternatives.Remove(0)
+        Wend
+        inHeader = False
+         headerLineIndex = XDocument_SearchLineFuzzy(pXDoc, 0, TABLEHEADERTEXT, conf)
+
+        If conf < 0.8 Then
+            For p = 0 To pXDoc.Pages(0).TextLines.Count - 1
+                score = TextLine_IsTableHeader(pXDoc.TextLines(p), db)
+                If score > 0.7 Then inHeader = True
+                If inHeader And score < 0.5 Then Exit For 'we left the header
+            Next
+            If inHeader = False Then Exit Sub 'No Table header found!!
+            headerLineIndex = Max(p - 1, 0)
+        End If
+        tablemodel = Project.TableModels.ItemByName(tableModelName)
+            XDocument_AnalyzeTableHeader(pXDoc, headerLineIndex, db, tablemodel, headerwords.Alternatives)
+            sortOrder = Alternatives_GetSortOrder(headerwords.Alternatives)
+        out = pLocator
+        XDocument_FindTableColumns(pXDoc, headerLineIndex, tablemodel, sortOrder, headerwords.Alternatives, out.Alternatives)
+        'we need to store the headerindex in every row, because the rows will get sorted later and we won't find it again!!
+        For p = 0 To pLocator.Alternatives.Count - 1
+            pLocator.Alternatives(p).LongTag = headerLineIndex
+        Next
+        pLocator.LongTag = 0
+    End Sub
+
+    Private Sub XDocument_AnalyzeTableHeader(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal lineIndex As Long, _
+                                              ByVal db As CASCADELib.CscDatabase, _
+                                              ByVal tablemodel As CASCADELib.CscTableModel, ByVal results As CscXDocFieldAlternatives)
+        Dim pageIndex As Long
+        pageIndex = pXDoc.TextLines(lineIndex).PageIndex
+        If pXDoc.Pages(pageIndex).TextLines.Count = 0 Then Exit Sub ' This page has no OCR text
+        If pXDoc.Pages(pageIndex).TextLines(lineIndex).Words.Count = 0 Then Exit Sub ' This page has no OCR text
+        'Build an index of column names to global column id's
+        Dim COLUMNIDS As New Dictionary
+        Dim i, w, cols As Long
+        cols = tablemodel.ModelColumns.Count
+        For i = 0 To cols - 1
+            Dim colName As String
+            colName = Project.GlobalColumns.ItemByID(tablemodel.ModelColumns(i).GlobalColumnID).DisplayNameLocalizations.Default
+            COLUMNIDS.Add(colName, i)
+            With results.Create
+                .Text = colName
+            End With
+        Next
+
+        Dim startindex As Long
+        'Find a line above the start of table
+        startindex = lineIndex - MAXROWSINHEADER
+        If startindex < pXDoc.Pages(pageIndex).TextLines(0).IndexOnDocument Then startindex = pXDoc.Pages(pageIndex).TextLines(0).IndexOnDocument
+        Dim wordsInLine, startWordIndex As Long
+        wordsInLine = pXDoc.TextLines(lineIndex).Words.Count - 1
+        startWordIndex = pXDoc.TextLines(lineIndex).Words(0).IndexOnDocument
+
+        Dim word As CscXDocWord
+        For i = startindex To lineIndex - 1
+            If TextLine_IsTableHeader(pXDoc.TextLines(i), db) > 0.5 Then 'check if this line contains at least 50% header words
+                For w = 0 To pXDoc.TextLines(i).Words.Count - 1
+                    word = pXDoc.TextLines(i).Words(w)
+                    Dim column, columns As String
+                    Dim conf As Double
+                    conf = 0.75
+                    columns = DataBase_SearchString(db, "columns", Trim(LCase(String_RemoveCharacters(word.Text, PUNCTUATION))), conf)
+                    If columns <> "" Then
+                        columns = Replace(columns, "_", " ")
+                        For Each column In Split(columns, ",")
+                            If Not COLUMNIDS.ContainsKey(column) Then Err.Raise(356,,column & " from database " & db.Name & " doesn't exist in table model " & tablemodel.Name & "!")
+                            With results.ItemByIndex(COLUMNIDS(column))
+                                Dim sf As New CscXDocSubField
+                                sf = .SubFields.Create(column)
+                                sf.Words.Append(word)
+                                sf.Confidence = 1
+                                Dim c As Double
+                                c = Subfields_Conflate(.SubFields, True, 10)
+                                If c > .Confidence Then .Confidence = c
+                            End With
+                        Next
+                    End If
+                Next
+            End If
+        Next
+    End Sub
+
+    Private Sub XDocument_FindTableColumns(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal lineIndex As Long, ByVal tablemodel As CASCADELib.CscTableModel, ByVal sortOrder() As Long, ByRef headerwords As CscXDocFieldAlternatives, ByRef results As CscXDocFieldAlternatives)
+        Dim i, j, s, bestS, pageIndex As Long
+        pageIndex = pXDoc.TextLines(lineIndex).PageIndex
+        For s = pXDoc.TextLines(lineIndex).Words.Count - 1 To 0 Step -1
+            'pXdoc.TextLines(lineIndex).Words(s).Top=0
+            'pXDoc.Words.Remove(pXDoc.TextLines(lineIndex).Words(0).IndexOnDocument)
+        Next
+        Dim word As CscXDocWord
+        For i = 0 To headerwords.Count - 1
+            results.Create()
+        Next
+        For Each i In sortOrder
+            'remove any header candidates that overlap with already found headers
+            For j = 0 To results.Count - 1
+                For s = headerwords(i).SubFields.Count - 1 To 0 Step -1
+                    If Field_HorizontalOverlap(results(j), headerwords(i).SubFields(s)) > 0 Then headerwords(i).SubFields.Remove(s)
+                Next
+            Next
+            'Find the best cluster of header words
+            Dim bestConf As Double
+            bestConf = 0
+            bestS = -1
+            For s = 0 To headerwords(i).SubFields.Count - 1
+                If headerwords(i).SubFields(s).Confidence > bestConf Then
+                    bestConf = headerwords(i).SubFields(s).Confidence
+                    bestS = s
+                End If
+            Next
+            If bestS > -1 Then
+                Dim alt As CscXDocFieldAlternative
+                alt = results(i)
+                alt.Confidence = headerwords.Count - i 'so they sort in order
+                With headerwords(i).SubFields(bestS)
+                    For s = 0 To .Words.Count - 1
+                        alt.Words.Append(.Words(s))
+                    Next
+                End With
+                alt.Text = headerwords(i).Text & ";" & alt.Text
+                word = New CscXDocWord
+                Field_Copy(alt, word)
+                word.Text = headerwords(I).Text
+                word.PageIndex = pageIndex
+                word.Top = pXDoc.TextLines(lineIndex).Top
+                word.Height = pXDoc.TextLines(lineIndex).Height
+                'pXdoc.Representations.ItemByName("FR").Pages(pXdoc.TextLines(lineIndex).PageIndex).AddWord(word)
+            End If
+        Next
+        For I = results.Count - 1 To 0
+            If results(I).Confidence = 0 Then results.Remove(I)
+        Next
+        'pXdoc.Representations.ItemByName("FR").qaLines
+    End Sub
+
+    Private Function XDocument_SearchLineFuzzy(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal pageIndex As Long, ByVal compareText As String, ByRef confidence As Double) As Long
+        Dim I, bestIndex As Long
+        Dim conf, bestConf As Double
+        bestConf = 0
+        For I = 0 To pXDoc.Pages(pageIndex).TextLines.Count - 1
+            Dim Text As String
+             Text = pXDoc.Pages(pageIndex).TextLines(I).Text
+                conf = String_FuzzyMatch(compareText, Text, True)
+            If conf > bestConf Then bestConf = conf : bestIndex = I
+        Next
+        confidence = bestConf
+        XDocument_SearchLineFuzzy = bestIndex
+    End Function
+
+    Private Function TextLine_IsTableHeader(ByVal textline As CscXDocTextLine, ByVal db As CASCADELib.CscDatabase) As Double
+        Dim w As Long
+        Dim conf As Double
+        Dim score As Double
+        Dim word As String
+        Dim match As String
+        For w = 0 To textline.Words.Count - 1
+            word = LCase(Trim(textline.Words(w).Text))
+            match = DataBase_SearchString(db, "headerword", word, conf)
+            score = score + String_FuzzyMatch(match, word, True) * Len(word)
+        Next
+        score = score / (Len(textline.Text) - textline.Words.Count + 1)
+        TextLine_IsTableHeader = score
+    End Function
+
+    Private Function String_RemoveCharacters(ByVal A As String, ByVal replaceChars As String) As String
+        A = LCase(Trim(A))
+        Dim I As Long
+        For I = 1 To Len(replaceChars)
+            A = Replace(A, Mid(replaceChars,I,1), "")
+        Next
+        Return A
+    End Function
+
+    Private Function DataBase_SearchExactInColumn(ByVal db As CASCADELib.CscDatabase, ByVal column As String, ByVal searchstring As String) As CscXDocLib.CscXDocField
+        'This does an exact match for the searchstring in a specific column, no fuzziness at all
+        'it returns ONLY 1 value. so if your database has more than one entry with this value, it could return the wrong one
+        Dim results As CscXDocLib.CscXDocField
+        results = Database_Search(db, column, searchstring, 1, 1.0#)
+        If results.Alternatives.Count > 0 Then
+            If results.Alternatives(0).SubFields.Exists(column) Then
+                If results.Alternatives(0).SubFields.ItemByName(column).Text = searchstring Then
+                    DataBase_SearchExactInColumn = results
+                Else 'the searchstring is NOT in the correct column, so ignore all results
+                    results = New CscXDocLib.CscXDocField
+                End If
+            Else 'the column doesn't exist in the database, so ignore all results
+                results = New CscXDocLib.CscXDocField
+            End If
+        End If
+        DataBase_SearchExactInColumn = results
+    End Function
+
+    Private Function DataBase_IsStringWithinColumn(ByVal db As CASCADELib.CscDatabase, ByVal column As String, ByVal searchstring As String, ByVal confidence As Double) As Boolean
+        Dim results As CscXDocLib.CscXDocField
+        results = Database_Search(db, "", searchstring, 5, confidence)
+        Dim A As Long
+        For A = 0 To results.Alternatives.Count - 1
+            If Not results.Alternatives(A).SubFields.Exists(column) Then
+                DataBase_IsStringWithinColumn = False
+                Exit Function
+            End If
+            If results.Alternatives(A).SubFields.ItemByName(column).Text = searchstring Then
+                DataBase_IsStringWithinColumn = True
+                Exit Function
+            End If
+        Next
+        DataBase_IsStringWithinColumn = False
+    End Function
+
+
+    Private Function DataBase_SearchString(ByVal db As CASCADELib.CscDatabase, ByVal column As String, ByVal searchstring As String, ByRef confidence As Double) As String
+        'This returns the value in the chosen column based on the searchstring from the best search result.
+        'the searchstring does not need to be in the column you want to retrieve. So you could return a first name based on a search for account number
+        Dim results As CscXDocLib.CscXDocField
+        results = Database_Search(db, column, searchstring, 2, confidence)
+        If results.Alternatives.Count = 0 Then
+            DataBase_SearchString = ""
+            Exit Function
+        End If
+        Dim A, besta As Long
+        Dim bestScore As Double
+        bestScore = 0
+        'We cannot assume that the first result is the best
+        With results.Alternatives
+            For A = 0 To .Count - 1
+                'The database locator will return 100% for "ABCDE" when querying "ABC". We need to drop the score
+                Dim ratio As Double
+                ratio = Len(.ItemByIndex(A).Text) / Len(searchstring)
+                If ratio < 1 Then .ItemByIndex(A).Confidence = .ItemByIndex(A).Confidence * ratio
+                If .ItemByIndex(A).Confidence > bestScore Then
+                    besta = A
+                    bestScore = .ItemByIndex(A).Confidence
+                End If
+            Next
+            confidence = bestScore
+            DataBase_SearchString = results.Alternatives(besta).Text
+        End With
+    End Function
+
+    Private Function Database_Search(ByVal db As CASCADELib.CscDatabase, ByVal column As String, ByVal searchstring As String, ByVal numberHits As Long, ByVal score As Double) As CscXDocLib.CscXDocField
+        'if column i="" then all columns are returned as subfields
+        'Set score=1.0 for exact match
+        Dim Fields() As String
+        Dim FieldIDs() As Long
+        ReDim Fields(db.FieldCount)
+        ReDim fieldisd(db.FieldCount)
+        Fields(0) = searchstring
+        FieldIDs(0) = 0
+        'Find the column we are looking for
+        Dim col As Long
+        col = -1
+        Dim i As Long
+        For i = 0 To db.FieldCount - 1
+            If db.FieldName(i) = column Then col = i
+        Next
+        If col = -1 And column <> "" Then Err.Raise(34589, , "Column '" & column & "' does not exist in database '" & db.Name & "'.")
+        Dim hits As CASCADELib.CscDatabaseResItems
+        hits = db.Search(Fields, FieldIDs, CASCADELib.CscQueryEvalMode.CscEvalMatchQuery, numberHits)
+        Dim results As CscXDocLib.CscXDocField
+        results = New CscXDocLib.CscXDocField  'You are allowed to create a standalone field
+        For i = 0 To hits.Count - 1
+            If hits(i).Score >= score Then
+                Dim alt As CscXDocFieldAlternative
+                alt = results.Alternatives.Create()
+                alt.Confidence = hits(i).Score
+                If col = -1 Then 'the column is "", so we return all fields
+                    Dim c As Long
+                    For c = 0 To db.FieldCount - 1
+                        alt.SubFields.Create(db.FieldName(c))
+                        alt.SubFields(c).Text = db.GetRecordData(hits(i).RecID)(c)
+                        alt.SubFields(c).Confidence = hits(i).Score
+                    Next
+                    alt.Text = ""
+                Else
+                    alt.Text = db.GetRecordData(hits(i).RecID)(col)
+                End If
+            End If
+        Next
+        Database_Search = results
+    End Function
+
+    Private Function Subfields_Conflate(ByRef clusters As CscXDocSubFields, ByVal horizontalOnly As Boolean, ByVal maxDistance As Long) As Double
+        'This merges subfields that are within maxDistance pixels of each other
+        'returns the best confidence of the conflated fields
+        Dim c As Long
+        Dim d As Long
+        c = 0
+        Dim conf As Double
+        conf = 0
+        While c < clusters.Count - 1
+            d = c + 1
+            While d < clusters.Count
+                Dim distance As Long
+                If horizontalOnly Then
+                    distance = HorizontalDistance(clusters(c), clusters(d))
+                Else
+                    distance = Rectangle_Distance(clusters(c), clusters(d))
+                End If
+                If distance < maxDistance Then
+                    Field_Append(clusters(c), clusters(d))
+                    clusters.Remove(d)
+                    If clusters(c).Confidence > conf Then conf = clusters(c).Confidence
+                Else
+                    d = d + 1
+                End If
+            Wend
+            c = c + 1
+        Wend
+        Subfields_Conflate = conf
+    End Function
+
+    Private Sub Field_Append(ByRef A As CscXDocSubField, ByRef b As CscXDocSubField)
+        'Appends all words from a to b, and adds their confidence
+        Dim w As Long
+        For w = 0 To b.Words.Count - 1
+            A.Words.Append(b.Words(w))
+        Next
+        Dim conf As Double
+        conf = A.Confidence + b.Confidence 'we are using confidence to count members
+        A.Confidence = conf
+    End Sub
+
+    Private Function Field_HorizontalOverlap2D(ByVal A As Object, ByVal b As Object, Optional ByVal offset As Long = 0) As Double
+        'returns percentage overlap of two fields, subfields or alternatives (0.0 if no overlap, 1.0 if perfect overlap)
+        'Check if fields are on the same page and that both exist
+        'the offset is how many pixels object b needs to be shifted horizontally - used for page registration
+        If A.PageIndex <> b.PageIndex Or A.PageIndex = -1 Then Return 0
+        Dim overlapArea As Double
+        overlapArea = Max((Min(A.Left + A.Width, b.Left + b.Width + offset) - Max(A.Left, b.Left + offset)), 0) * _
+                    Max((Min(A.Top + A.Height, b.Top + b.Height) - Max(A.Top, b.Top)), 0)
+        Return overlapArea / Max(A.Width * A.Height, b.Width * b.Height)
+    End Function
+
+    Private Function Field_HorizontalOverlap(ByVal A As Object, ByVal b As Object, Optional ByVal offset As Long = 0, Optional ByVal ignorePage As Boolean = False) As Double
+        'Calculates the horizontal overlap of two fields and returns 0<=overlap<=1
+        'Overlap=1 is also returned if one field is inside the other
+        If (Not ignorePage And (A.PageIndex <> b.PageIndex)) Or A.PageIndex = -1 Then Return 0
+        If A.Width = 0 Or b.Width = 0 Then Return 0
+        Dim o As Double
+        o = Max((Min(A.Left + A.Width, b.Left + b.Width + offset) - Max(A.Left, b.Left + offset)), 0)
+        Return o / Min(A.Width, b.Width)
+    End Function
+
+    Private Function Field_VerticalOverlap(ByVal A As Object, ByVal b As Object, Optional ByVal ignorePage As Boolean = False) As Double
+        'Calculates the horizontal overlap of two fields and returns 0<=overlap<=1
+        'Overlap=1 is also returned if one field is inside the other
+        Dim o As Double
+        If (Not ignorePage And (A.PageIndex <> b.PageIndex)) Or A.PageIndex = -1 Then Return 0
+        If A.Height = 0 Or b.Height = 0 Then Return 0
+        o = Max((Min(A.Top + A.Height, b.Top + b.Height) - Max(A.Top, b.Top)), 0)
+        Field_VerticalOverlap = o / Min(A.Height, b.Height)
+    End Function
+
+    Private Function Field_HasConfidence(ByVal A As Object) As Boolean
+        Field_HasConfidence = TypeOf A Is CscXDocLib.CscXDocField Or TypeOf A Is CscXDocFieldAlternative Or TypeOf A Is CscXDocSubField
+    End Function
+
+    Private Function Field_HasWords(ByVal A As Object) As Boolean
+        If Not (TypeOf A Is CscXDocLib.CscXDocField Or TypeOf A Is CscXDocSubField Or TypeOf A Is CscXDocFieldAlternative) Then Field_HasWords = False : Exit Function
+        Return A.Words.Count > 0
+    End Function
+
+    Private Function Field_HasSubFields(ByVal A As Object) As Boolean
+        Field_HasSubFields = TypeOf A Is CscXDocLib.CscXDocField Or TypeOf A Is CscXDocFieldAlternative
+    End Function
+
+    Private Sub Field_Copy(ByVal A As Object, ByVal b As Object, Optional ByVal Append As Boolean = False)
+        Dim i As Long
+        If Not Append Then
+            If TypeOf b Is CscXDocLib.CscXDocField Then
+                While b.Alternatives.Count > 0
+                    b.Alternatives.Remove(0)
+                Wend
+            ElseIf TypeOf b Is CscXDocFieldAlternative Then
+                b.SubFields.Clear()
+            ElseIf TypeOf b Is CscXDocTable Then
+                b.Rows.Clear()
+            End If
+            If Field_HasWords(b) Then
+                While b.Words.Count > 0
+                    b.Words.Remove(0)
+                Wend
+            End If
+            b.Text = ""
+        End If
+        If Field_HasWords(A) And Field_HasWords(b) Then
+            For i = 0 To A.Words.Count - 1
+                b.Words.Append(A.Words(i))
+            Next
+        ElseIf TypeOf A Is CscXDocLib.ICscXDocLine And Not TypeOf B Is CscXDocLib.ICscXDocLine Then
+            B.Top = A.StartY
+            B.Left = A.StartX
+            B.Width = A.EndX - A.StartX
+            B.Height = A.EndY - A.StartY
+            B.Confidence = 1
+        Else
+            B.Top = A.Top
+            B.Left = A.Left
+            B.Width = A.Width
+            B.Height = A.Height
+            If Append Then B.Text = Replace(B.Text & " " & A.Text, " ", "  ") Else B.Text = Trim(A.Text)
+        End If
+        B.PageIndex = A.PageIndex
+        If Field_HasConfidence(A) And Field_HasConfidence(B) Then B.Confidence = A.Confidence
+        If Field_HasSubFields(A) And Field_HasSubFields(B) Then
+            For i = 0 To A.SubFields.Count - 1
+                Field_Copy(A.SubFields(i), B.SubFields.Create(A.SubFields(i).Name))
+            Next
+        End If
+        If TypeOf A Is CscXDocLib.CscXDocField Or TypeOf B Is CscXDocLib.CscXDocField Then
+            For i = 0 To A.Alternatives.Count - 1
+                Field_Copy(A.Alternatives(i), B.Alternatives.Create())
+            Next
+        End If
+    End Sub
+
+
+    Private Function String_FuzzyMatch(ByVal A As String, ByVal B As String, ByVal RemoveSpaces As Boolean) As Double
+        If RemoveSpaces Then
+            A = Replace(A, " ", "")
+            B = Replace(B, " ", "")
+        End If
+        Dim length As Long
+        length = Max(Len(A), Len(B))
+        If length = 0 Then String_FuzzyMatch = 0 : Exit Function
+        Dim distance As Long
+        distance = String_LevenshteinDistance(A, B)
+        String_FuzzyMatch = CDbl(1.0# - (distance / length) ^ 2)
+    End Function
+
+    Private Function String_LevenshteinDistance(ByVal A As String, ByVal B As String)
+        'http://en.wikipedia.org/wiki/Levenshtein_distance
+        'Levenshtein distance between two strings, used for fuzzy matching
+        Dim i As Long, j As Long, cost As Long, subs As Long
+        Dim ins As Long
+        Dim dels As Long
+        Dim d() As Long
+        If Len(A) = 0 Then String_LevenshteinDistance = Len(B) : Exit Function
+        If Len(B) = 0 Then String_LevenshteinDistance = Len(A) : Exit Function
+        ReDim d(Len(A), Len(B))
+        For i = 0 To Len(A)
+            d(i, 0) = i
+        Next
+        For j = 0 To Len(B)
+            d(0, j) = j
+        Next
+        For i = 1 To Len(A)
+            For j = 1 To Len(B)
+                If Mid(A, i, 1) = Mid(B, j, 1) Then cost = 0 Else cost = 1 ' cost of substitution
+                dels = (d(i - 1, j) + 1)     ' cost of deletion
+                ins = (d(i, j - 1) + 1)     ' cost of insertion
+                subs = (d(i - 1, j - 1) + cost)     'cost of substition or match
+                d(i, j) = Min(ins, Min(dels, subs))
+            Next
+        Next
+        String_LevenshteinDistance = d(Len(A), Len(b))
+    End Function
+
+
+    Private Sub Lines_FindBestCluster(ByVal Lines As CscXDocLines, ByVal direction As CscXDocLib.CscXDocLineDirections, ByRef clusteredLines As CscXDocFieldAlternatives)
+        Dim clusters As CscXDocField
+        clusters = New CscXDocField
+        Dim bestclusters() As Long
+        Dim overlap, bestoverlap As Double
+        Dim sf As CscXDocSubField
+        Dim i, j, bestC As Long
+
+        For i = 0 To Lines.Count - 1
+            If Lines(i).Direction = direction Then
+                bestC = 0
+                bestoverlap = 0
+                For j = 0 To clusters.Alternatives.Count - 1
+                    Select Case direction
+                        Case CscXDocLib.CscXDocLineDirections.CscXDocLineDirectionHorizontal
+                            overlap = Line_HorizontalOverlap(Lines(i), clusters.Alternatives(j).SubFields(0))
+                        Case CscXDocLib.CscXDocLineDirections.CscXDocLineDirectionVertical
+                            overlap = Line_VerticalOverlap(Lines(i), clusters.Alternatives(j).SubFields(0))
+                    End Select
+                    If overlap > bestoverlap Then
+                        bestoverlap = overlap
+                        bestC = j
+                    End If
+                Next
+                If bestoverlap > 0.8 Then
+                    sf = clusters.Alternatives(bestC).SubFields.Create("a")
+                Else
+                    sf = clusters.Alternatives.Create.SubFields.Create("a")
+                End If
+                Field_Copy(Lines(i), sf)
+            End If
+        Next
+        For i = 0 To clusters.Alternatives.Count - 1
+            clusters.Alternatives(i).Confidence = clusters.Alternatives(i).SubFields.Count
+        Next
+        If clusters.Alternatives.Count = 0 Then Exit Sub
+        bestclusters = Alternatives_GetSortOrder(clusters.Alternatives)
+        If UBound(bestclusters) > -1 Then
+            With clusters.Alternatives(bestclusters(0))
+                For i = 0 To .SubFields.Count - 1
+                    Field_Copy(.SubFields(i), clusteredLines.Create)
+                Next
+            End With
+        End If
+    End Sub
+
+
+    Private Function Table_Overlap(ByVal table As CscXDocTable, ByVal f As Object) As Boolean
+        Dim t As New CscXDocLib.CscXDocField
+        t.PageIndex = f.PageIndex
+        t.Top = table.Top(f.PageIndex)
+        t.Height = table.Height(f.PageIndex)
+        Table_Overlap = Field_VerticalOverlap(f, t) > 0
+        Exit Function
+        'this code below is wrong
+        'If f.pageIndex < 0 Then Exit Function
+        'Dim tabletop As Long
+        'Dim tablebottom As Long
+        'tabletop = table.Top(f.pageIndex)
+        'tablebottom = tabletop + table.Height(f.pageIndex)
+        'Table_Overlap = (f.Top + f.Height > tabletop And f.Top < tablebottom)
+    End Function
+
+    Private Function XDocument_FindLeftTextMargin(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal p As Long) As Long
+        'Assuming that most of each page is left aligned, we find the left text margin on each page
+        Dim clusters As New CscXDocLib.CscXDocField
+        Dim textline As CscXDocTextLine
+        Dim bestclusterIndexes() As Long
+        Dim l, c As Long
+        Dim found As Boolean
+        For l = 0 To pXDoc.Pages(p).TextLines.Count - 1
+            found = False
+            textline = pXDoc.Pages(p).TextLines(l)
+            For c = 0 To clusters.Alternatives.Count - 1
+                If Abs(clusters.Alternatives(c).SubFields(0).Left - textline.Left) < 30 Then
+                    With clusters.Alternatives(c).SubFields().Create(CStr(l))
+                        .Left = textline.Left
+                    End With
+                    found = True
+                    Exit For
+                End If
+            Next
+            If Not found Then
+                With clusters.Alternatives.Create.SubFields().Create(CStr(l))
+                    .Left = textline.Left
+                End With
+            End If
+        Next
+        'Store subfield.count into alt.conf because the sort return sorts best confidence of alts
+        For l = 0 To clusters.Alternatives.Count - 1
+            clusters.Alternatives(l).Confidence = clusters.Alternatives(l).SubFields.Count
+        Next
+        bestclusterIndexes = Alternatives_GetSortOrder(clusters.Alternatives)
+        If UBound(bestclusterIndexes) < 0 Then XDocument_FindLeftTextMargin = -1 : Exit Function
+        l = 0
+        'return the average left margin coordinate of this largest cluster of lines
+        With clusters.Alternatives(bestclusterIndexes(0))
+            For c = 0 To .SubFields.Count - 1
+                l = l + .SubFields(c).Left
+            Next
+            XDocument_FindLeftTextMargin = l / .SubFields.Count
+        End With
+    End Function
+
+    Private Function Table_SumColumn(ByVal table As CscXDocTable, ByVal colID As Long, ByVal amountFormatter As CASCADELib.ICscFieldFormatter, ByRef valid As Boolean) As Double
+        'Sums a column in a database and returns false if any cell is invalid
+        Table_SumColumn = table.GetColumnSum(colID, valid) : Exit Function
+        'Dim sum As Double
+        'Dim r As Long
+        'Dim cell As CscXDocLib.CscXDocTableCell
+        'sum = 0
+        'For r = 0 To table.Rows.Count - 1
+        '    cell = table.Rows(r).Cells(colID)
+        '    amountFormatter.FormatTableCell(cell)
+        '    If Not cell.DoubleFormatted Then valid = False : Table_SumColumn = 0 : Exit Function
+        '    sum = sum + cell.DoubleValue
+        'Next
+        'valid = True
+        'Table_SumColumn = sum
+    End Function
+
+    Private Function Page_GroupTextLinesBySimilarity(ByVal textLines As CscXDocTextLines, ByVal startLineIndex As Long, ByVal stopLineIndex As Long, ByVal clusterFuzzyMatch As Double, ByRef clusters As CscXDocLib.CscXDocField, ByVal createNewClusters As Boolean) As CscXDocLib.CscXDocField
+        'This starts on page p at line lineindex and looks downward grouping text lines together that are "fuzzily similar". It returns a collection of all textlines on the page grouped together.
+        'rows of a table will cluster together because they are "fuzzily similar"
+        Dim l, c, s As Long
+        Dim sf As CscXDocSubField
+        Dim score As Double
+        Dim found As Boolean
+        Dim textline As String
+        Dim textlinePattern As String
+        'Convert the user friendly pattern to the confidential & internal fuzzy match pattern
+        textlinePattern = Replace(LINEITEMPATTERN, "c", "Ж")
+        textlinePattern = Replace(textlinePattern, "n", "00")
+        textlinePattern = Replace(textlinePattern, "d", "00,00")
+        textlinePattern = Replace(textlinePattern, "p", "18%")
+        textlinePattern = String_StrongNormalize(textlinePattern)
+        ''TODO the best cluster is not the largest, but the one that best matches textlinepattern
+
+        For l = startLineIndex To stopLineIndex 'todo - only go as far as end of table to save CPU time, not to end of page
+            textline = String_StrongNormalize(textLines(l).Text)
+            found = False
+            For c = 0 To clusters.Alternatives.Count - 1
+                With clusters.Alternatives(c)
+                    For s = 0 To .SubFields.Count - 1
+                        score = String_FuzzyMatch(textline, .SubFields(s).Text, False)
+                        'dl.WriteLine(score.ToString("0.00%") & textLines(l).Text)
+                        If score > clusterFuzzyMatch Then
+                            found = True
+                            sf = .SubFields.Create(CStr(s))
+                            sf.LongTag = l
+                            sf.Text = textline
+                            sf.Confidence = score
+                            Exit For
+                        End If
+                    Next
+                End With
+                If found Then Exit For
+            Next
+            If Not found And createNewClusters Then
+                With clusters.Alternatives.Create.SubFields.Create("0")
+                    .Words.Append(textLines(l).Words(0))
+                    .Text = textline
+                    .Confidence = score
+                    .LongTag = l
+                End With
+            End If
+        Next
+        For l = 0 To clusters.Alternatives.Count - 1
+            With clusters.Alternatives(l)
+                'The best cluster is the largest cluster (works for long tables with varying wordwrap)
+                .Confidence = .SubFields.Count
+                'the best cluster is the cluster that looks most like a typical line pattern (works also for single line tables)
+                'TODO TODAY .Confidence = String_FuzzyMatch(textlinePattern, String_StrongNormalize(.SubFields(0).Text), False)
+            End With
+
+        Next
+        Return clusters
+    End Function
+
+    Private Function Object_Compare(ByVal A As Object, ByVal b As Object) As Boolean
+        Return A.Conf > b.Conf
+    End Function
+
+    Private Sub Table_InsertRow(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal headers As CscXDocFieldAlternatives, ByVal lineIndex As Long, ByVal table As CscXDocTable, ByVal offset As Long)
+        Dim w, r, colIndex As Long
+        Dim word As CscXDocWord
+        Dim row As CscXDocTableRow
+        If table.Rows.Count = 0 Or TextLine_IsGraphicalLineAbove(pXDoc, lineIndex, HorizontalLines.Alternatives) Then
+            'dl.WriteLine("Appended new row")
+            row = table.Rows.Append()
+        Else
+            'dl.WriteLine("inserted to existing row")
+            row = table.Rows(table.Rows.Count - 1)
+        End If
+        'If we have wrapped to a second page then start a new row
+        'TODO we should also check that if the net,total,tax columns already have values in them, we MUST START A NEW ROW, irrespective of line detection.
+        If row.IndexInTable > 0 Then
+            If (pXDoc.TextLines(lineIndex).PageIndex <> table.Rows(row.IndexInTable - 1).StartPage) Then row = table.Rows.Append
+        End If
+        If (row.Cells.ItemByName("Total Price").Text <> "" Or row.Cells.ItemByName("Quantity").Text <> "") And String_CountDigits(pXDoc.TextLines(lineIndex).Text) > 12 Then row = table.Rows.Append
+        For w = 0 To pXDoc.TextLines(lineIndex).Words.Count - 1
+            word = pXDoc.TextLines(lineIndex).Words(w)
+            For r = 0 To headers.Count - 1
+                If Field_HorizontalOverlap(word, headers(r), offset, True) > 0 Then
+                    Dim colName As String
+                    colName = Trim(Split(headers(r).Text, ";")(0))
+                    colIndex = table.Columns.ItemByName(colName).IndexInTable
+                    row.Cells(colIndex).AddWordData(word)
+                    Exit For
+                End If
+            Next
+        Next
+        'dl.WriteLine("table-row: " & msg)
+    End Sub
+
+    Private Function TextLine_IsGraphicalLineAbove(ByVal pXDoc As CscXDocLib.CscXDocument, ByVal lineIndex As Long, ByVal graphicalLines As CscXDocFieldAlternatives) As Boolean
+        Dim pixelabove, pixelbelow, g As Long
+        pixelbelow = pXDoc.TextLines(lineIndex).Top + pXDoc.TextLines(lineIndex).Height / 2
+        If lineIndex > 1 Then pixelabove = pXDoc.TextLines(lineIndex - 1).Top + pXDoc.TextLines(lineIndex - 1).Height / 2 Else pixelabove = 0 'check page as well
+        For g = 0 To graphicalLines.Count - 1
+            If pXDoc.TextLines(lineIndex).PageIndex = graphicalLines(g).PageIndex And graphicalLines(g).Top >= pixelabove And graphicalLines(g).Top <= pixelbelow Then Return True
+        Next
+        Return False
+    End Function
+
+    Private Function String_StrongNormalize(ByVal t As String) As String
+        'reduces every character to string to character set. eg "aBc $123.56" ->"a ?000.00"
+        Dim ch, out As String
+        out = ""
+        Dim i As Long
+        For i = 1 To Len(t)
+            ch = Mid(t, i, 1)
+            Select Case AscW(ch)
+                Case Is > &H4F9  'beyond Cyrillic
+                    out = out & "?"
+                Case Is > &H400  'Cyrillic
+                    out = out & "c"
+                Case Is > &HBF   'Page 2 utf-8
+                    out = out & "a"
+                Case Is > &H7A
+                    'ignore strange characters
+                Case Is > &H40   'Alphabetic
+                    out = out & "a"
+                Case Is > &H39    ':;<=>?@
+                    out = out & " "
+                Case Is > &H2F   ' numeric
+                    out = out & "0"
+                Case &H25, &H2C, &H2D, &H2E      ' %,-.
+                    out = out & ch
+                Case Is > &H19   ' keep spaces
+                    out = out & " "
+                Case Else
+                    'ignore lower ASCII
+            End Select
+        Next
+        While InStr(out, "cc")
+            out = Replace(out, "cc", "c")
+        Wend
+        While InStr(out, "aa")
+            out = Replace(out, "aa", "a")
+        Wend
+        While InStr(out, "c c ")
+            out = Replace(out, "c c ", "c ")
+        Wend
+        While InStr(out, "a a ")
+            out = Replace(out, "a a ", "a ")
+        Wend
+        While InStr(out, "  ")
+            out = Replace(out, "  ", " ")
+        Wend
+        Return out
+    End Function
+
+    Private Function Alternatives_GetSortOrder(ByVal alts As Object) As Long()
+        Dim i, sortOrder() As Long
+        ReDim sortOrder(alts.Count - 1)
+        If alts.Count = 0 Then Return sortOrder
+        Dim refs As New List(Of alt)
+        For i = 0 To alts.Count - 1
+            Dim alt As New alt
+            alt.ID = i
+            alt.Conf = alts(i).Confidence
+            refs.Add(alt)
+        Next
+        refs.Sort(New AltComparer)
+        '        Objects_Sort(refs)
+        For i = 0 To refs.Count - 1
+            sortOrder(i) = refs(i).ID
+        Next
+        Return sortOrder
+    End Function
+
+
+
+    Private Function Rectangle_Distance(ByVal a As Object, ByVal b As Object) As Long
+        Dim vertDistance As Long
+        vertDistance = Abs(b.Top + b.Height / 2 - a.Top - a.Height / 2) - b.Height / 2 - a.Height / 2
+        Dim horDistance As Long
+        horDistance = Abs(b.Left + b.Width / 2 - a.Left - a.Width / 2) - b.Width / 2 - a.Width / 2
+        Return Max(Max(vertDistance, horDistance), 0)
+    End Function
+
+    Private Function HorizontalDistance(ByVal a As Object, ByVal b As Object) As Long
+        Dim horDistance As Long
+        horDistance = Abs(b.Left + b.Width / 2 - a.Left - a.Width / 2) - b.Width / 2 - a.Width / 2
+        Return Max(horDistance, 0)
+    End Function
+
+    Private Sub Objects_Sort(ByRef a As Object)
+        Quicksort(a, 0, UBound(a))
+    End Sub
+
+    Private Sub Quicksort(ByRef a As Object, ByVal Left As Long, ByVal Right As Long)
+        Dim pivot As Long
+        If Right > Left Then
+            pivot = Quicksort_GetPivot(Left, Right)
+            pivot = Quicksort_Partition(a, Left, Right, pivot)
+            Quicksort(a, Left, pivot)
+            Quicksort(a, pivot + 1, Right)
+        End If
+    End Sub
+
+    Private Function Quicksort_GetPivot(ByVal Left As Long, ByVal Right As Long) As Long
+        'Return a random Long between Left and Right
+        Return (Rnd() * (Right - Left + 1) * 1000) Mod (Right - Left + 1) + Left
+    End Function
+
+    Private Function Quicksort_Partition(ByRef a As Object, ByVal l As Long, ByVal r As Long, ByRef pivot As Long) As Long
+        Dim i, store As Long
+        Dim piv As Object
+        piv = a(pivot)
+        Object_Swap(a(r), a(pivot))
+        store = l
+        For i = l To r - 1
+            If Object_Compare(a(i), piv) Then
+                Object_Swap(a(store), a(i))
+                store = store + 1
+            End If
+        Next
+        Object_Swap(a(r), a(store))
+        Return store
+    End Function
+
+    Private Sub Object_Swap(ByRef v1, ByRef v2)
+        Dim tmp As Object
+        tmp = v1
+        v1 = v2
+        v2 = tmp
+    End Sub
+
+    Function TableModel_CreateColumnIndex(ByVal TABLEMODELNAME As String) As Dictionary
+        Dim colIDs As New Dictionary
+        Dim i As Long, cols As Long
+        Dim tablemodel As CASCADELib.CscTableModel
+        tablemodel = Project.TableModels.ItemByName(TABLEMODELNAME)
+        cols = tablemodel.ModelColumns.Count
+        For i = 0 To cols - 1
+            Dim colName As String
+            colName = Project.GlobalColumns.ItemByID(tablemodel.ModelColumns(i).GlobalColumnID).DisplayName
+            colIDs.Add(colName, i)
+        Next
+        Return colIDs
+    End Function
+
+    Private Function Line_HorizontalOverlap(ByVal a As Object, ByVal b As Object) As Double
+        'Calculates the horizontal overlap of two fields and returns 0<=overlap<=1
+        Dim o As Double
+        If TypeOf A Is CscXDocLib.ICscXDocLine Then
+            If A.StartX = A.EndX Or b.Width = 0 Then Return 0
+            o = Max((Min(A.EndX, b.Left + b.Width) - Max(A.StartX, b.Left)), 0)
+            Return o / Max(A.EndX - A.StartX, b.Width)
+        Else
+            If A.Width = 0 Or b.Width = 0 Then Return 0
+            o = Max((Min(A.Left + A.Width, b.Left + b.Width) - Max(A.Left, b.Left)), 0)
+            Return o / Max(A.Width, b.Width)
+        End If
+    End Function
+
+    Private Function Line_VerticalOverlap(ByVal a As Object, ByVal b As Object) As Double
+        'Calculates the vertical overlap of two fields and returns 0<=overlap<=1
+        Dim o As Double
+        If TypeOf a Is CscXDocLib.ICscXDocLine Then
+            If a.EndY = a.StartY Or b.Height = 0 Then Return 0
+            o = Max((Min(a.EndY, b.Top + b.Height) - Max(a.StartY, b.Top)), 0)
+            Return o / Max(a.EndY - a.StartY, b.Height)
+        Else
+            o = Max((Min(a.Top + a.Height, b.Top + b.Height) - Max(a.Top, b.Top)), 0)
+            Return o / Max(a.Height, b.Height)
+        End If
+    End Function
+
+
+    Private Sub EndOfTable(ByVal pXDoc As CASCADELib.CscXDocument, ByVal DBLoc As CscXDocLib.CscXDocField, ByVal pLocator As CASCADELib.CscXDocField)
+        'This looks for the endOfTable, by checking DB_EndOfTable results
+        'TODO: This is buggy because I need to check the page of the endof table. if it is not on the same page as the header i should not remove the alt
+        'TODO: I think this will fail if DB_EndOfTable finds nothing
+        Dim startLineIndex, startLinePixel As Long
+        startLineIndex = Headers.Alternatives(0).LongTag + 1
+        startLinePixel = pXDoc.TextLines(startLineIndex).Top + pXDoc.TextLines(startLineIndex).Height
+        Dim pageWidth As Long
+        pageWidth = pXDoc.CDoc.Pages(0).Width
+        EndOfTablePixel = 2000000
+        Dim i As Long
+        For i = DBLoc.Alternatives.Count - 1 To 0 Step -1
+            With DBLoc.Alternatives(i).SubFields(0)
+                'We don't trust the confidences coming from DBLocator because a search for "ABC DEF" in "DEFx sf ABCfgdf" will return 100%, so we recalculate the scores
+                Dim words As CscXDocWords
+                words = pXDoc.GetWordsInRect(.PageIndex, .Left, .Top, .Width, .Height)
+                If words.Count > 0 Then .Confidence = String_FuzzyMatch(.Text, words.Text, True)
+                If (.PageIndex = 0 And .Top <= startLinePixel) Or .Left > pageWidth * 0.5 Or .Confidence < 0.7 Then
+                    DBLoc.Alternatives.Remove(i)
+                Else
+                    If .Top < EndOfTablePixel Then EndOfTablePixel = .Top : EndOfTablePage = .PageIndex
+                End If
+            End With
+        Next
+        Field_Copy(DBLoc, pLocator)
+    End Sub
+
+    Private Function String_FormatAsDouble(ByVal a As String, Optional ByVal amountFormatter As String = "") As Double
+        Dim f As New CscXDocLib.CscXDocField
+        If amountFormatter = "" Then amountFormatter = Project.DefaultAmountFormatter
+        f.Text = a
+        Project.FieldFormatters.ItemByName(amountFormatter).FormatField(f)
+        Return f.DoubleValue
+    End Function
+
+    Private Function String_CountDigits(ByVal a As String) As Long
+        Dim r, c As Long
+        For r = 1 To Len(a)
+            Select Case AscW(Mid(a, r, 1))
+                Case &H30 To &H39
+                    c = c + 1
+            End Select
+        Next
+        Return c
+    End Function
+
+Function Max (a,b)
+   Return If(a>b,a,b)
+End Function
+Function Min (a,b)
+   Return If(a<b,a,b)
+End Function
+
+```
+
 ### Detecting Table Headers
 Add the following to a dictionary file with substitutions and add it to a format locator, and in place of a regex add the dictionary reference. This locator will identify all the words in the headers and label them. The file below was generated by automatic analysis of many Russian invoices - any OCR errors appearing were common.
 ```
