@@ -1,9 +1,11 @@
 **Table of Contents**
+
 <!-- toc -->
 
 - [How to Read Russian Invoices in Kofax Transformation](#how-to-read-russian-invoices-in-kofax-transformation)
   * [How to read Russian Tables](#how-to-read-russian-tables)
-  * [Correcting Table Values](#correcting-table-values)
+    + [Detecting Table Headers](#detecting-table-headers)
+    + [Correcting Table Values](#correcting-table-values)
   * [Amount formatter for - and =](#amount-formatter-for---and-)
   * [Locating INN & KPP](#locating-inn--kpp)
   * [Split INN and KPP](#split-inn-and-kpp)
@@ -16,6 +18,7 @@
   * [Units Formatting](#units-formatting)
 
 <!-- tocstop -->
+
 # How to Read Russian Invoices in Kofax Transformation
 Russian invoice have some unique components, that are different from a typical European or American invoice.
 * [INN](https://www.nalog.ru/eng/exchinf/inn/) (10 or 12 digit Taxpayer Personal Identification Number, with checksum)  
