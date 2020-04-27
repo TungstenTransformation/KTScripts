@@ -25,7 +25,7 @@ Russian invoice have some unique components, that are different from a typical E
 * The table total and tax information is embedded inside the lat row of the table
 * Russian invoices can use **-** as a decimal separator and **=** as a negative sign. eg "=101-00" = "-100.00"
 
-## How to read Russian Tables.
+## How to read Russian Tables
 Russian Table headers have lots of words with considerable word wrapping. This is a challenge to the table locator.
 The following script detects accuractely the Table header. It uses fuzzy logic to avoid OCR errors.
 1. Detect the textline containing ""1 2 3 4 5 6 7 8 9 10 11 12" using fuzzy logic
@@ -771,4 +771,67 @@ Private Sub CountryNameFormatter_FormatField(ByVal FieldText As String, Formatte
    ValidFormat = False
    ErrDescription="неизвестной стране"
 End Sub
+```
+## Units Formatting
+Fuzzy match units and auto-correct them with a Script field Formatter
+```vbscript
+Const UNITS="БУТ,БУТЫЛК,БУТЫЛКА,ШТ,КГ,КОР,КОР.20,ВЕДРО,ПАЧ,УПАК,УПАК.8,УПАК.12,УП,БАНКА,БЛК,УПК"
+Private Sub UnitsFormatter_FormatField(ByVal FieldText As String, FormattedText As String, ErrDescription As String, ValidFormat As Boolean)
+   FormattedText=Replace(FieldText,".","")
+   FormattedText=UCase(Replace(FormattedText,"|",""))
+   If Len(FormattedText) = 0 Then
+      ValidFormat = True
+      Exit Sub
+   End If
+   Dim unit As String
+   Dim bestId,bestScore,score,i As Integer
+   bestScore=100
+   For Each unit In Split(UNITS,",")
+      score=String_LevenshteinDistance(unit,FormattedText)
+      If score<bestScore Then bestScore=score:bestId=i
+      i=i+1
+   Next
+   If bestScore<2 Then
+      ValidFormat=True
+      FormattedText=Split(UNITS,",")(bestId)
+   Else
+      ValidFormat=False
+      ErrDescription="неизвестной Единица измерения"
+   End If
+End Sub
+
+Private Function String_LevenshteinDistance(a As String , b As String)
+   'http://en.wikipedia.org/wiki/Levenshtein_distance
+   'Levenshtein distance between two strings, used for fuzzy matching
+   Dim i,j,cost,d,ins,del,subs As Integer
+   If Len(a) = 0 Then Return 0
+   If Len(b) = 0 Then Return 0
+   ReDim d(Len(a), Len(b))
+   For i = 0 To Len(a)
+      d(i, 0) = i
+   Next
+   For j = 0 To Len(b)
+      d(0, j) = j
+   Next
+   For i = 1 To Len(a)
+     For j = 1 To Len(b)
+         If Mid(a, i, 1) = Mid(b, j, 1) Then cost = 0 Else cost = 1   ' cost of substitution
+         del = ( d( i - 1, j ) + 1 ) ' cost of deletion
+         ins = ( d( i, j - 1 ) + 1 ) ' cost of insertion
+         subs = ( d( i - 1, j - 1 ) + cost ) 'cost of substition or match
+         d(i,j)=Min(ins,Min(del,subs))
+      Next
+   Next
+   Return d(Len(a), Len(b))
+End Function
+
+Private Function Max(v1 As Long, v2 As Long) As Long
+   If v1 > v2 Then Return v1 Else Return v2
+End Function
+
+Private Function Min(v1 As Long, v2 As Long) As Long
+   If v1 < v2 Then Return v1 Else Return v2
+End Function
+
+
 ```
