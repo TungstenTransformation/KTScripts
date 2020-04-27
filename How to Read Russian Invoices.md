@@ -3,7 +3,7 @@
 <!-- toc -->
 
 - [How to Read Russian Invoices in Kofax Transformation](#how-to-read-russian-invoices-in-kofax-transformation)
-  * [How to read Russian Tables.](#how-to-read-russian-tables)
+  * [How to read Russian Tables](#how-to-read-russian-tables)
   * [Correcting Table Values](#correcting-table-values)
   * [Amount formatter for - and =](#amount-formatter-for---and-)
   * [Locating INN & KPP](#locating-inn--kpp)
@@ -14,6 +14,7 @@
   * [Useful functions](#useful-functions)
   * [Format Invoice Number](#format-invoice-number)
   * [Spell Check Country Names](#spell-check-country-names)
+  * [Units Formatting](#units-formatting)
 
 <!-- tocstop -->
 
