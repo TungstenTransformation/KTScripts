@@ -1075,26 +1075,29 @@ Option Explicit
         Return out
     End Function
 
-    Private Function Alternatives_GetSortOrder(ByVal alts As Object) As Long()
-        Dim i, sortOrder() As Long
-        ReDim sortOrder(alts.Count - 1)
-        If alts.Count = 0 Then Return sortOrder
-        Dim refs As New List(Of alt)
-        For i = 0 To alts.Count - 1
-            Dim alt As New alt
-            alt.ID = i
-            alt.Conf = alts(i).Confidence
-            refs.Add(alt)
-        Next
-        refs.Sort(New AltComparer)
-        '        Objects_Sort(refs)
-        For i = 0 To refs.Count - 1
-            sortOrder(i) = refs(i).ID
-        Next
-        Return sortOrder
-    End Function
-
-
+'Move  this delegate function and the comparer_confidence to the top of the script
+Delegate Function ComparerDelegate(a As Variant, b As Variant) As Boolean ' Delegate definition for sorting comparers
+Public Function Comparer_Confidence( a As Variant, b As Variant) As Boolean
+   'Used to sort lines
+   Return a.Confidence > b.Confidence
+End Function
+Private Function Alternatives_GetSortOrder(ByVal Alts As Object) As Long()
+   Dim a As Long, sortOrder() As Long
+   Dim Alt As New CscXDocFieldAlternative
+   Dim Refs() As CscXDocFieldAlternative
+   ReDim sortOrder(Alts.Count - 1)
+   If Alts.Count = 0 Then Return sortOrder
+   ReDim Refs(Alts.Count-1)
+   For a = 0 To Alts.Count - 1
+      Set Refs(a)=Alts(a)
+      Refs(a).LongTag = a
+   Next
+   Array_Sort(Alts, Comparer)
+   For I = 0 To Refs.Count - 1
+      sortOrder(I) = Refs(I).LongTag
+   Next
+   Return sortOrder
+ End Function
 
     Private Function Rectangle_Distance(ByVal a As Object, ByVal b As Object) As Long
         Dim vertDistance As Long
