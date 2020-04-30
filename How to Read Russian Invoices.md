@@ -1092,7 +1092,7 @@ Private Function Alternatives_GetSortOrder(ByVal Alts As Object) As Long()
       Set Refs(a)=Alts(a)
       Refs(a).LongTag = a
    Next
-   Array_Sort(Alts, Comparer)
+   Array_Sort(Alts, Comparer) 'Copy function from https://github.com/KofaxRPA/KTScripts/blob/master/QuickSort.vb
    For I = 0 To Refs.Count - 1
       sortOrder(I) = Refs(I).LongTag
    Next
