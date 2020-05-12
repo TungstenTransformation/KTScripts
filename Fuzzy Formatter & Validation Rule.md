@@ -9,7 +9,7 @@ The Validation Method does a non-fuzzy search in the fuzzy database to check tha
 ## Example: Canadian Provinces.
 
 ### Create Database
-1. Create a database in Notepad with Canadian Province names and all possible abbreviations. You can have as many columns as you like. Put the correct value in the first column. *it doens't matter if you have duplicates in the abbreviations. If they are ambiguous they will product options for the user*.
+1. Create a database in Notepad with Canadian Province names and all possible abbreviations. You can have as many columns as you like. Put the correct value in the first column. *it doesn't matter if you have duplicates in the abbreviations. If they are ambiguous they will produce options for the user*.
 
 Province|Post|English|French
 --------|----|--|--
@@ -28,12 +28,12 @@ Yukon|YT|Yuk|Yn
 ![image](https://user-images.githubusercontent.com/47416964/76402246-713e5f00-6383-11ea-9d7e-59e559953926.png)
 2. Create a subfolder called **databases** inside your project folder, right next to the .fpr file. *If you do this then all of your databases will be inside the project and when you move the project to another machine all the databases and dictionaries will be automatically found again.*
 1. Create a **Local Fuzzy Database** in ProjectSettings/Databases/Databases/Add
-1. Open **Provinces.txt**. Make sure that the file delimiter is correct. Select **First line contains caption*
-** *Automatic update from import file* is required if the database updates frequently. This one doesn't so don't select this.**
+1. Open **Provinces.txt**. Make sure that the file delimiter is correct. Select **First line contains caption**
+ *Automatic update from import file* is required if the database updates frequently. This one doesn't, so don't select this.
 1. Make sure **Load database in memory** is selected for speed, and make sure **Advanced** is selected for **Database processing**
 1. Press **Ok**.
 ### Create Fuzzy Field Formatter
-1. Create Field Formatter called **Provinces** in **ProjectSettings/Formatting/Add..**  
+1. Create a Field Formatter called **Provinces** in **ProjectSettings/Formatting/Add..**  
     ![image](https://user-images.githubusercontent.com/47416964/76403678-8c11d300-6385-11ea-92ba-446a5ea5be9f.png)
 1. **Select**, **Copy** and **Show Script**  
     ![image](https://user-images.githubusercontent.com/47416964/76403778-b82d5400-6385-11ea-98fe-e61151a44dad.png)
