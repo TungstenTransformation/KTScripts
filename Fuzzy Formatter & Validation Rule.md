@@ -9,7 +9,7 @@ The Validation Method does a non-fuzzy search in the fuzzy database to check tha
 ## Example: Canadian Provinces.
 
 ### Create Database
-1. Create a database in Notepad with Canadian Provincenames and all possible abbreviations. You can have as many columns as you like. Put the correct value in the first column. *it doens't matter if you have duplicates in the abbreviations. If they are ambiguous they will product options for the user*.
+1. Create a database in Notepad with Canadian Province names and all possible abbreviations. You can have as many columns as you like. Put the correct value in the first column. *it doens't matter if you have duplicates in the abbreviations. If they are ambiguous they will product options for the user*.
 
 Province|Post|English|French
 --------|----|--|--
