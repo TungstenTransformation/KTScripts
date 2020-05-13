@@ -21,16 +21,18 @@ Const π= Atn(1)*4    ' 3.141592653589793238
 
 
 Private Sub SL_RotateText_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument,ByVal pLocator As CASCADELib.CscXDocField)
+   XDocument_RotateText(pXDoc)
+End Sub
+
+Public Sub XDocument_RotateText(pXDoc As CscXDocument)
    Dim Angle As Double, P As Long
    If pXDoc.Representations.Count=0 Then Exit Sub ' there is no OCR text
+   Dim OCR As CscXDocRepresentation, Rotated As CscXDocRepresentation
+   Set OCR=pXDoc.Representations(0)
+   Set Rotated= pXDoc.Representations.Create(OCR.Name & " Rotated")
    For P=0 To pXDoc.CDoc.Pages.Count-1
-      Angle=XDocument_CalculateTextSkew(pXDoc,0)
-      With pLocator.Alternatives.Create
-         .Confidence=1-P/100
-         .Text=Format(Angle,"0.0000") & " rad (" & Format(Degrees(Angle),"##.00") & "°)"
-         .StringTag=CStr(CInt(Angle*1000)) ' store angle for later use independent of regional settings
-      End With
-      XDocument_RotateText(pXDoc,P,Angle)
+      Angle=Page_CalculateTextSkew(pXDoc,0)
+      Page_RotateText(pXDoc, P, Rotated, Angle)
    Next
    'rebuild the text lines on the document
    pXDoc.Representations.Remove(0)' remove old rep
@@ -38,46 +40,36 @@ Private Sub SL_RotateText_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocum
    pXDoc.Save
 End Sub
 
-Public Sub XDocument_RotateText(pXDoc As CscXDocument, PageNumber As Long, Angle As Double)
+Public Sub Page_RotateText(pXDoc As CscXDocument, PageNumber As Long, Rep As CscXDocRepresentation, Angle As Double)
    'This rotates all text on the page through an angle (in radians) about the center of the page
-   'it saves all word coordinates in an XValue for restoration later
-   Dim C As Double, S As Double, M As Double, N As Double, Page As CscXDocPage, W As Long, X As Double, Y As Double
-   Dim OCR As CscXDocRepresentation, Rotated As CscXDocRepresentation
-   Dim XValue As CscXValue, XValueName As String, Word As CscXDocWord
-   XValueName="Page " & Format(PageNumber,"000")
+   'it saves all word coordinates in an XValue for restoration later.
+   'it saves the rotated words into the Representation provided
+   Dim C As Double, S As Double, Page As CscXDocPage, W As Long, Word As CscXDocWord
+   Dim XValue As CscXValue, XValueName As String
    If pXDoc.Representations.Count=0 Then Exit Sub ' there is no OCR text
+   XValueName="Page " & Format(PageNumber,"000")
    If pXDoc.XValues.ItemExists(XValueName) Then Exit Sub ' we have already rotated this page
-   Set OCR=pXDoc.Representations(0)
-   Set Rotated= pXDoc.Representations.Create(OCR.Name & " Rotated")
-   C=Cos(Angle)
-   S=Sin(Angle)
-   With pXDoc.CDoc.Pages(PageNumber)' Find central coordinate of page to rotate around.
-     ' M=.Width/2*(1-C)+.Height/2*S  ' We rotate the words relative to the middle of the page.
-     ' N=.Height/2*(1-C)-.Width/2*S  '  This is the fixed part of the transform. It is the same for each word.
-   End With
    Set Page=pXDoc.Pages(PageNumber)
    pXDoc.XValues.Add(XValueName,"",True)
    Set XValue=pXDoc.XValues.ItemByName(XValueName)
-   For W=Page.Words.Count-1 To 0 Step -1
+   C=Cos(Angle)
+   S=Sin(Angle)
+   For W=0 To Page.Words.Count-1
       Set Word=New CscXDocWord
       With Page.Words(W)
          XValue.Value=XValue.Value & CStr(.Left) & "," & CStr(.Top) & ";"
          Word.Text=.Text
-         Word.Left=Round(.Left*C+.Top*S+M,0)
-         Word.Top=Round(.Top*C-.Left*S+N,0)
+         Word.Left=Round(.Left*C+.Top*S,0)
+         Word.Top=Round(.Top*C-.Left*S,0) ' the minus sign is there as XDoc has vertical coordinate going down, not up
          Word.Width=.Width
          Word.Height=.Height
-         'Word.Confidence=.Confidence
-         Rotated.Pages(PageNumber).AddWord(Word)
-         Word.StringTag=CStr(.Left) & "," & CStr(.Top)
+         Rep.Pages(PageNumber).AddWord(Word)
       End With
    Next
    pXDoc.Save
 End Sub
 
-
-
-Public Function XDocument_CalculateTextSkew(XDocument As CscXDocument, PageNumber As Long) As Double
+Public Function Page_CalculateTextSkew(XDocument As CscXDocument, PageNumber As Long) As Double
    Dim hist(100) As Long, T As Long, Words As CscXDocWords, W As Long, Word1 As CscXDocWord, Word2 As CscXDocWord
    Dim H As Long, N As Long, BestN As Long, Mean As Double, Weight As Double, V As Long
    Dim Angle As Double, Page As CscXDocPage
@@ -152,4 +144,5 @@ Private Function arctan(y As Double, x As Double) As Double
       Return Atn(y/x)-π
    End If
 End Function
+
 ```
