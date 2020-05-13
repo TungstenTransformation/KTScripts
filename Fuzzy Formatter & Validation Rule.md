@@ -5,6 +5,8 @@ Use this to spell-check and auto-spell-check field values. Useful for correcting
 Formatters **can** change a field value, Validation Methods **cannot**.    
 The Fuzzy Field Formatter uses a fuzzy database to find matches and can auto-correct a field or make suggestions to the user.  
 The Validation Method does a non-fuzzy search in the fuzzy database to check that the value is perfect.
+## Dependencies 
+* https://github.com/KofaxRPA/KTScripts/blob/master/Database_Search.vb  
 
 ## Example: Canadian Provinces.
 
