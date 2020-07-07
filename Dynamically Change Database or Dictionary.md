@@ -20,6 +20,7 @@ You also need to consider that documents could be processed in parallel and so y
 
 4. After the Database Locator has finished running the locator is pointed back to the original database and the temporary database file is deleted.
 
+**MAKE SURE THAT YOUR DOCUMENTS ARE CLASSIFIED (hotkey F5) BEFORE TESTING!!** *pXDoc.ExtractionClass* is needed to find the Database Locator Definition.
 ```vb
 ```
 
