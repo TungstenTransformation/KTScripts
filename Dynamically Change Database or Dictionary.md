@@ -1,4 +1,4 @@
-# How to Dynamically Change Database or Dictionary 
+# How to Dynamically Change a Database or Dictionary 
 Sometimes it is useful to create a fuzzy dictionary or fuzzy database that is unique for a document, so we need to change the database on demand.  
 **Fuzzy Dictionaries** are a powerful but mostly unknown feature of Kofax Transformation. A **Format Locator** normally uses a regex or a pattern, but if it is given a Dictionary instead of a regex then it becomes a **Fuzzy Dictionary Locator**, which has the advantage over a Database Locator that it finds **ALL** references to a word, whereas a Database Locator only finds **ONE** reference (and that may not be the first one in the document)
 
