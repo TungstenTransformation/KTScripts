@@ -7,7 +7,7 @@ In Kofax Transformation Dictionary and Database files are static. There are two 
 * Search and Match Server has a setting to regularly update a remote fuzzy from it's SQL or text file source.  
 
 This guide will show you how the safely make a dictionary or database dynamic. It will describe the steps for a database, but the dictionary uses exactly the same approach.
-You also need to consider that documents could be processed in parallel and so you need to ensure that the database for one document cannot leak to another document.  
+You also need to consider that documents could be processed in parallel and so you need to ensure that the database for one document cannot leak to another document - the script below is safe for parallel processing because each database has a GUID in its name, and the project file is **NEVER** saved.    
 # Steps to make a dynamic database
 1. Create a fuzzy database with sample entries or even empty entries.
 2. Add a Database Locator that uses this fuzzy database. Test that it works.  
