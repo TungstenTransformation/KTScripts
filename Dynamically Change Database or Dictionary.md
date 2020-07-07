@@ -10,18 +10,97 @@ This guide will show you how the safely make a dictionary or database dynamic. I
 You also need to consider that documents could be processed in parallel and so you need to ensure that the database for one document cannot leak to another document.  
 # Steps to make a dynamic database
 1. Create a fuzzy database with sample entries or even empty entries.
-2. Add a Database Locator that uses this fuzzy database. Test that it works.
-3. Add a Script Locator **before** the Databaselocator called **SL_CreateDynamicDatabase**. The script does the following
+2. Add a Database Locator that uses this fuzzy database. Test that it works.  
+![image](https://user-images.githubusercontent.com/47416964/86799502-4be00a00-c072-11ea-9600-1d38594002a5.png)
+3. Add a Script Locator **before** the Databaselocator called **SL_CreateTempDatabase** and one after called **SL_DeleteTempDatabase**  
+![image](https://user-images.githubusercontent.com/47416964/86799350-23f0a680-c072-11ea-844e-88049549d62a.png)  
+The script does the following
    * Create a GUID for this document (This ensures no conflict between this document and another document in parallel processing)
-   * Create a databasefile right next to the original import file.
-   * Create a new temporary database.
-   * Imports the temporary database.
-   * Alters the project to point to the new database. **This is a potentially dangerous step, because the project is altering itself. Make sure that you do not save your project in an invalid state.**
+   * Create a databasefile right next to the original import file.  
+![image](https://user-images.githubusercontent.com/47416964/86799639-75009a80-c072-11ea-9216-0980f960f124.png)  
+   * Create a new temporary database.  
+   ![image](https://user-images.githubusercontent.com/47416964/86799707-85b11080-c072-11ea-98a4-59997f11e663.png)  
+   * Imports the temporary database.  
+   ![image](https://user-images.githubusercontent.com/47416964/86799768-96fa1d00-c072-11ea-810a-aa7cab72b928.png)  
+   * Alters the project to point to the new database. **This is a potentially dangerous step, because the project is altering itself. Make sure that you do not save your project in an invalid state.**  
+   ![image](https://user-images.githubusercontent.com/47416964/86799829-a8432980-c072-11ea-9def-81964c59a260.png)
 
-4. After the Database Locator has finished running the locator is pointed back to the original database and the temporary database file is deleted.
+4. After the Database Locator has finished running the locator is pointed back to the original database and the temporary database file is deleted.  
+![image](https://user-images.githubusercontent.com/47416964/86799873-b5f8af00-c072-11ea-9818-6010fe4418d6.png)
 
 **MAKE SURE THAT YOUR DOCUMENTS ARE CLASSIFIED (hotkey F5) BEFORE TESTING!!** *pXDoc.ExtractionClass* is needed to find the Database Locator Definition.
 ```vb
+Option Explicit
+
+' Class script: NewClass1
+
+Private Sub SL_CreateTempDatabase_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
+   Dim TempName As String
+   TempName=Database_CreateTemp("Items","Windows 7;10;190.00") 'copy the format of a database, but give it new content
+   DatabaseLocator_SetDatabase(pXDoc.ExtractionClass, "DL_Items",TempName) 'Point the database locator at the new database
+End Sub
+
+Private Sub SL_DeleteTempDatabase_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
+   DatabaseLocator_SetDatabase(pXDoc.ExtractionClass,"DL_Items", "Items") 'point the database locator back to the default database
+   Database_DeleteTemp("Items_Temp")
+End Sub
+
+Private Function Database_CreateTemp(DatabaseName As String, Values As String) As String
+   'This function copies a database with new values
+   Dim Database As CscDatabase, TempDatabase As New CscDatabase, F As Long, TypeLib As Object, GUID As String
+   Set TypeLib = CreateObject("Scriptlet.TypeLib") ' this library can create GUIDs
+   GUID=Mid(TypeLib.GUID,2,36) ' remove { and }
+   If Project.Databases.ItemExists(DatabaseName+ "_TEMP") Then Database_DeleteTemp(DatabaseName) 'clean up old temp database if it's there
+   Set Database=Project.Databases.ItemByName(DatabaseName)
+   If Not Database.DatabaseType=CscDatabaseType.CscFUZZYLocalType Then Err.Raise(487,,"Database '" & Database.Name & "' must be a fuzzy local database!")
+   TempDatabase.Name= Database.Name & "_TEMP"
+   TempDatabase.DatabaseType=CscDatabaseType.CscFUZZYLocalType
+   TempDatabase.ImportFilename = Replace(Database.ImportFilename, ".txt", "_" & GUID & ".txt")
+   TempDatabase.DelimiterChars=Database.DelimiterChars
+   Open TempDatabase.ImportFilename For Output As #1
+   Print #1, vbUTF8BOM;  'make the database file UTF-8 compatible
+   'Write the captions to the new database if they are there
+   If Database.FirstLineIsCaption Then
+      For F = 0 To Database.FieldCount-1
+         Print #1, Database.FieldName(F);   'The final ";" prevents a newline being printed
+         If F<Database.FieldCount-1 Then  Print #1, Database.DelimiterChars ; 'print a delimiter between the columns
+      Next
+      Print #1, "" ' New line
+      Print #1, Values
+      Close #1
+   End If
+   TempDatabase.FirstLineIsCaption=Database.FirstLineIsCaption
+   TempDatabase.DelimiterChars=Database.DelimiterChars
+   TempDatabase.AutoUpdate=False
+   TempDatabase.DetectFieldCount(TempDatabase.DelimiterChars)
+   Project.Databases.Add(TempDatabase)
+   TempDatabase.ImportDatabase(True)
+   Database_CreateTemp=TempDatabase.Name 'This generates the database file (just a copy of the import file) and the fuzzy index file (.crp2)
+End Function
+
+Sub DatabaseLocator_SetDatabase(ClassName As String, LocatorName As String, DatabaseName As String)
+   'Add reference to Kofax Cascade DatabaseLocator
+   Dim DLMethod As CscDatabaseLocator
+   If Not Project.Databases.ItemExists(DatabaseName) Then Err.Raise(456,,"Database '" & DatabaseName & "' doesn't exist!")
+   Set DLMethod=Project.ClassByName(ClassName).Locators.ItemByName(LocatorName).LocatorMethod
+   DLMethod.DatabaseName=DatabaseName  'setting to the new database
+End Sub
+
+Private Sub Database_DeleteTemp(DatabaseName As String)
+   Dim Database As CscDatabase
+   Set Database=Project.Databases.ItemByName(DatabaseName)
+   Kill Database.ImportFilename 'Delete the import file
+   Kill Database.DatabasePath 'delete the fuzzy index file .crp2
+   Kill Database.TextFilename 'delete the copy of the text file
+   Project.Databases.RemoveByName(Database.Name)
+End Sub
+
+Function FormatLocator_ReplaceDict(ByVal pXDoc As CASCADELib.CscXDocument,LocatorName As String,DictFileName As String) As String
+   'Kofax Cascade FormatLocator
+   Dim FLMethod As CscRegExpLocator, Dict As CscDictionary
+   Set FLMethod=Project.ClassByName(pXDoc.ExtractionClass).Locators.ItemByName(LocatorName).LocatorMethod
+   FLMethod.RegularExpressions(0).RegularExpression="§"& DictFileName & "§"
+End Function
 ```
 
 
