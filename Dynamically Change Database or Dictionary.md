@@ -22,10 +22,10 @@ The script does the following
    ![image](https://user-images.githubusercontent.com/47416964/86799707-85b11080-c072-11ea-98a4-59997f11e663.png)  
    * Imports the temporary database.  
    ![image](https://user-images.githubusercontent.com/47416964/86799768-96fa1d00-c072-11ea-810a-aa7cab72b928.png)  
-   * Alters the project to point to the new database. **This is a potentially dangerous step, because the project is altering itself. Make sure that you do not save your project in an invalid state.**  
+   * Alters the Database Locator to point to the new database. **This is a potentially dangerous step, because the project is altering itself. Make sure that you do not save your project in an invalid state. You can corrupt your project file if you make a mistake here.**  
    ![image](https://user-images.githubusercontent.com/47416964/86799829-a8432980-c072-11ea-9def-81964c59a260.png)
 
-4. After the Database Locator has finished running the locator is pointed back to the original database and the temporary database file is deleted.  
+4. After the Database Locator has finished running, the locator is pointed back to the original database and the temporary database files are deleted.  
 ![image](https://user-images.githubusercontent.com/47416964/86799873-b5f8af00-c072-11ea-9818-6010fe4418d6.png)
 
 **MAKE SURE THAT YOUR DOCUMENTS ARE CLASSIFIED (hotkey F5) BEFORE TESTING!!** *pXDoc.ExtractionClass* is needed to find the Database Locator Definition.
