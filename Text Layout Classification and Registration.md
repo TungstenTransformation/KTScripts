@@ -1,3 +1,4 @@
+```vb
 '#Language "WWB-COM"
 
 Option Explicit
@@ -218,4 +219,4 @@ Public Sub Coordinate_Shift(ByRef X As Double, ByRef Y As Double, Shifts As CscX
    X=xm*X+xb  'The Linear regression function gave us these slopes m and intercepts b.
    Y=ym*Y+yb
 End Sub
-
+```
