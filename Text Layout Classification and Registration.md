@@ -1,20 +1,20 @@
 # Text Layout Algorithm (called "TL" below)
-This algorithm uses the location of almost every word on the page to either *classify the page* or *register OCR zones*.
-Every unique word on the page is *aligned* to it's corresponding word on the other document. This gives the precise vertical shift and stretch, and horizontal shift and stretch. This algorithm is VERY robust against OCR errors because even if 60% of the words had OCR errors, we would still find the correct alignment with the remaining 40% easily.  
+TL uses the location of almost every word on the page to either *classify the page* or *register OCR zones*.
+Every unique word on the page is *aligned* to it's corresponding word on the other document. This gives the precise vertical shift and stretch, and horizontal shift and stretch. TL is VERY robust against OCR errors because even if 60% of the words had OCR errors, we would still find the correct alignment with the remaining 40% easily.  
 
-This allows subpixel accuracy in **registering** OCR zones because we have used 100s of words on the page to do the registration.
-This allows **very precise classification** because if the documents are only slightly different then words don't have the same alignment with each other. This can easily detect when an extra line of text has been added to the middle of a document
+TL allows subpixel accuracy in **registering** OCR zones because we have used 100s of words on the page to do the registration.
+TL  allows **very precise classification** because if the documents are only slightly different then words don't have the same alignment with each other. This can easily detect when an extra line of text has been added to the middle of a document
 
-This algorithm takes about 1 second for the comparison between the document and the training sample in the project class.
+TL takes about 1 second for the comparison between the document and the training sample in the project class.
 
 ## Text Layout Classification
-This algorithm is very useful when
+TL is very useful when
 *  2 document classes differ only by a few words. Maybe an extra sentence or 1 less sentence.
 
- If you use it to compare with 10 documents, then it would take 10 seconds. It is best to classify documents with the inbuilt fast "Layout Classification" and "Text Classification", and then do sub-classification with the variants of a class. 
+ If you use it to compare with 10 documents, then it would take 10 seconds. It is best to classify documents with the in-built fast "Layout Classification" and "Text Classification", and then do sub-classification with the variants of a class. 
  ### Example.
  Your project has document classes **A**, **B** and **C**, which are quite different from each other. Document **B** has variants **B1** to **B6** that are quite similiar to each other and are subclasses of **B** because although they have the same fields, some or all of the locators need to be different.    
- After a document is either classified as **B** or **B1** to **B6**, the algorithm tests the document with all 7 classes with the *Text Layout* algorithm and assigns the document to the class with the best match.
+ After a document is either classified as **B** or **B1** to **B6**, TL tests the document with all 7 classes with the *Text Layout* algorithm and assigns the document to the class with the best match.
 
 ## Text Layout Registration
 This algorithm is very useful when you need to perform OCR on a document and the document 
@@ -36,6 +36,14 @@ Usually these settings mean you do not
 1. Set **Local re-registration** to max of 10 mm horizontally and vertically. (TL has unlimited distance)
 1. Disable **Registration Failure makes zone invalid** as you want to see where the zones would be found.
 ![image](https://user-images.githubusercontent.com/47416964/87690499-d66aec80-c789-11ea-8bcc-618a41180ae1.png)
+
+Kofax Transformation has support for adjusting the zones of a Zone Locator by script - we will use this technique here as well.
+## How TL Works
+TL uses the following algorithm
+1. Find all unique words on Document A (This is the document you want to classify or register) using a Dictionary object. This is very fast.
+2. Find all unique words on Document B (This is either the classification sample document or Zone Locator's sample document)
+3. Find all unique words on Document A that are on Document B. These are the anchor words we will use to align the documents.
+4. Perform [linear regression](https://www.easycalculation.com/statistics/learn-regression.php), (a High School math technique), on the x-coordinates from Document A
 
 ```vb
 '#Language "WWB-COM"
