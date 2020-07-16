@@ -43,7 +43,15 @@ TL uses the following algorithm
 1. Find all unique words on Document A (This is the document you want to classify or register) using a Dictionary object. This is very fast.
 2. Find all unique words on Document B (This is either the classification sample document or Zone Locator's sample document)
 3. Find all unique words on Document A that are on Document B. These are the anchor words we will use to align the documents.
-4. Perform [linear regression](https://www.easycalculation.com/statistics/learn-regression.php), (a High School math technique), on the x-coordinates from Document A
+4. Plot the X coordinate of each word in Document A against the X coordinate of each word in Document B and calculate the line passing through them using [linear regression](https://www.easycalculation.com/statistics/learn-regression.php), a High School math technique.  
+![image](https://user-images.githubusercontent.com/47416964/87692847-817ca580-c78c-11ea-9846-476fc5966edb.png)
+5. Linear Regression calculates 
+* the **slope**, M, of the line, which corresponds to the **stretch**. In the example you see that the document has 97.8% of the width of the original document and 96.0% of the height.
+* the **intercept**, B, of the line, which corresponds to the **shift**. In the example you see that the document has shifted 118.2 pixels horizontally and 65.3 pixels vertically
+* the **R**, R, of the line, shows how well the dots fit on a straight line. 1.000 is perfect alignment. In this case we have perfect alignment horizontally and vertically. 
+![image](https://user-images.githubusercontent.com/47416964/87693114-d7e9e400-c78c-11ea-90d2-cd76fac3cfa2.png)
+
+
 
 ```vb
 '#Language "WWB-COM"
