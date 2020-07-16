@@ -1,3 +1,42 @@
+# Text Layout Algorithm (called "TL" below)
+This algorithm uses the location of almost every word on the page to either *classify the page* or *register OCR zones*.
+Every unique word on the page is *aligned* to it's corresponding word on the other document. This gives the precise vertical shift and stretch, and horizontal shift and stretch. This algorithm is VERY robust against OCR errors because even if 60% of the words had OCR errors, we would still find the correct alignment with the remaining 40% easily.  
+
+This allows subpixel accuracy in **registering** OCR zones because we have used 100s of words on the page to do the registration.
+This allows **very precise classification** because if the documents are only slightly different then words don't have the same alignment with each other. This can easily detect when an extra line of text has been added to the middle of a document
+
+This algorithm takes about 1 second for the comparison between the document and the training sample in the project class.
+
+## Text Layout Classification
+This algorithm is very useful when
+*  2 document classes differ only by a few words. Maybe an extra sentence or 1 less sentence.
+
+ If you use it to compare with 10 documents, then it would take 10 seconds. It is best to classify documents with the inbuilt fast "Layout Classification" and "Text Classification", and then do sub-classification with the variants of a class. 
+ ### Example.
+ Your project has document classes **A**, **B** and **C**, which are quite different from each other. Document **B** has variants **B1** to **B6** that are quite similiar to each other and are subclasses of **B** because although they have the same fields, some or all of the locators need to be different.    
+ After a document is either classified as **B** or **B1** to **B6**, the algorithm tests the document with all 7 classes with the *Text Layout* algorithm and assigns the document to the class with the best match.
+
+## Text Layout Registration
+This algorithm is very useful when you need to perform OCR on a document and the document 
+* has MANY background words on the page, as is typical on a US government or insurance form
+* is highly stretched in one direction. 
+* has a strong zoom (e.g. a photo from a mobile phone with the camera far back) 
+* came from a mobile phone and the camera was at an angle to the paper
+
+TL uses almost every word on the page as an anchor. This is much better than manually configuring a few anchors yourself.  
+
+**NOTICE** Please test the Advanced Zone Locator** with the following registration settings *before* you try this algorithm.
+Usually these settings mean you do not 
+1. Make sure Registration Type is **custom**
+1. Disable **Anchors** (don't use anchors as they are lots of work and don't do as good a job 
+1. Enable **Lines** if your document has many vertical and horizontal lines on it
+1. Enable **OCR** if your document has a lot of background text (which is what Layout Classification uses as well!)
+1. Enable **Layout**
+1. Enable **Account for Local Distortion**.   (TL checks for distortion across the whole page)
+1. Set **Local re-registration** to max of 10 mm horizontally and vertically. (TL has unlimited distance)
+1. Disable **Registration Failure makes zone invalid** as you want to see where the zones would be found.
+![image](https://user-images.githubusercontent.com/47416964/87690499-d66aec80-c789-11ea-8bcc-618a41180ae1.png)
+
 ```vb
 '#Language "WWB-COM"
 
