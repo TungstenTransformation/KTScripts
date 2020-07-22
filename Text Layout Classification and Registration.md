@@ -12,6 +12,10 @@ TL is very useful when
 *  2 document classes differ only by a few words. Maybe an extra sentence or 1 less sentence.
 
  If you use it to compare with 10 documents, then it would take 10 seconds. It is best to classify documents with the in-built fast "Layout Classification" and "Text Classification", and then do sub-classification with the variants of a class. 
+ Here is a Classification Benchmark for a set of Japanese Forms that are almost identical with each other - they vary only in a few words and phrases.  
+ ![image](https://user-images.githubusercontent.com/47416964/88191031-491d1180-cc3b-11ea-910c-07834060d9c7.png)
+
+
  ### Example.
  Your project has document classes **A**, **B** and **C**, which are quite different from each other. Document **B** has variants **B1** to **B6** that are quite similiar to each other and are subclasses of **B** because although they have the same fields, some or all of the locators need to be different.    
  After a document is either classified as **B** or **B1** to **B6**, TL tests the document with all 7 classes with the *Text Layout* algorithm and assigns the document to the class with the best match.
