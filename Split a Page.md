@@ -10,6 +10,13 @@ You can also run it from Batch_Close, but that is too late, because you normally
 ![image](https://user-images.githubusercontent.com/47416964/89385245-9a2f0a00-d6ff-11ea-8539-a67d1b5ecae9.png)  
 1. Test the script by clicking the lightening icon **Runtime Script Events** (CTRL-F11)    
 ![image](https://user-images.githubusercontent.com/47416964/89385285-aadf8000-d6ff-11ea-8381-fa7aa36ed090.png)  
+1. After the script has finished save the XDocument with the **single** floppy disk icon  
+  *Make sure the XDocument is selected in the tree*  
+![image](https://user-images.githubusercontent.com/47416964/89400090-a91fb780-d713-11ea-91b1-aee370edd55e.png)
+1. Reload the Document Set  
+![image](https://user-images.githubusercontent.com/47416964/89400171-cf455780-d713-11ea-933b-f2cb5aa0213f.png)
+1. You will see your two split pages  
+![image](https://user-images.githubusercontent.com/47416964/89400210-de2c0a00-d713-11ea-8497-2b7baf02312b.png)
 
 
 ```vb
