@@ -56,8 +56,8 @@ Private Sub Document_SplitPage(pXDocInfo As CscXDocInfo, PageNo As Long, Optiona
       Page1.CopyRect(Page,0,0,0,0,Page.Width,Page.Height/2)
       Page2.CopyRect(Page,0,Page.Height/2,0,0,Page.Width,Page.Height/2)
    End If
-   Page1.Save(Page1.FileName,Page1.FileFormat)
-   Page2.Save(Replace(Page1.FileName & ".split.tif"),Page1.FileFormat)
+   Page1.Save(FileName_Append(Page.FileName,"a"),Page.FileFormat)
+   Page2.Save(FileName_Append(Page.FileName,"b"),Page.FileFormat)
    'Insert a new page into the document, so that Kofax Capture knows it is there. This will cost a page count in the license
    Batch.CopyPage(pXDocInfo,PageNo,PageNo+1) ' This event can only be called from Batch_Open or Batch_Close
    'Replace the pages
@@ -69,6 +69,12 @@ End Sub
 Private Sub SL_Size_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
     Page_GetSize(pXDoc.CDoc.Pages(0),pLocator.Alternatives)
 End Sub
+
+Private Function FileName_Append(Filename As String, Append As String) As String
+   Dim I As Long   'Append a string to a filename before the "." and extension
+   I=InStrRev(Filename,".")
+   Return Left(Filename,I-1) & Append & Mid(Filename,I)
+End Function
 
 Public Function Page_IsA3(Page As CscCDocPage) As Boolean
    Dim Score As Double, EdgeRatio As Double
