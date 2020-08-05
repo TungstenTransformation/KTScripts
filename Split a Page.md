@@ -58,15 +58,11 @@ Private Sub Document_SplitPage(pXDocInfo As CscXDocInfo, PageNo As Long, Optiona
    End If
    Page1.Save(FileName_Append(Page.FileName,"a"),Page.FileFormat)
    Page2.Save(FileName_Append(Page.FileName,"b"),Page.FileFormat)
-   Page1.Load(FileName_Append(Page.FileName,"a"))  '.save doesn't set the filename
-   Page2.Load(FileName_Append(Page.FileName,"b"))
    'Insert a new page into the document, so that Kofax Capture knows it is there. This will cost a page count in the license
-   Batch.AddPage(pXDocInfo,Page2.FileName,Csc_SFT_AutoDetect,PageNo+1) ' This event can only be called from Batch_Open or Batch_Close
+   Batch.AddPage(pXDocInfo,FileName_Append(Page.FileName,"a"),Csc_SFT_AutoDetect,PageNo+1) ' This event can only be called from Batch_Open or Batch_Close
+   Batch.AddPage(pXDocInfo,FileName_Append(Page.FileName,"b"),Csc_SFT_AutoDetect,PageNo+2) ' This event can only be called from Batch_Open or Batch_Close
+   Batch.DeletePage(pXDocInfo,PageNo)
    'Replace the first page
-   pXDocInfo.XDocument.CDoc.Pages(PageNo).UnloadSourceImage()
-   pXDocInfo.XDocument.CDoc.Pages(PageNo).SetImage(Page1)
-   pXDocInfo.XDocument.CDoc.Pages(PageNo).Width=Page1.Width
-   pXDocInfo.XDocument.CDoc.Pages(PageNo).Height=Page1.Height
    'pXDocInfo.XDocument.Save()
 End Sub
 
