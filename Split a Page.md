@@ -35,6 +35,7 @@ Private Sub Document_SplitPage(pXDocInfo As CscXDocInfo, PageNo As Long, Optiona
    'Split a page and add it to the document
    'You MUST call this from Batch_Open or Batch_Close event for the page to be accessible outside of KT
    Dim Page As CscImage, Page1 As New CscImage, Page2 As New CscImage, ColorFormat As CscImageColorFormat
+   Dim Page1FileName As String, Page2FileName As String
    Set Page=pXDocInfo.XDocument.CDoc.Pages(PageNo).GetImage
    If Page.IsBinary Then
       ColorFormat= CscImgColFormatBinary
@@ -56,13 +57,18 @@ Private Sub Document_SplitPage(pXDocInfo As CscXDocInfo, PageNo As Long, Optiona
       Page1.CopyRect(Page,0,0,0,0,Page.Width,Page.Height/2)
       Page2.CopyRect(Page,0,Page.Height/2,0,0,Page.Width,Page.Height/2)
    End If
-   Page1.Save(FileName_Append(Page.FileName,"a"),Page.FileFormat)
-   Page2.Save(FileName_Append(Page.FileName,"b"),Page.FileFormat)
+   Page1FileName=FileName_Append(Page.FileName,"a")
+   Page2FileName=FileName_Append(Page.FileName,"b")
+   Page1.Save(Page1FileName,Page.FileFormat)
+   Page2.Save(Page2FileName,Page.FileFormat)
    'Insert a new page into the document, so that Kofax Capture knows it is there. This will cost a page count in the license
-   Batch.AddPage(pXDocInfo,FileName_Append(Page.FileName,"a"),Csc_SFT_AutoDetect,PageNo+1) ' This event can only be called from Batch_Open or Batch_Close
-   Batch.AddPage(pXDocInfo,FileName_Append(Page.FileName,"b"),Csc_SFT_AutoDetect,PageNo+2) ' This event can only be called from Batch_Open or Batch_Close
-   Batch.DeletePage(pXDocInfo,PageNo)
-   'Replace the first page
+   pXDocInfo.XDocument.ReplacePageSourceFile(Page1FileName,"TIFF",0,0)  '"TIFF" just means any image format here (TIFF, PNG, JPG) as opposed to "PDF".
+   pXDocInfo.XDocument.CDoc.Pages(PageNo).Width=Page1.Width ' The ReplacePageSourceFile function does not check for changes in image size.
+   pXDocInfo.XDocument.CDoc.Pages(PageNo).Height=Page1.Height ' For Horizontal split
+   ' This event can only be called from Batch_Open or Batch_Close. It is only available in KTM.
+   'In KTA you will have to use a .NET action in the workflow as Batch events are not triggered.
+   'In Mobile Capture and RPA you can use any script event and manipulate the XDoc directly, as neither trigger Batch events.
+   Batch.AddPage(pXDocInfo,Page2FileName,Csc_SFT_AutoDetect,PageNo+1)
    'pXDocInfo.XDocument.Save()
 End Sub
 
