@@ -71,11 +71,12 @@ Private Sub SL_Size_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, B
 End Sub
 
 Public Function Page_IsA3(Page As CscCDocPage) As Boolean
-   Dim Score As Double
+   Dim Score As Double, EdgeRatio As Double
    If Page.Width=0 Or Page.Height=0 Or Page.XRes=0 Or Page.YRes=0 Then Return False
-   Score=Page.Width*Page.XRes*Page.Height*Page.YRes/11.7/16.54  'A3= 11.7 x 16.54 inch²
+   Score=Page.Width/Page.XRes*Page.Height/Page.YRes/11.7/16.54  'A3= 11.7 x 16.54 inch²
    Score=Min(Score,1/Score) ' calculate how close the area of the page is to an A3 page
-   Score=Score*Min(Page.Width/Page.Height/11.7*16.54,Page.Height/Page.Width/16.54*11.7) ' calculate how close the edge ratio is to the A3 edge ratio = sqrt(2)=16.54/11.7
+   EdgeRatio=Page.Width/Page.XRes/Page.Height*Page.YRes/16.54*11.7
+   Score=Score*Min(EdgeRatio,1/EdgeRatio) ' calculate how close the edge ratio is to the A3 edge ratio = sqrt(2)=16.54/11.7
    'score will be 100% for perfect A3, otherwise smaller. An A4 page will get score 50%
    If Score >0.9 Then Return True ' accept some cropping.
 End Function
