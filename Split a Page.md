@@ -1,6 +1,16 @@
 # Split a Page
 The following Kofax Transformation project level script will split A3 pages in documents vertically, inserting a new batch. It **must** be run from the event Batch_Open, because it adds pages to the document.
-You can also run it from Batch_Close, but that is too late, because you normally want to split a document before classifying, not after extraction.
+You can also run it from Batch_Close, but that is too late, because you normally want to split a document before classifying, not after extraction.  
+## How to Test in Project Builder
+1. Switch to **Hierarchy Mode**  
+![image](https://user-images.githubusercontent.com/47416964/89385091-6227c700-d6ff-11ea-91e9-4ca36723187a.png)  
+1. Configure Runtime script events  
+![image](https://user-images.githubusercontent.com/47416964/89385177-7d92d200-d6ff-11ea-8836-21ee8d5e63cc.png)  
+1. Select **Batch_Open**  
+![image](https://user-images.githubusercontent.com/47416964/89385245-9a2f0a00-d6ff-11ea-8539-a67d1b5ecae9.png)  
+1. Test the script by clicking the lightening icon **Runtime Script Events** (CTRL-F11)    
+![image](https://user-images.githubusercontent.com/47416964/89385285-aadf8000-d6ff-11ea-8381-fa7aa36ed090.png)  
+
 
 ```vb
 '#Language "WWB-COM"
