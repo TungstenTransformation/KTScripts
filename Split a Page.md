@@ -58,12 +58,16 @@ Private Sub Document_SplitPage(pXDocInfo As CscXDocInfo, PageNo As Long, Optiona
    End If
    Page1.Save(FileName_Append(Page.FileName,"a"),Page.FileFormat)
    Page2.Save(FileName_Append(Page.FileName,"b"),Page.FileFormat)
+   Page1.Load(FileName_Append(Page.FileName,"a"))  '.save doesn't set the filename
+   Page2.Load(FileName_Append(Page.FileName,"b"))
    'Insert a new page into the document, so that Kofax Capture knows it is there. This will cost a page count in the license
-   Batch.CopyPage(pXDocInfo,PageNo,PageNo+1) ' This event can only be called from Batch_Open or Batch_Close
-   'Replace the pages
+   Batch.AddPage(pXDocInfo,Page2.FileName,Csc_SFT_AutoDetect,PageNo+1) ' This event can only be called from Batch_Open or Batch_Close
+   'Replace the first page
+   pXDocInfo.XDocument.CDoc.Pages(PageNo).UnloadSourceImage()
    pXDocInfo.XDocument.CDoc.Pages(PageNo).SetImage(Page1)
-   pXDocInfo.XDocument.CDoc.Pages(PageNo+1).SetImage(Page2)
-   pXDocInfo.XDocument.Save()
+   pXDocInfo.XDocument.CDoc.Pages(PageNo).Width=Page1.Width
+   pXDocInfo.XDocument.CDoc.Pages(PageNo).Height=Page1.Height
+   'pXDocInfo.XDocument.Save()
 End Sub
 
 Private Sub SL_Size_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
@@ -71,10 +75,11 @@ Private Sub SL_Size_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, B
 End Sub
 
 Private Function FileName_Append(Filename As String, Append As String) As String
-   Dim I As Long   'Append a string to a filename before the "." and extension
+   Dim I As Long 'Append a string to a filename before the "." and extension
    I=InStrRev(Filename,".")
    Return Left(Filename,I-1) & Append & Mid(Filename,I)
 End Function
+
 
 Public Function Page_IsA3(Page As CscCDocPage) As Boolean
    Dim Score As Double, EdgeRatio As Double
@@ -142,5 +147,4 @@ End Function
 Public Function Min(a,b)
    Return IIf(a<b,a,b)
 End Function
-
 ```
