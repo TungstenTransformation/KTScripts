@@ -104,7 +104,12 @@ Sub Field_Copy(A As Object, B As Object,Optional Append As Boolean=False)
       B.Width=A.Width
       B.Height=A.Height
       B.PageIndex=A.PageIndex
-      If Append Then B.Text=Trim(Replace(B.Text & " " & A.Text,"  "," ")) Else B.Text=Trim(A.Text)
+      If Append AndAlso Not (TypeOf A Is CscXDocFieldAlternative And TypeOf B Is CscXDocFieldAlternative) Then 
+         B.Text=Trim(Replace(B.Text & " " & A.Text,"  "," ")) 
+      Else 
+         B.Text=Trim(A.Text) 
+      End If 
+
    End If
    If TypeOf A Is CscXDocFieldAlternative AndAlso TypeOf B Is CscXDocFieldAlternative Then
        B.Source=A.Source 'Copy knowledgebase source info
