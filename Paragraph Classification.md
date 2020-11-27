@@ -1,4 +1,7 @@
 # Paragraph Classification
+
+NOTE!! This has now become part of Kofax Transformation Modules 4.0. Many features presented below are no longer required.  
+
 Sometimes it is useful to classify individual paragraphs in a document
 * You are looking for paragraphs in a document with a particular vocab or sentiment.
 * You want to calculate the sentiment of each paragraph separately 
