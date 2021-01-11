@@ -3,7 +3,7 @@ This locator finds all the text columns on a document and returns each column as
 The alternatives can then be used to extract paragraphs, to classify by paragraph or column, or to run NLP over columns or paragraphs.  
 Add this script to the class containing a script locator with the name **SL_Column**
 ## Script
-'''vb
+```vb
 '#Language "WWB-COM"
 Option Explicit
 
@@ -92,5 +92,4 @@ End Function
 Public Function Min(v1, v2)
    Return IIf( v1 < v2, v1, v2)
 End Function
-
-'''
+```
