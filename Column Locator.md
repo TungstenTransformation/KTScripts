@@ -5,7 +5,10 @@ The alternatives can then be used to extract paragraphs, to classify by paragrap
 ![image](https://user-images.githubusercontent.com/47416964/104158379-8a71cb00-53ed-11eb-8748-5a72e7b6e94a.png)
 
 Add this script to the class containing a script locator with the name **SL_Column**.
-There are two parameters **gapH** and **gapV**. Any words that are closer to each other than **horizontal Gap** or **vertical Gap** will be merged into a column object.
+The algorithm merges together words that are "close" together into columns.  
+There is one parameter **gapH**. Any words that are horizontally closer to each other than **horizontal Gap** will be merged into a column object.  
+The confidence of each column is just 99.9%, 99.8%, 99.7% etc so that the columns appear in the order that they were created. The column order does not reflect the order on the document. The columns will need sorting so that the have the order that they do on the document.
+
 ## Script
 ```vb
 '#Language "WWB-COM"
@@ -14,31 +17,30 @@ Option Explicit
 Private Sub SL_Columns_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
    Dim Columns As CscXDocFieldAlternatives, Column As CscXDocFieldAlternative, C As Long, CStart As Long, CEnd As Long, D As Long
    Dim Word As CscXDocWord, Words As CscXDocWords, W As Long
-   Dim P As Long, gapH As Long, gapV As Long
+   Dim P As Long, gapH As Long
    gapH=10
-   gapV=3
    Set Columns=pLocator.Alternatives
    CStart=0
-   For P=0 To pXDoc.Pages.Count-1
+   For P=0 To pXDoc.Pages.Count-1 ' loop through all pages
       Set Words=pXDoc.Pages(P).Words
-      For W=0 To Words.Count-1
+      For W=0 To Words.Count-1 ' loop through all words on the page
          Set Word=Words(W)
          'put word into correct column
          Set Column = Nothing
-         If Columns.Count<>CStart Then
-            For C=CStart To Columns.Count-1
+         If Columns.Count<>CStart Then 'if we already have columns on this page
+            For C=CStart To Columns.Count-1 'find if any existing column is "above" the word
                If Object_HorizontalDistance(Columns(C),Word)<gapH Then
                   Set Column=Columns(C)
                   Exit For
                End If
             Next 'column
          End If
-         If Column Is Nothing Then
+         If Column Is Nothing Then 'add a new column if the word isn't "close" to an existing column
             Set Column=Columns.Create
             Column.Confidence=1-Columns.Count/1000 ' just to keep the columns in order of creation
          End If
          Column.Words.Append(Word)
-         'merge columns
+         'merge columns ' as columns grow, they may get close to each other - this merges "sub"-columns.
          For C=Columns.Count-2 To CStart Step -1
             For D=Columns.Count-1 To C+1 Step -1
                If Object_HorizontalDistance(Columns(C),Columns(D))<gapH Then
