@@ -7,7 +7,7 @@ The alternatives can then be used to extract paragraphs, to classify by paragrap
 Add this script to the class containing a script locator with the name **SL_Column**.
 The algorithm merges together words that are "close" together into columns.  
 There is one parameter **gapH**. Any words that are horizontally closer to each other than **horizontal Gap** will be merged into a column object.  
-The confidence of each column is just 99.9%, 99.8%, 99.7% etc so that the columns appear in the order that they were created. The column order does not reflect the order on the document (In the second image above you see that column 99.9% is still there and that 99.8, 99.7, 99.6 & 99.5 were merged into it - this happened because the first word on the page is high in the top right corner. That is why column 1 has 99.4%). The columns will need sorting so that the have the order that they do on the document.
+The confidence of each column is just 99.9%, 99.8%, 99.7% etc so that the columns appear in the order that they were created. The column order does not reflect the order on the document (In the second image above you see that column 99.9% is still there and that 99.8, 99.7, 99.6 & 99.5 were merged into it - this happened because the first word on the page is high in the top right corner. That is why column 1 has 99.4%). The columns will need [sorting](Alternatives_Sort.md) so that the have the order that they do on the document.
 
 ## Script
 ```vb
