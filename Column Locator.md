@@ -1,7 +1,11 @@
 # Column Locator
 This locator finds all the text columns on a document and returns each column as an alternative in the locator.  
 The alternatives can then be used to extract paragraphs, to classify by paragraph or column, or to run NLP over columns or paragraphs.  
-Add this script to the class containing a script locator with the name **SL_Column**
+![image](https://user-images.githubusercontent.com/47416964/104158346-7037ed00-53ed-11eb-80ee-746cc475bd8a.png)
+![image](https://user-images.githubusercontent.com/47416964/104158379-8a71cb00-53ed-11eb-8748-5a72e7b6e94a.png)
+
+Add this script to the class containing a script locator with the name **SL_Column**.
+There are two parameters **gapH** and **gapV**. Any words that are closer to each other than **horizontal Gap** or **vertical Gap** will be merged into a column object.
 ## Script
 ```vb
 '#Language "WWB-COM"
