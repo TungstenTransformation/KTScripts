@@ -7,6 +7,7 @@ After that, if you change all of the confidences to match the new order then you
 A sort algorithm uses **comparers** to perform the sort. The script provides the following comparers
 * Comparer_Left2RightTop2Bottom
 * Comparer_TopLeftCorner
+* Comparer_AboveOrLeft   *useful for sorting paragraphs on a page*
 * Comparer_Confidence
 
 **TopLeftCorner** is suitable for sorting columns on a page.  
