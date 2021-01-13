@@ -25,6 +25,13 @@ Public Function Comparer_TopLeftCorner(a As Variant, b As Variant) As Boolean
    Return a.Left+a.Top < b.Left+b.Top
 End Function
 
+ Public Function Comparer_AboveOrLeft(a As Variant, b As Variant) As Boolean
+   'Sorts items by their top-left coordinate - good for grouping graphical lines together
+   If a.PageIndex<>b.PageIndex Then return a.PageIndex<b.PageIndex
+   If a.Top+a.Height<b.Top then return true ' a is 'above' b
+   Return a.Left+a.width < b.Left 'a is 'left of b
+End Function
+
 Public Function Comparer_Confidence( a As Variant, b As Variant) As Boolean
    'Used to sort lines
    Return a.Confidence > b.Confidence
