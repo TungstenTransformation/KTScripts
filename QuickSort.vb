@@ -27,9 +27,21 @@ End Function
 
  Public Function Comparer_AboveOrLeft(a As Variant, b As Variant) As Boolean
    'Sorts items by their top-left coordinate - good for grouping graphical lines together
-   If a.PageIndex<>b.PageIndex Then return a.PageIndex<b.PageIndex
-   If a.Top+a.Height<b.Top then return true ' a is 'above' b
-   Return a.Left+a.width < b.Left 'a is 'left of b
+   If a.PageIndex<>b.PageIndex Then Return a.PageIndex<b.PageIndex
+   If a.Top+a.Height<b.Top Then  'a is above b
+      If a.Left <= b.Left And a.Left+a.Width >= b.Left Then Return True ' a overlaps b horizontally to the left
+      If b.Left <= a.Left And b.Left+b.Width >= a.Left Then Return False ' a overlaps a horizontally to the right
+      'a and b do not overlap horizontally, but b is under a
+      Return a.Left<b.Left
+   End If
+   If a.Left+a.Width<b.Height Then  'a is left of b
+      If a.Top <= b.Top And a.Top+a.Height >= b.Top Then Return True ' a overlaps b vertically but is higher
+      If b.Top <= a.Top And b.Top+b.Height >= a.Top Then Return True 'a overlaps b vertically but is lower  (there are two or more columns here...)
+      'a and b do not overlap horizontally, but b is under a
+      Return a.Top < b.Top
+   End If
+   'if we got here the two objects overlap so we return one further in the top left.
+   Return a.Left+a.Top < b.Left+a.Top
 End Function
 
 Public Function Comparer_Confidence( a As Variant, b As Variant) As Boolean
