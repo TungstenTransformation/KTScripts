@@ -13,7 +13,8 @@ Sub Field_Copy(A As Object, B As Object,Optional Append As Boolean=False)
          Field_Copy(A,B.Create(),True)
       End If
       Exit Sub
-   End If   If TypeOf A Is CscXDocFieldAlternative And TypeOf B Is CscXDocField Then
+   End If
+   If TypeOf A Is CscXDocFieldAlternative And TypeOf B Is CscXDocField Then
       If Not Append Then Alternatives_Clear(B.Alternatives)
       Field_Copy(A,B.Alternatives.Create,False) 'Recurse
       Exit Sub
