@@ -26,7 +26,7 @@ Public Function Comparer_TopLeftCorner(a As Variant, b As Variant) As Boolean
 End Function
 
  Public Function Comparer_AboveOrLeft(a As Variant, b As Variant) As Boolean
-   'Sorts items by their top-left coordinate - good for grouping graphical lines together
+   'Sorts items by their top-left coordinate - good for sorting paragraphs into columns
    If a.PageIndex<>b.PageIndex Then Return a.PageIndex<b.PageIndex
    If a.Top+a.Height<=b.Top Then  'a is above b
       If Object_OverlapHorizontal(a,b)>0.0 Then Return True ' a wins as b is directly under a
