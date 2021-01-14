@@ -17,5 +17,7 @@ Delegate Function ComparerDelegate(a As Variant, b As Variant) As Boolean ' Dele
 ```
 You can sort your Alternatives by calling
 ```vb
-Alternatives_Sort(pLocator.Alternatives,Comparer_TopLeftCorner)
+Alternatives_Sort(pLocator.Alternatives, AddressOf Comparer_TopLeftCorner)
 ````
+
+You will need to include [Field_Copy](Field_Copy.vb) script that sorting uses.
