@@ -11,91 +11,68 @@ The confidence of each column is just 99.9%, 99.8%, 99.7% etc so that the column
 
 ## Script
 ```vb
-'#Language "WWB-COM"
-Option Explicit
-
 Private Sub SL_Columns_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
    Dim Columns As CscXDocFieldAlternatives, Column As CscXDocFieldAlternative, C As Long, CStart As Long, CEnd As Long, D As Long
    Dim Word As CscXDocWord, Words As CscXDocWords, W As Long
-   Dim P As Long, gapH As Long
+   Dim P As Long, gapH As Long, Headers As CscXDocFieldAlternatives, H As Long, HeaderLine() As Long
    gapH=10
    Set Columns=pLocator.Alternatives
+   ReDim HeaderLine(pXDoc.Pages.Count-1)
+   Set Headers=pXDoc.Locators.ItemByName("FL_Headers").Alternatives
+   For H=0 To UBound(HeaderLine)
+      HeaderLine(H)=-1 ' on most pages we need to accept line 0  - page without header
+   Next
+   For H=0 To Headers.Count-1
+      HeaderLine(Headers(H).PageIndex)=Headers(H).Words(0).LineIndex
+   Next
    CStart=0
    For P=0 To pXDoc.Pages.Count-1 ' loop through all pages
       Set Words=pXDoc.Pages(P).Words
       For W=0 To Words.Count-1 ' loop through all words on the page
          Set Word=Words(W)
-         'put word into correct column
-         Set Column = Nothing
-         If Columns.Count<>CStart Then 'if we already have columns on this page
-            For C=CStart To Columns.Count-1 'find if any existing column is "above" the word
-               If Object_HorizontalDistance(Columns(C),Word)<gapH Then
-                  Set Column=Columns(C)
-                  Exit For
-               End If
-            Next 'column
-         End If
-         If Column Is Nothing Then 'add a new column if the word isn't "close" to an existing column
-            Set Column=Columns.Create
-            Column.Confidence=1-Columns.Count/1000 ' just to keep the columns in order of creation
-         End If
-         Column.Words.Append(Word)
-         'merge columns ' as columns grow, they may get close to each other - this merges "sub"-columns.
-         For C=Columns.Count-2 To CStart Step -1
-            For D=Columns.Count-1 To C+1 Step -1
-               If Object_HorizontalDistance(Columns(C),Columns(D))<gapH Then
-                  For W=0 To Columns(D).Words.Count-1
-                     Columns(C).Words.Append(Columns(D).Words(W))
-                  Next
-                  Columns.Remove(D)
-               End If
+         If Word.LineIndex> HeaderLine(Word.PageIndex) Then ' we are below the header
+            'put word into correct column
+            Set Column = Nothing
+            If Columns.Count<>CStart Then 'if we already have columns on this page
+               For C=CStart To Columns.Count-1 'find if any existing column is "above" the word
+                  If Object_HorizontalDistance(Columns(C),Word)<gapH Then
+                     Set Column=Columns(C)
+                     Exit For
+                  End If
+               Next 'column
+            End If
+            If Column Is Nothing Then 'add a new column if the word isn't "close" to an existing column
+               Set Column=Columns.Create
+               Column.Confidence=1-Columns.Count/1000 ' just to keep the columns in order of creation
+            End If
+            Column.Words.Append(Word)
+            'merge columns ' as columns grow, they may get close to each other - this merges "sub"-columns.
+            For C=Columns.Count-2 To CStart Step -1 'count backwards because we are deleting
+               For D=Columns.Count-1 To C+1 Step -1
+                  If Object_HorizontalDistance(Columns(C),Columns(D))<gapH Then
+                     For W=0 To Columns(D).Words.Count-1 'copy all words to new column
+                        Columns(C).Words.Append(Columns(D).Words(W))
+                     Next
+                     Columns.Remove(D)
+                  End If
+               Next
             Next
-         Next
+         End If
       Next 'word
       CStart=Columns.Count
    Next 'page
+
+   ' remove small columns
+   For C= Columns.Count-1 To 0 Step -1
+      If Columns(C).Words.Count<4 Or Len(Columns(C).Text) <20 Then Columns.Remove(C)
+   Next
+
+   'here we need to sort paragraphs
+   Alternatives_Sort(Columns,AddressOf Comparer_AboveOrLeft)
+
+   For C=0 To Columns.Count-1
+      Columns(C).Confidence = 1-(C/100)
+   Next
+
 End Sub
-
-Public Function Object_isClose(a As Object, b As Object, gapH As Long, gapV As Long) As Boolean
-   If Object_HorizontalDistance(a,b)<=gapH And Object_VerticalDistance(a,b)<gapV Then Return True
-   Return False
-End Function
-
-
-Public Function Object_Distance( a As Object, b As Object) As Long
-   Return Min(Object_HorizontalDistance(a,b),Object_VerticalDistance(a,b))
-End Function
-
-Public Function Object_VerticalDistance( a As Object, b As Object) As Long
-   Return Max(Abs(b.Top+b.Height/2-a.Top-a.Height/2)-b.Height/2-a.Height/2,0)
-End Function
-
-Public Function Object_HorizontalDistance( a As Object, b As Object) As Long
-   Return Max(Abs(b.Left+b.Width/2-a.Left-a.Width/2)-b.Width/2-a.Width/2,0)
-End Function
-
-Public Function Object_OverlapHorizontal( a As Object, b As Object,Optional offset As Long=0,Optional differentPages As Boolean=False) As Double
-   'Calculates the horizontal overlap of two fields and returns 0<=overlap<=1
-   'Overlap=1 is also returned if one field is inside the other
-   If (Not differentPages And (a.PageIndex <> b.PageIndex)) Or a.PageIndex=-1 Or a.Width = 0 Or b.Width=0 Then Return 0
-   Return Max((Min(a.Left+a.Width,b.Left+b.Width+offset)-Max(a.Left,b.Left+offset)),0)/Min(a.Width,b.Width)
-End Function
-
-Public Function Object_VerticalOverlap( a As Object, b As Object,Optional ignorePage As Boolean=False) As Double
-   'Calculates the vertical overlap of two fields and returns 0<=overlap<=1
-   'Overlap=1 is also returned if one field is inside the other
-   Dim o As Double
-   If (Not ignorePage And (a.PageIndex <> b.PageIndex)) Or a.PageIndex=-1 Then Exit Function
-   If a.Height = 0 Or b.Height=0 Then Exit Function
-   o=Max((Min(a.Top+a.Height,b.Top+b.Height)-Max(a.Top,b.Top)),0)
-   Return o/Min(a.Height,b.Height)
-End Function
-
-Public Function Max(v1, v2)
-   Return IIf( v1 > v2, v1, v2)
-End Function
-
-Public Function Min(v1, v2)
-   Return IIf( v1 < v2, v1, v2)
-End Function
 ```
