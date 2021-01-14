@@ -28,20 +28,25 @@ End Function
  Public Function Comparer_AboveOrLeft(a As Variant, b As Variant) As Boolean
    'Sorts items by their top-left coordinate - good for grouping graphical lines together
    If a.PageIndex<>b.PageIndex Then Return a.PageIndex<b.PageIndex
-   If a.Top+a.Height<b.Top Then  'a is above b
-      If a.Left <= b.Left And a.Left+a.Width >= b.Left Then Return True ' a overlaps b horizontally to the left
-      If b.Left <= a.Left And b.Left+b.Width >= a.Left Then Return False ' a overlaps a horizontally to the right
-      'a and b do not overlap horizontally, but b is under a
-      Return a.Left<b.Left
+   If a.Top+a.Height<=b.Top Then  'a is above b
+      If Object_OverlapHorizontal(a,b)>0.0 Then Return True ' a wins as b is directly under a
+      If b.Left+b.Width<=a.Left Then Return False ' b is left of a and under a, so b is before a
+      If a.Left+a.Width<=b.Left Then Return True ' b is right of a and under a, so a is before b
+      Return True  'anything else, a wins
+   ElseIf b.Top+b.Height <= a.Top Then 'b is above a
+      If Object_OverlapHorizontal(a,b)>0.0 Then Return False 'a is directly under b, so b wins
+      If b.Left+b.Width<=a.Left Then Return False ' b is left of a and above a, so b is before a
+      If a.Left+a.Width<=b.Left Then Return True ' b is right of a and above a, so a is before b
+   ElseIf a.Left+a.Width<=b.Left Then 'a is left of b
+      If Object_OverlapVertical(a,b) >0.0 Then Return True ' a is directly left of b, so a wins
+      If b.Top+b.Height<=a.Top Then Return True ' a is left of b and below b, so a wins ( b is in next column
+      If a.Top+a.Height<=b.Top Then Return True ' b is below a in next column. so a wins
+   Else ' a is right of b
+      If Object_OverlapVertical(a,b) >0.0 Then Return False ' a is directly right of b, so b wins
+      If b.Top+b.Height<=a.Top Then Return False ' a is right of b and below b, so b wins ( b is in prev column
+      If a.Top+a.Height<=b.Top Then Return False ' b is below a in prev column. so b wins
    End If
-   If a.Left+a.Width<b.Height Then  'a is left of b
-      If a.Top <= b.Top And a.Top+a.Height >= b.Top Then Return True ' a overlaps b vertically but is higher
-      If b.Top <= a.Top And b.Top+b.Height >= a.Top Then Return True 'a overlaps b vertically but is lower  (there are two or more columns here...)
-      'a and b do not overlap horizontally, but b is under a
-      Return a.Top < b.Top
-   End If
-   'if we got here the two objects overlap so we return one further in the top left.
-   Return a.Left+a.Top < b.Left+a.Top
+   Err.Raise(567,,"we should never get here!")
 End Function
 
 Public Function Comparer_Confidence( a As Variant, b As Variant) As Boolean
