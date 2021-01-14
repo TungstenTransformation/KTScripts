@@ -4,7 +4,7 @@ Kofax Transformation automatically sorts alternatives based on their confidence.
 any alternatives created will be automatically re-sorted by their confidence before the next locator starts.   
 If you need to sort by another criteria, then use the following script.  
 After that, if you change all of the confidences to match the new order then your order will be kept.  
-A sort algorithm uses **comparers** to perform the sort. The script provides the following comparers
+A sort algorithm uses **comparers** to perform the sort. The script provides the following comparers (you can also make your own custom comparers)
 * Comparer_Left2RightTop2Bottom
 * Comparer_TopLeftCorner
 * Comparer_AboveOrLeft   *useful for sorting paragraphs on a page*
