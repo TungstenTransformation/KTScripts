@@ -85,7 +85,7 @@ Sub Object_SortWords(a As Object, pXDoc As CscXDocument)
    Wend
    a.Text=""
    For W=0 To Sorted.Count-1
-      a.Words.Append(Sorted(W)
+      a.Words.Append(Sorted(W))
    Next
 End Sub
 
