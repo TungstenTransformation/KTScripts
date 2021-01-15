@@ -71,8 +71,22 @@ Private Sub SL_Columns_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument
    Alternatives_Sort(Columns,AddressOf Comparer_AboveOrLeft)
 
    For C=0 To Columns.Count-1
-      Columns(C).Confidence = 1-(C/100)
+      Columns(C).Confidence = 1-(C/100)  'preserve the order of the columns by setting artificial confidences 100%, 99%, 98%, etc..
+     Object_SortWords(Columns(C), pXDoc) 'put all of the words in the paragraph in the correct order. The merging above doesn't preserve word order.
    Next
 
 End Sub
+
+Sub Object_SortWords(a As Object, pXDoc As CscXDocument)
+   Dim W As Long, Sorted As CscXDocWords
+   Set Sorted=pXDoc.GetWordsInRect(a.PageIndex,a.Left,a.Top,a.Width,a.Height)
+   While a.Words.Count>0
+      a.Words.Remove(0)
+   Wend
+   a.Text=""
+   For W=0 To Sorted.Count-1
+      a.Words.Append(Sorted(W)
+   Next
+End Sub
+
 ```
