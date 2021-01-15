@@ -49,6 +49,31 @@ End Function
    Err.Raise(567,,"we should never get here!")
 End Function
 
+Public Function Object_OverlapHorizontal( a As Object, b As Object,Optional offset As Long=0,Optional differentPages As Boolean=False) As Double
+   'Calculates the horizontal overlap of two fields and returns 0<=overlap<=1
+   'Overlap=1 is also returned if one field is inside the other
+   If (Not differentPages And (a.PageIndex <> b.PageIndex)) Or a.PageIndex=-1 Or a.Width = 0 Or b.Width=0 Then Return 0
+   Return Max((Min(a.Left+a.Width,b.Left+b.Width+offset)-Max(a.Left,b.Left+offset)),0)/Min(a.Width,b.Width)
+End Function
+
+Public Function Object_OverlapVertical( a As Object, b As Object,Optional ignorePage As Boolean=False) As Double
+   'Calculates the vertical overlap of two fields and returns 0<=overlap<=1
+   'Overlap=1 is also returned if one field is inside the other
+   Dim o As Double
+   If (Not ignorePage And (a.PageIndex <> b.PageIndex)) Or a.PageIndex=-1 Then Exit Function
+   If a.Height = 0 Or b.Height=0 Then Exit Function
+   o=Max((Min(a.Top+a.Height,b.Top+b.Height)-Max(a.Top,b.Top)),0)
+   Return o/Min(a.Height,b.Height)
+End Function
+
+Public Function Max(v1, v2)
+   Return IIf( v1 > v2, v1, v2)
+End Function
+
+Public Function Min(v1, v2)
+   Return IIf( v1 < v2, v1, v2)
+End Function
+                                                   
 Public Function Comparer_Confidence( a As Variant, b As Variant) As Boolean
    'Used to sort lines
    Return a.Confidence > b.Confidence
