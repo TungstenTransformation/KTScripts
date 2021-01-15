@@ -65,6 +65,17 @@ Public Function Object_OverlapVertical( a As Object, b As Object,Optional ignore
    o=Max((Min(a.Top+a.Height,b.Top+b.Height)-Max(a.Top,b.Top)),0)
    Return o/Min(a.Height,b.Height)
 End Function
+                                                                  
+Public Function Object_OverlapHorizontal2D( a As Object, b As Object,Optional offset As Long=0) As Double
+'returns percentage overlap of two fields, subfields, zones, boxes, words or alternatives (0.0 if no overlap, 1.0 if perfect overlap)
+   'Check if fields are on the same page and that both exist
+   'the offset is how many pixels object b needs to be shifted horizontally - used for page registration
+   If a.PageIndex <> b.PageIndex Or a.PageIndex=-1 Then  Exit Function
+   Dim overlapArea As Double
+   overlapArea=Long_Max((Long_Min(a.Left+a.Width,b.Left+b.Width+offset)-Long_Max(a.Left,b.Left+offset)),0) * _
+               Long_Max((Long_Min(a.Top+a.Height,b.Top+b.Height)-Long_Max(a.Top,b.Top)),0)
+   Return overlapArea/Long_Max(a.Width*a.Height,b.Width*b.Height)
+End Function
 
 Public Function Max(v1, v2)
    Return IIf( v1 > v2, v1, v2)
