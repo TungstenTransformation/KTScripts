@@ -22,7 +22,7 @@ This script converts the PDFs into TIFF images and gives these benefits
 ![image](https://user-images.githubusercontent.com/47416964/98677185-f5a31080-235c-11eb-9fbd-854847a0eb64.png)
 1. You now see that the PDF icon ![image](https://user-images.githubusercontent.com/47416964/98677290-1bc8b080-235d-11eb-8d9d-744e81204eb0.png)
  is gone, and that the the XDocuments are now TIFF based ![image](https://user-images.githubusercontent.com/47416964/98677260-12d7df00-235d-11eb-8cc8-76713b68f089.png)
-1. In Windows Explorer you will see the original PDF, the XDocument and each of the TIFF images.  
+1. In Windows Explorer you will see the original PDF, the XDocument and each page as a TIFF image.  
 ![image](https://user-images.githubusercontent.com/47416964/98677952-161f9a80-235e-11eb-8681-a821089439f9.png)
 1. Remove the script from your project if you no longer needed. It can run in produciton, but only if you want theses TIFFs at runtime for some reason. 
 1. To undo everything and revert back to the PDFs directly, load the document set with Source files set to PDF only.  
