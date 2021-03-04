@@ -1,8 +1,8 @@
 # Convert PDF to TIFF in KTM, KTA, RPA, KTT or RTTI
 PDF documents have the following disadvantages when building a project in Project Builder
 * PDF documents cannot be merged, split, or pages deleted.
-* The make many locators VERY SLOW.  
-*Kofax Transformation needs to "render" a PDF page to pixels for pixel-based locators (barcode locators, zone locators, automatic table locator which is looking for horizontal and vertical lines) and layout classification to see the non-text parts of the document. This rendering can take about 1 second/page.*
+* PDF documents make *testing* barcode, zone and table locators VERY SLOW.  
+*Kofax Transformation needs to "render" a PDF page to pixels for pixel-based locators (The automatic table locator which is looking for horizontal and vertical lines) and layout classification to see the non-text parts of the document. This rendering can take about 1 second/page.*
 
 Here is how to make working with PDFs in KT Project Builder 10x or more faster.
 Your locators, benchmarks and classification will all run much faster.  
