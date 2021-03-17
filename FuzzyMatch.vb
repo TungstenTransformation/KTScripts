@@ -21,7 +21,7 @@ Private Function XDocument_SearchLineFuzzy(ByVal pXDoc As CscXDocLib.CscXDocumen
 End Function
 
 
-Public Function String_LevenshteinDistance(a As String ,b As String) as Integer
+Public Function String_LevenshteinDistance(a As String ,b As String) as Long
    'http://en.wikipedia.org/wiki/Levenshtein_distance
    'Levenshtein distance between two strings, used for fuzzy matching
    'Returns the number of character differences between the two strings.
@@ -250,8 +250,8 @@ Public Function String_IsUpperCaseOrUnicode(c As String) As Boolean
 End Function
 
 public Function Alternatives_LineUp(a as CSCXDocAlternatives, b as CSCXDOCAlternatives)
-   'a is a list of alternatives – each alternative is a character on the textline, with left & width interpolated from the word
-   'TStringTag is set to the strongly normalised value. Eg if .Text=”C” then .StringTag=”a” for alphabetic.)
+   'a is a list of alternatives Â– each alternative is a character on the textline, with left & width interpolated from the word
+   'TStringTag is set to the strongly normalised value. Eg if .Text=Â”CÂ” then .StringTag=Â”aÂ” for alphabetic.)
    While i<a.Count And j<b.Count
       If a(i).Left+a(i).Width<b(j).Left Then 'the top word is left of the bottom word
          i=i+1
