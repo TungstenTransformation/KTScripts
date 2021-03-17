@@ -1,10 +1,10 @@
 # Customizing Locators
 All locators (including Table Locators) in Kofax Transformation are customizable. There script events **Document_BeforeLocate** and **Document_AfterLocate** run on every locator. This gives you the chance to prepare a locator up front or to change the results of a loator
 When a locator is run or when you press **Test** on a locator the following 4 steps happen
-* **Document_BeforeLocate** is called
-* the locator runs normally
-* **Document_AfterLocate** is called
-* The alternatives are re-sorted. (This is very cool! your script can add/delete alternatives and change the confidences)
+1. **Document_BeforeLocate** is called
+1. the locator runs normally
+1. **Document_AfterLocate** is called
+1. The alternatives are re-sorted. (This is very cool! your script can add/delete alternatives and change the confidences)
 
 
 Here is an example of Document_AfterLocate dealing with 5 different locators
