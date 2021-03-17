@@ -133,9 +133,7 @@ End Function
 Private Function arctan(y As Double, x As Double) As Double
    'https://en.wikipedia.org/wiki/Atan2#Definition_and_computation
    If x=0 Then
-      If y>0 Then Return π/2
-      If y<0 Then Return -π/2
-      Return 0 ' We don't throw an undefined exception because https://en.wikipedia.org/wiki/Atan2#Realizations_of_the_function_in_common_computer_languages
+      return Sgn(y)* π/2 ' We don't throw an undefined exception because https://en.wikipedia.org/wiki/Atan2#Realizations_of_the_function_in_common_computer_languages
    ElseIf x>0 Then
       Return Atn(y/x)
    ElseIf y>=0 Then
