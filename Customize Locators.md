@@ -17,6 +17,7 @@ Private Sub Document_AfterLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal L
       Alternatives_RemoveBelow(pXDoc.Locators.ItemByName(LocatorName).Alternatives,1.00)
    Case "FL_Amounts" ' remove alternatives below 75%
       Alternatives_RemoveBelow(pXDoc.Locators.ItemByName(LocatorName).Alternatives,0.75)
+   End Select
 End Sub
 ```
 ## Document_BeforeLocate
