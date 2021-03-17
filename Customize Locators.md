@@ -10,7 +10,6 @@ When a locator is run or when you press **Test** on a locator the following 4 st
 Here is an example of Document_AfterLocate dealing with 5 different locators
 ```vb
 Private Sub Document_AfterLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal LocatorName As String)
-   'If LocatorName="TL_Procedures" Then XDocument_FindProcedures(pXDoc,"lastname:AAAAA Quantity:D procedure:AAAAAAA billed:AA.AA copay:AA.AA paid:AA.AA")
    Select Case LocatorName
    Case "TL_Procedures"
       Table_Procedures(pXDoc,pXDoc.Locators.ItemByName(LocatorName).Alternatives(0).Table)
@@ -20,7 +19,7 @@ Private Sub Document_AfterLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal L
       Alternatives_RemoveBelow(pXDoc.Locators.ItemByName(LocatorName).Alternatives,0.75)
 End Sub
 ```
-##Document_BeforeLocate
+## Document_BeforeLocate
 Set a region dynamically in a locator at runtime
 ```vb
 Public Sub Locator_SetRegion(ByVal pXDoc As CASCADELib.CscXDocument, LocatorName As String, Region As Object)
@@ -38,7 +37,7 @@ Public Sub Locator_SetRegion(ByVal pXDoc As CASCADELib.CscXDocument, LocatorName
 End Sub
 ```
 
-##Document_AfterLocate
+## Document_AfterLocate
 Remove Alternatives below a threshhold.
 ```vb
 Private Sub Alternatives_RemoveBelow(Alts As CscXDocFieldAlternatives, Confidence As Double)
