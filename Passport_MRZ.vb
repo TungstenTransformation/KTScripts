@@ -29,7 +29,7 @@ Public Sub MRZ_Parse(MRZ As Object, details As CscXDocSubFields, MRZID As Long)
       If Left(part(0),5)="Check" Then
          field=Split(part(0),"_")(1)
          With details.ItemByName(field)
-            If MRZ_Checksum(Mid(MRZ.Text,pos,length),.Text) Then .Confidence=0.9
+      If MRZ_Checksum(Mid(MRZ.Text,pos,length),.Text) Then .Confidence=0.9 ' This 90% is literally true as the Checksum is 90% accurate and checks the text quality.
          End With
       Else
          Set sf=details.Create(part(0))
@@ -49,7 +49,7 @@ Public Sub MRZ_Parse(MRZ As Object, details As CscXDocSubFields, MRZID As Long)
          sf.PageIndex=MRZ.PageIndex
          sf.Top=MRZ.Top
          sf.Height=MRZ.Height
-         sf.Confidence=.11 'Set all confidences to something really low, since we don't trust the OCR engine.
+         sf.Confidence=.11 'Set all confidences to something really low, since we don't trust the OCR engine. The checksum doesn't include the text
       End If
    Next
    For pos=0 To details.Count-1
