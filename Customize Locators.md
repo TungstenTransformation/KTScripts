@@ -11,12 +11,12 @@ Here is an example of Document_AfterLocate dealing with 5 different locators
 ```vb
 Private Sub Document_AfterLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal LocatorName As String)
    Select Case LocatorName
-   Case "TL_Procedures"
-      Table_Procedures(pXDoc,pXDoc.Locators.ItemByName(LocatorName).Alternatives(0).Table)
-   Case "FL_LastNames", "FL_FirstNames", "FL_Procedures" ' remove alternatives below 100%
-      Alternatives_RemoveBelow(pXDoc.Locators.ItemByName(LocatorName).Alternatives,1.00)
-   Case "FL_Amounts" ' remove alternatives below 75%
-      Alternatives_RemoveBelow(pXDoc.Locators.ItemByName(LocatorName).Alternatives,0.75)
+      Case "TL_Procedures"
+         Table_Procedures(pXDoc,pXDoc.Locators.ItemByName(LocatorName).Alternatives(0).Table)
+      Case "FL_LastNames", "FL_FirstNames", "FL_Procedures" ' remove alternatives below 100%
+         Alternatives_RemoveBelow(pXDoc.Locators.ItemByName(LocatorName).Alternatives,1.00)
+      Case "FL_Amounts" ' remove alternatives below 75%
+         Alternatives_RemoveBelow(pXDoc.Locators.ItemByName(LocatorName).Alternatives,0.75)
    End Select
 End Sub
 ```
