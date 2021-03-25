@@ -81,9 +81,9 @@ Private Function IBAN_CheckLength(IBAN As String) As Boolean
    'Each country has it's own different length for an IBAN
    'https://en.wikipedia.org/wiki/International_Bank_Account_Number#IBAN_formats_by_country
    Const IbanCountryLengths As String = "AL28AD24AT20AZ28BA20BH22BE16BA20BG22BR29BY28CR22HR21CY28CZ24DK18DO28EE20EG29FO18" & _
-                                        "FI18FR27GE22DE22GI23GR27GL18GT28HR21HU28IS26IE22IL23IT27KZ20KW30LV21LB28" & _
-                                        "LI21LT20LU20MK19MT31MR27MU30MC27MD24ME22NL18NO15PK24PS29PL28PT25RO24" & _
-                                        "SM27SA24RS22SK24SI19ES24SE24CH21TL23TN24TR26AE23GB22VG24QA29"
+                                        "FI18FR27GE22DE22GI23GR27GL18GT28HR21HU28IQ23IS26IE22IL23IT27JO30KZ20XK20KW30LV21LB28" & _
+                                        "LY25LI21LT20LU20MK19MT31MR27MU30MC27MD24ME22NL18NO15PK24PS29PL28PT25QA29RO24" & _
+                                        "LC32SM27ST25SA24RS22SC31SK24SI19ES24SE24SV28CH21TL23TN24TR26UA29AE23GB22VA22VG24QA29"
     Dim I As Long, Length As Long, CountryCode As String
     Length=Len(IBAN)
     If Length<15 Then Return False
