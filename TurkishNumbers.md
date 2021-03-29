@@ -1,7 +1,7 @@
 # Turkish Numbers
 This script Field Formatter converts any number from 1 to 999,000,000,000,000,000 into Turkish words. This is useful for validating amounts on Turkish money transfers.  
 ![image](https://user-images.githubusercontent.com/47416964/112871877-01029880-90c0-11eb-922d-3fc1ecf51188.png)  
-In the **Document_BeforeLocate** of a format locator, you can run this on the output of a previous locator and insert the Turkish string dynamically into the Levensthein format, which will then fuzzy-search for the number on the document.
+In the **Document_BeforeLocate** event of a format locator, you can run this on the output of a previous locator and insert the Turkish string dynamically into the Levensthein format, which will then fuzzy-search for the number on the document.
 
 
 ```vb
