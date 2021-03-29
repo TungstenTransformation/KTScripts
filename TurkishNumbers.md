@@ -62,7 +62,7 @@ Private Sub TurkishNumbers_FormatDoubleField(ByVal FieldText As String, Formatte
       Select Case Digit
          Case "0"  'ignore sıfır
          Case "1"
-            If Order="1" Or Tens & Hundreds <>"00" Then FormattedText=Dict(Digit) & FormattedText 'bir    prevents "binbir"
+            If Order="1" Or Tens & Hundreds <>"00" Then FormattedText=Dict(Digit) & FormattedText 'bir    prevents "birbin"
          Case Else
             FormattedText=Dict(Digit) & FormattedText 'iki...dokuz
       End Select
