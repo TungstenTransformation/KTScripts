@@ -30,6 +30,7 @@ Private Sub Document_BeforeLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal 
 End Sub
 
 Public Sub Alternatives_Format(Alts As CscXDocFieldAlternatives, FieldFormatterName As String)
+   'Format all alternatives of a Locator with a field formatter
    Dim FieldFormatter As ICscFieldFormatter, A As Long, Field As New CscXDocField, Alt As CscXDocFieldAlternative
    Set FieldFormatter=Project.FieldFormatters.ItemByName(FieldFormatterName)
    For A=0 To Alts.Count-1
@@ -39,7 +40,6 @@ Public Sub Alternatives_Format(Alts As CscXDocFieldAlternatives, FieldFormatterN
       Alt.Text=Field.Text
    Next
 End Sub
-
 
 Public Sub XDoc_Locate(pXDoc As CscXDocument, SearchValuesLocator As String, LevenshteinLocatorName As String)
    'Fuzzy search a document for the alternatives of a locator
