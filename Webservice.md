@@ -10,6 +10,7 @@ Public Function HTTP_GET(URL As String) As String
       'TODO error handling
    Else
       HTTP_GET=HTTP.responseText
+      'HTTP_GET=HTTP.responseXML  'if you want to return an XML object change the return type of the function to MSXML2.DOMDocument60
    End If
 End Function
 ```
