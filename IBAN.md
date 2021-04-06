@@ -110,4 +110,18 @@ Private Function IBAN_CalculateCheckDigits(Country As String, BBAN As String, By
    Next
    Return Format(98-String_Mod(Sum,97),"00")' pad the modulus to two digits
 End Function
+
+Private Function String_Mod(Number As String, Divisor As Long) As Long
+   'This efficiently calculates the modulus on a very long number represented as a string
+   'http://stackoverflow.com/questions/15943037/vbscript-validate-iban-with-mod97-number-is-too-big
+   Const Digits As String = "0123456789"
+   Dim I As Long, M As Long, CH As String
+   M = 0
+   For I = 1 To Len(Number)
+      CH=Mid(Number, I, 1)
+      If InStr(Digits,CH)<1 Then Return -1 ' this is not a number
+      M = (10*M +  CInt(CH)) Mod Divisor
+   Next
+   Return M
+End Function
 ```
