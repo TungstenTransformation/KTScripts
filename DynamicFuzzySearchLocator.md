@@ -42,6 +42,7 @@ Public Sub Alternatives_Format(Alts As CscXDocFieldAlternatives, FieldFormatterN
 End Sub
 
 Public Sub XDoc_Locate(pXDoc As CscXDocument, SearchValuesLocator As String, LevenshteinLocatorName As String)
+   'Add reference to "Kofax Cascade Format Locator" in Edit/References... Menu
    'Fuzzy search a document for the alternatives of a locator
    'This adds Levenshtein Format Definitions to a format locator based on the alternatives to the SearchValuesLocator
    'Add reference to Kofax Cascade Format Locator
