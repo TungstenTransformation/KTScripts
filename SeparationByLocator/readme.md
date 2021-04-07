@@ -60,7 +60,22 @@ Some locators find ALL results on all pages. We can call these locator ONCE for 
 * Add the script below.
 * Run the separation benchmark
 ```vb
-TODO: separation script with locator for each page. No global variables.
+Private Sub Document_BeforeSeparatePages(ByVal pXDoc As CASCADELib.CscXDocument, ByRef bSkip As Boolean)
+   Dim P As Long, Page As CscCDocPage, Temp As CscXDocument, SeparationValue As String, Previous As String
+   For P=0 To pXDoc.CDoc.Pages.Count-1
+      Set Page=pXDoc.CDoc.Pages(P)
+      Set Temp=New CscXDocument
+      Temp.CopyPages(pXDoc,P,1)
+      Project.ClassByName("separation").Extract(Temp)
+      SeparationValue=Temp.Fields.ItemByName("separation").Text
+      If SeparationValue <>"" Then
+         If SeparationValue<>Previous Then Page.SplitPage=True
+         Previous=SeparationValue
+      End If
+      Set Temp=Nothing
+   Next
+   bSkip=True ' Don't run Document_SeparateCurrentPage. Document_AfterSeparatePages will still run
+End Sub
 ````
 
 
