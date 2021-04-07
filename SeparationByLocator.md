@@ -49,8 +49,13 @@ Some locators find ALL results on all pages. We can call these locator ONCE for 
 * Select all documents (CTRL-A) and Press F5 to classify all your documents (in KTA you can press F6 to Extract with the current class). This is to ensure that each document is classified to the correct class.
 * Assign all of your documents to the correct class as well.
 * Save your documents
-* Convert it to a benchmark set
-* You now see that the separation benchmark is runable. You can click it and see that your documents are not separated.
+* Convert it to a benchmark set  
+![image](https://user-images.githubusercontent.com/47416964/113844941-4a747700-9795-11eb-9f09-5126c63c408b.png)
+* You now see that the separation benchmark is runable.  
+![image](https://user-images.githubusercontent.com/47416964/113845046-61b36480-9795-11eb-9a93-78ee18ada45c.png)
+* Run the benchmark and see that your documents are not separated.
+![image](https://user-images.githubusercontent.com/47416964/113845194-89a2c800-9795-11eb-9a43-2c16ed5977bd.png)
+
 * Add your separation locator to the **separation** class. For the example it is a format locator looking for a single digit **\d**
 * Add the script below.
 * Run the separation benchmark
