@@ -18,12 +18,12 @@ The Document is not actually split until AFTER **Document_AfterSeparatePages** h
 
 # Two Strategies
 The attached sample set contains 11 pages that contain single numbers on most pages.  
-**1,1,2,3, ,4, ,4,5,5,5**  
-These need to be separated into 5 documents  
-**1-1,2,3- ,4- -4,5-5-5**  
-The separation locator finds nothing on page 2 of document 3 and page 2 of document 4.   
-Document 4 contains a blank page in the middle. The most complicated part of the script is ensuring that page 3 of document 4 is part of the preceding document. 
-We cannot use the simplistic strategy *make a new document if the locator has a different value than the previous page*. We need to deal with blank pages.    
+**1, ,1,2,3, ,4,5,6,5,5**  
+These need to be separated into 6 documents  
+**1- -1,2,3- ,4,5,6-6-6**  
+The separation locator finds nothing on page 2 of document 1 and page 2 of document 3.   
+Document 1 contains a blank page in the middle. The most complicated part of the script is ensuring that page 3 of document 1 remains part of the document.  
+We cannot use the simplistic strategy *make a new document if the locator has a different value than the previous page*. We need to look before the blank pages.    
 
 Some locators find only ONE result and then stop. We need to call these locators for each page.
 * database locator
@@ -39,6 +39,13 @@ Some locators find ALL results on all pages. We can call these locator ONCE for 
 * barcode locator  
 
 # Strategy 1. Call a separation locator for each page.
+* Right-click on your desired class and select **Default Classification Result**  
+![image](https://user-images.githubusercontent.com/47416964/113843239-b35aef80-9793-11eb-9f7e-4be06e06d06c.png)
+
+* Create a class called **separation** to hold your separation locator(s)
+* Disable "Valid classification result" and "Available for manual classification". This class will only be used by your script, you don't want it to be used for classification nor seen by the validation users.  
+![image](https://user-images.githubusercontent.com/47416964/113843019-88709b80-9793-11eb-8ed9-ae7b95d786a4.png)
+
 
 
 # Strategy 2. Call a separation locator for the entire document.
