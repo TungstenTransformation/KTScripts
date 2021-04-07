@@ -40,7 +40,7 @@ Some locators find ALL results on all pages. We can call these locator ONCE for 
 
 # Strategy 1. Call a separation locator for each page.
 * Right-click on your desired class and select **Default Classification Result**. Every document will be classified to this class.    
-![image](https://user-images.githubusercontent.com/47416964/113843239-b35aef80-9793-11eb-9f7e-4be06e06d06c.png)
+![image](https://user-images.githubusercontent.com/47416964/113844449-c5895d80-9794-11eb-9906-2422e80d1f22.png)  
 * Create a class called **separation** to hold your separation locator(s)
 * Disable "Valid classification result" and "Available for manual classification". This class will only be used by your script, you don't want it to be used for classification nor seen by the validation users.  
 ![image](https://user-images.githubusercontent.com/47416964/113843019-88709b80-9793-11eb-8ed9-ae7b95d786a4.png)
