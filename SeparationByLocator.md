@@ -39,13 +39,24 @@ Some locators find ALL results on all pages. We can call these locator ONCE for 
 * barcode locator  
 
 # Strategy 1. Call a separation locator for each page.
-* Right-click on your desired class and select **Default Classification Result**  
+* Right-click on your desired class and select **Default Classification Result**. Every document will be classified to this class.    
 ![image](https://user-images.githubusercontent.com/47416964/113843239-b35aef80-9793-11eb-9f7e-4be06e06d06c.png)
-
 * Create a class called **separation** to hold your separation locator(s)
 * Disable "Valid classification result" and "Available for manual classification". This class will only be used by your script, you don't want it to be used for classification nor seen by the validation users.  
 ![image](https://user-images.githubusercontent.com/47416964/113843019-88709b80-9793-11eb-8ed9-ae7b95d786a4.png)
-
+* Load the document set
+* You can use the Edit Menu to split and merge pages into the documents as needed.
+* Select all documents (CTRL-A) and Press F5 to classify all your documents (in KTA you can press F6 to Extract with the current class). This is to ensure that each document is classified to the correct class.
+* Assign all of your documents to the correct class as well.
+* Save your documents
+* Convert it to a benchmark set
+* You now see that the separation benchmark is runable. You can click it and see that your documents are not separated.
+* Add your separation locator to the **separation** class. For the example it is a format locator looking for a single digit **\d**
+* Add the script below.
+* Run the separation benchmark
+```vb
+TODO: separation script with locator for each page. No global variables.
+````
 
 
 # Strategy 2. Call a separation locator for the entire document.
