@@ -50,7 +50,7 @@ Some locators find ALL results on all pages. We can call these locator ONCE for 
 * Assign all of your documents to the correct class as well.
 * Save your documents
 * Convert it to a benchmark set  
-![image](https://user-images.githubusercontent.com/47416964/113844941-4a747700-9795-11eb-9f09-5126c63c408b.png)
+![image](https://user-images.githubusercontent.com/47416964/113845349-b2c35880-9795-11eb-9094-dcf2d7645907.png)
 * You now see that the separation benchmark is runable.  
 ![image](https://user-images.githubusercontent.com/47416964/113845046-61b36480-9795-11eb-9a93-78ee18ada45c.png)
 * Run the benchmark and see that your documents are not separated.
