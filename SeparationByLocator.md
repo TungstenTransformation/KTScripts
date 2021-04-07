@@ -19,7 +19,8 @@ The Document is not actually split until AFTER **Document_AfterSeparatePages** h
 # Two Strategies
 Some locators find ALL results on all pages. We can call these locator ONCE for all pages.
 * format locator
-* barcode locator
+* barcode locator  
+
 Some locators find only ONE result and then stop. We need to call these locators for each page.
 * database locator
 * trainable group locators
@@ -32,6 +33,36 @@ Some locators find only ONE result and then stop. We need to call these locators
 # Strategy 1. Call a separation locator for each page.
 The attached sample set contains pages that contain single numbers on each page.  
 **1,1,2,3,4, ,4,5,5,5**  
-These need to be separated into documents
-**1-1,2,3,4- -4,5-5-5**
+These need to be separated into documents  
+**1-1,2,3,4- -4,5-5-5**  
 Document 4 contains a blank page in the middle. The most complicated part of the script is ensuring that page 3 of document 4 is part of the preceding document.
+
+# Strategy 2. Call a separation locator for the entire document.
+*problem: This script makes page 3 of document 4 a new document*
+```vb
+Private Sub Document_BeforeSeparatePages(ByVal pXDoc As CASCADELib.CscXDocument, ByRef bSkip As Boolean)
+   'Build an array of numbers for each page
+   Dim A As Long, Alt As CscXDocFieldAlternative, Alts As CscXDocFieldAlternatives
+   ReDim Numbers(pXDoc.Pages.Count-1)
+   Project.RootClass.Extract(pXDoc)
+   Set Alts=pXDoc.Locators.ItemByName("FL_Number").Alternatives
+   For  A=0 To Alts.Count-1
+      Set Alt=Alts(A)
+      If Alt.Confidence>0.8 Then Numbers(Alt.PageIndex)=Alt.Text
+   Next
+End Sub
+
+Private Sub Document_SeparateCurrentPage(pXDoc As CASCADELib.CscXDocument, ByVal PageNr As Long, bSplitPage As Boolean, RemainingPages As Long)
+   'This keeps handing you the parent document over and over with a new pagenr. This pXDoc is not actually split, but pages are
+   'copied out of it into the new "real" xdocuments
+   If PageNr=0 Then ' this is to prevent the array lookup looking for -1, and we never split the first page anyway
+      bSplitPage= False
+   ElseIf Numbers(PageNr)="" Then ' current page has no number so part of previous document
+      bSplitPage= False
+   ElseIf Numbers(PageNr)=Numbers(PageNr-1) Then ' same number = same document
+      bSplitPage=False
+   Else
+      bSplitPage=True  ' current page has a different number than previous page, so new document
+   End If
+End Sub
+```
