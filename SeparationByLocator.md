@@ -17,9 +17,13 @@ if you ignore **RemainingPages**, then the same event will be called for the nex
 The Document is not actually split until AFTER **Document_AfterSeparatePages** has run. This is your last chance to change pXDoc.CDoc.Pages(PageNr).SplitPage for each page.
 
 # Two Strategies
-Some locators find ALL results on all pages. We can call these locator ONCE for all pages.
-* format locator
-* barcode locator  
+The attached sample set contains 11 pages that contain single numbers on most pages.  
+**1,1,2,3, ,4, ,4,5,5,5**  
+These need to be separated into 5 documents  
+**1-1,2,3- ,4- -4,5-5-5**  
+The separation locator finds nothing on page 2 of document 3 and page 2 of document 4.   
+Document 4 contains a blank page in the middle. The most complicated part of the script is ensuring that page 3 of document 4 is part of the preceding document. 
+We cannot use the simplistic strategy *make a new document if the locator has a different value than the previous page*. We need to deal with blank pages.    
 
 Some locators find only ONE result and then stop. We need to call these locators for each page.
 * database locator
@@ -30,12 +34,12 @@ Some locators find only ONE result and then stop. We need to call these locators
 * Vendor Locator
 * Sentiment Locator
 
+Some locators find ALL results on all pages. We can call these locator ONCE for all pages.
+* format locator
+* barcode locator  
+
 # Strategy 1. Call a separation locator for each page.
-The attached sample set contains pages that contain single numbers on each page.  
-**1,1,2,3,4, ,4,5,5,5**  
-These need to be separated into documents  
-**1-1,2,3,4- -4,5-5-5**  
-Document 4 contains a blank page in the middle. The most complicated part of the script is ensuring that page 3 of document 4 is part of the preceding document.
+
 
 # Strategy 2. Call a separation locator for the entire document.
 *problem: This script makes page 3 of document 4 a new document*
