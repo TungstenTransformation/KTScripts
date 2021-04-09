@@ -1,29 +1,31 @@
+
 # Separation By Locator
-This script will assume that every document is classified to the same class, and that a locator is used to find out where to separate the document.  
+This script will assume that every document is classified to the same class, and that a locator is used to find out where to separate the documents.  
 **Trainable Document Separation** is not used. This is a customization of **Standard Document Separation**.    
 ![image](https://user-images.githubusercontent.com/47416964/113839226-ca97de00-978f-11eb-959c-ac4e977d2c85.png)
 
 KT provides three events that can be used for custom [Document Separation](https://docshield.kofax.com/KTT/en_US/6.3.0-v15o2fs281/help/SCRIPT/ScriptDocumentation/c_StandardDocumentSeparation.html)
+All of these events are run before the document is really split. All the Events do is provide you convenient opportunities to set CDoc.Pages(P).SplitPage to **true** or leave it at **false**.
 * **Document_BeforeSeparatePages**(ByVal pXDoc As CASCADELib.CscXDocument, ByRef bSkip As Boolean) 
 *This event provides you with the entire batch of pages as a single document*  
-If you set bSkip=true then no separation will occur and  Document_SeparateCurrentPage will not be called.  
+*If you set bSkip=true then **Document_SeparateCurrentPage** will not be called for each page.   **Document_SeparateCurrentPage** will always be called.*
 
 * **Document_SeparateCurrentPage**(pXDoc As CASCADELib.CscXDocument, ByVal PageNr As Long, bSplitPage As Boolean, RemainingPages As Long)  
 *This event is called for every single page and provides you with the "batch of pages" and a pointer to the current page.*  
-All this script does is set pXDoc.CDoc.Pages(PageNr).SplitPage=bSplitPage.  
+All this script does is set pXDoc.CDoc.Pages(PageNr).SplitPage=bSplitPage and skip pages based on **RemainingPages**.  
 If you set bSplitPage=true, then this page will become the first page of a new document.  
 if you ignore **RemainingPages**, then the same event will be called for the next page.
 * **Document_AfterSeparatePages**(ByVal pXDoc As CASCADELib.CscXDocument)  
-The Document is not actually split until AFTER **Document_AfterSeparatePages** has run. This is your last chance to change pXDoc.CDoc.Pages(PageNr).SplitPage for each page.
+The Document will be split AFTER **Document_AfterSeparatePages** has run. This is your last chance to change **pXDoc.CDoc.Pages(PageNr).SplitPage** for each page. This event is mainly used as an opportunity to change what  **Trainable Document Separation** or **Standard Document Separation** suggest.
 
-# Two Strategies
+# Sample Documents
 The attached sample set contains 11 pages that contain single numbers on most pages.  
 **1, ,1,2,3, ,4,5,6,5,5**  
 These need to be separated into 6 documents  
 **1- -1,2,3- ,4,5,6-6-6**  
 The separation locator finds nothing on page 2 of document 1 and page 2 of document 3.   
-Document 1 contains a blank page in the middle. The most complicated part of the script is ensuring that page 3 of document 1 remains part of the document.  
-We cannot use the simplistic strategy *make a new document if the locator has a different value than the previous page*. We need to look before the blank pages.    
+Document 1 contains a blank page in the middle. The most complicated thing to do is to ensure that page 3 of document 1 remains part of the document 1 and doesn't become its own document.  
+We cannot use the simplistic strategy *make a new document if the locator has a different value than the previous page*. We need to look at the locator value from before the blank pages.    
 
 Some locators find only ONE result and then stop. We need to call these locators for each page.
 * database locator
@@ -38,7 +40,7 @@ Some locators find ALL results on all pages. We can call these locator ONCE for 
 * format locator
 * barcode locator  
 
-# Strategy 1. Call a separation locator for each page.
+# Strategy 1. Call a separation locator for the entire document.
 * Right-click on your desired class and select **Default Classification Result**. Every document will be classified to this class.    
 ![image](https://user-images.githubusercontent.com/47416964/113844449-c5895d80-9794-11eb-9906-2422e80d1f22.png)  
 * Create a class called **separation** to hold your separation locator(s)
@@ -79,7 +81,7 @@ End Sub
 ````
 
 
-# Strategy 2. Call a separation locator for the entire document.
+# Strategy 2. Call a separation locator for each page.
 *problem: This script makes page 3 of document 4 a new document*
 ```vb
 Private Sub Document_BeforeSeparatePages(ByVal pXDoc As CASCADELib.CscXDocument, ByRef bSkip As Boolean)
