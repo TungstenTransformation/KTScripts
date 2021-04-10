@@ -19,14 +19,15 @@ if you ignore **RemainingPages**, then the same event will be called for the nex
 The Document will be split AFTER **Document_AfterSeparatePages** has run. This is your last chance to change **pXDoc.CDoc.Pages(PageNr).SplitPage** for each page. This event is mainly used as an opportunity to change what  **Trainable Document Separation** or **Standard Document Separation** suggest.
 
 # Sample Documents
-The attached sample set contains 11 pages that contain single numbers on most pages.  
-**1, ,1,2,3, ,4,5,6,5,5**  
+The attached sample set contains 11 pages that are very simple: they contain only 1 digit on them, and 2 of them are blank. 
+**1,_,1,2,3,_,4,5,6,5,5**  
 These need to be separated into 6 documents  
-**1- -1,2,3- ,4,5,6-6-6**  
-The separation locator finds nothing on page 2 of document 1 and page 2 of document 3.   
-Document 1 contains a blank page in the middle. The most complicated thing to do is to ensure that page 3 of document 1 remains part of the document 1 and doesn't become its own document.  
-We cannot use the simplistic strategy *make a new document if the locator has a different value than the previous page*. We need to look at the locator value from before the blank pages.    
+**1-_-1, 2, 3-_, 4, 5, 6-6-6**  
+Page 2 of document 1 and page 2 of document 3 are completely blank.
+The most complicated thing to do is to ensure that page 3 of document 1 remains part of the document 1 and doesn't become its own document.  
+We cannot use the simplistic strategy *make a new document if the locator has a different value than the previous page*. We need to look at the locator value from before the blank pages. 
 
+# Two Strategies
 Some locators find only ONE result and then stop. We need to call these locators for each page.
 * database locator
 * trainable group locators
@@ -34,34 +35,34 @@ Some locators find only ONE result and then stop. We need to call these locators
 * zone locator
 * Address Locator
 * Vendor Locator
-* Sentiment Locator
-
+* Sentiment Locator  
 Some locators find ALL results on all pages. We can call these locator ONCE for all pages.
 * format locator
 * barcode locator  
 
-# Strategy 1. Call a separation locator for the entire document.
+# Strategy 1. Call a separation locator once for all pages.
 * Right-click on your desired class and select **Default Classification Result**. Every document will be classified to this class.    
-![image](https://user-images.githubusercontent.com/47416964/113844449-c5895d80-9794-11eb-9906-2422e80d1f22.png)  
-* Create a class called **separation** to hold your separation locator(s)
+![image](https://user-images.githubusercontent.com/47416964/113844449-c5895d80-9794-11eb-9906-2422e80d1f22.png)    * Create a class called **separation** to hold your separation locator(s)
 * Disable "Valid classification result" and "Available for manual classification". This class will only be used by your script, you don't want it to be used for classification nor seen by the validation users.  
-![image](https://user-images.githubusercontent.com/47416964/113843019-88709b80-9793-11eb-8ed9-ae7b95d786a4.png)
-* Load the document set
-* You can use the Edit Menu to split and merge pages into the documents as needed.
-* Select all documents (CTRL-A) and Press F5 to classify all your documents (in KTA you can press F6 to Extract with the current class). This is to ensure that each document is classified to the correct class.
-* Assign all of your documents to the correct class as well.
-* Save your documents
+![image](https://user-images.githubusercontent.com/47416964/113843019-88709b80-9793-11eb-8ed9-ae7b95d786a4.png)* Add a field **separation** to the **separation** class.
+![image](https://user-images.githubusercontent.com/47416964/114250798-313f1680-999f-11eb-8ce7-3304dd98f4a1.png)
+* Load the document set and switch to **Hierarchy View**  
+![image](https://user-images.githubusercontent.com/47416964/114250861-60558800-999f-11eb-9fac-923b6d86a20e.png)
+* You can use the right-click **Edit Menu** to split and merge pages into the documents as needed.  
+![image](https://user-images.githubusercontent.com/47416964/114250895-7d8a5680-999f-11eb-9fd2-8e98fe670cc1.png)
+* Select all documents (CTRL-A) and Press F5 to classify all your documents (in KTA you can press F6 to Extract with the currently selected class). This is to ensure that each document is classified to the correct class.
+* **Assign** all of your documents to the correct class as well.
+* **Save** your documents  
+![image](https://user-images.githubusercontent.com/47416964/114250994-cfcb7780-999f-11eb-98ef-f18460cf9b3a.png)
 * Convert it to a benchmark set  
 ![image](https://user-images.githubusercontent.com/47416964/113845349-b2c35880-9795-11eb-9094-dcf2d7645907.png)
-* You now see that the separation benchmark is runable.  
+* You now see that the separation benchmark is available.  
 ![image](https://user-images.githubusercontent.com/47416964/113845046-61b36480-9795-11eb-9a93-78ee18ada45c.png)
 * Run the benchmark and see that your documents are not separated.
 ![image](https://user-images.githubusercontent.com/47416964/113845194-89a2c800-9795-11eb-9a43-2c16ed5977bd.png)
-
-* Add your separation locator to the **separation** class. For the example it is a format locator looking for a single digit **\d**
-* Add the script below.
-* Run the separation benchmark
-```vb
+* Add your separation locator(s) to the **separation** class. For the example documents it is a format locator looking for a single digit **\d**
+* Add the script below to the Project Class. It will mark a page for splitting if the locator returns a different value than the previous page that contained a value (i.e. blank pages are just added to the the current document)
+ ```vb
 Private Sub Document_BeforeSeparatePages(ByVal pXDoc As CASCADELib.CscXDocument, ByRef bSkip As Boolean)
    Dim P As Long, Page As CscCDocPage, Temp As CscXDocument, SeparationValue As String, Previous As String
    For P=0 To pXDoc.CDoc.Pages.Count-1
@@ -79,6 +80,8 @@ Private Sub Document_BeforeSeparatePages(ByVal pXDoc As CASCADELib.CscXDocument,
    bSkip=True ' Don't run Document_SeparateCurrentPage. Document_AfterSeparatePages will still run
 End Sub
 ````
+* Run the separation benchmark and you will see correct separation.  
+![image](https://user-images.githubusercontent.com/47416964/114251084-0bfed800-99a0-11eb-8ae9-e8f156232709.png)
 
 
 # Strategy 2. Call a separation locator for each page.
