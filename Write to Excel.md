@@ -25,9 +25,9 @@ Private Sub Batch_Close(ByVal pXRootFolder As CASCADELib.CscXFolder, ByVal Close
       FileName=ParentFolder & Mid(FileName,InStrRev(FileName,"\")+1)
    Wend
    Set ExcelApp = New Excel.Application 'Load Golden Data into array Truth
-   ExcelApp.Visible=False
+   ExcelApp.Visible=False 'Stop Excel updating the screen on changes until all changes are made. This makes the script 100s of times faster
    Set wb=ExcelApp.Workbooks.Open(FileName)
-   Set ws=wb.Worksheets.Item(pXRootFolder.DocInfos(0).ExtractionClass)
+   Set ws=wb.Worksheets.Item(pXRootFolder.DocInfos(0).ExtractionClass) 'find the Excel Sheet with the same name as the KT Class name.
    With ws.Range("A1").CurrentRegion
       ReDim Truth(.Rows.Count,.Columns.Count)
       ReDim CharScores(.Columns.Count)
