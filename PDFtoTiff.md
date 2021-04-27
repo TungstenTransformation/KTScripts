@@ -30,7 +30,7 @@ This script converts the PDFs into TIFF images and gives these benefits
 
 
 # The script function does the following
-* Create a single-page TIFF image for each page. (Kofax Capture, KTM and KTA all prefer to work with single page TIFFS. Export connectors can merge them to mulit-page tiffs if needed)
+* Create a single-page TIFF image for each page. (Kofax Capture, KTM and KTA all prefer to work with single page TIFFS. Export connectors can merge them to multi-page tiffs if needed)
 * Optionally perform basic VRS on the image.
 * Replace each page in the XDoc with the TIFF pages.
 * Preserve the PDF Text layer to avoid performing OCR.
