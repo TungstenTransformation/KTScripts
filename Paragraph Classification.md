@@ -24,7 +24,7 @@ When you perform page-level OCR, the paragraphs are detected and added to the XD
 
 ![](https://user-images.githubusercontent.com/47416964/122933611-16a9f600-d36f-11eb-9afd-d3eaf3c33ab5.png)
 
-You will need to use a script to process them.
+At the bottom of this document is a script to copy paragraphs into a Table Locator.
 
 ![image](https://user-images.githubusercontent.com/47416964/91288142-ec100080-e790-11ea-9565-1e6bc443513a.png)
 
@@ -164,6 +164,32 @@ Next
 If Result="" Then Return Result
 Return Left(Result,Len(Result)-2)
 End Function
+```
+
+```vbnet
+Private Sub Document_AfterLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal LocatorName As String)
+   'Customize a Table Locator to show all the paragraphs of a document
+   Select Case LocatorName
+   Case "TL_Paragraphs"
+      Table_LoadParagraphs(pXDoc.Locators.ItemByName(LocatorName).Alternatives(0).Table,pXDoc, 0)
+   End Select
+
+End Sub
+
+Private Sub Table_LoadParagraphs(Table As CscXDocTable, pXDoc As CscXDocument, ColumnNumber As Long)
+   'Copy all paragraphs of a document into a column of a table
+   Dim P As Long, Paragraphs As CscXDocParagraphs, Words As CscXDocWords, W As Long, Row As CscXDocTableRow
+   Table.Rows.Clear
+   Set Paragraphs=pXDoc.Representations(0).Paragraphs
+   For P=0 To Paragraphs.Count-1
+      Set Words=Paragraphs(P).Words
+      'The entire text of the Paragraph is in Words.Text You can use this text to decide which paragraphs to put in the table, eg by classifying them using the function above String_Classify
+      Set Row=Table.Rows.Append
+      For W=0 To Words.Count-1
+         Row.Cells(ColumnNumber).AddWordData(Words(W))
+      Next
+   Next
+End Sub
 ```
 
 ````vbnet
