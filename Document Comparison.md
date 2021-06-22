@@ -1,6 +1,6 @@
 # Document Comparison
 
-This script compares a document with another document and shows all differences in a table list, where they can be accepted or rejected.  
+This script compares a document with another document and shows all differences in a table list, where they can be accepted or rejected.  This supports documents of any length and efficiently finds all the differences.  
 The results are shown in a table. You can see the deletions are shown with *-DEL-* and insertions with *-INS-*.
 The new document is marked as valid and the original is read-only. The user only has to confirm a result by pressing ENTER and rejecting by pressing SPACE and ENTER.  
 ![image](https://user-images.githubusercontent.com/47416964/90763659-5cc5a180-e2e7-11ea-8451-01e65b69448a.png)  
