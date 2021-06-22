@@ -1,7 +1,7 @@
 # Paragraph Classification
 
 NOTE!! This has now become part of Kofax Transformation Modules 10.4 in November 2020. Many features presented below are no longer required.  
-Please read the [new version](Paragraph Classification.md).
+Please read the [new version](Paragraph%20Classification.md).
 
 Sometimes it is useful to classify individual paragraphs in a document
 * You are looking for paragraphs in a document with a particular vocab or sentiment.
