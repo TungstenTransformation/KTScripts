@@ -2,7 +2,7 @@
 
 This script compares a document with another document and shows all differences in a table list, where they can be accepted or rejected.  
 The results are shown in a table. You can see the deletions are shown with *-DEL-* and insertions with *-INS-*.
-The new document is marked as valid and the orignal is read-only. The user only has to confirm a result by pressing ENTER and rejecting by pressing SPACE and ENTER.  
+The new document is marked as valid and the original is read-only. The user only has to confirm a result by pressing ENTER and rejecting by pressing SPACE and ENTER.  
 ![image](https://user-images.githubusercontent.com/47416964/90763659-5cc5a180-e2e7-11ea-8451-01e65b69448a.png)  
 This simple example is only showing mistmatches. You can adjust to show more word context for each documen, but if you click or tab onto the Document Text, then the document image will scroll to show the document.  
 The script is fast and will find the optimal match - if the documents are very similar the match is even faster.  
