@@ -1,4 +1,4 @@
-# Paragraph Classification
+# Paragraph Classification (Previous to KTM 10.4)
 
 NOTE!! This has now become part of Kofax Transformation Modules 10.4 in November 2020. Many features presented below are no longer required.  
 Please read the [new version](Paragraph%20Classification.md).
