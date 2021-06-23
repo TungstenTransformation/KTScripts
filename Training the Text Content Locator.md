@@ -130,9 +130,13 @@ You are now ready to run the first benchmark and see the zero results. After tra
 ![image](https://user-images.githubusercontent.com/47416964/123104479-445a7200-d437-11eb-994a-85ce3b66ceef.png)  
 1. Open the **Extraction Benchmark** from the View Menu and press **Start**
 ![image](https://user-images.githubusercontent.com/47416964/123104565-5b00c900-d437-11eb-96ec-6c836007f92d.png)
-1. We have perfect results because that **Document_AfterExtract** is still in the script!!  
+1. You have perfect results because that **Document_AfterExtract** is still in the script!!  
 ![image](https://user-images.githubusercontent.com/47416964/123104917-a87d3600-d437-11eb-91c6-4475c766847e.png)
-2. 
+2. Remove the **Document_AfterExtract** from the script and re-run the Extraction Benchmark.  Here you will see that there are no results, and that the project has 100% [false negatives](https://en.wikipedia.org/wiki/False_positives_and_false_negatives) (yellow).  
+![image](https://user-images.githubusercontent.com/47416964/123105088-cba7e580-d437-11eb-805f-85b4f39e15f8.png)
+3. Drag all of your documents to the **Extract Set** to train them.  
+![image](https://user-images.githubusercontent.com/47416964/123105407-14f83500-d438-11eb-8fc8-1b7b07caec17.png)
+3. 
 
 
 
