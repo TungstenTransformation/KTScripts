@@ -59,7 +59,7 @@ End Sub
 ![image](https://user-images.githubusercontent.com/47416964/123090547-9051ea80-d428-11eb-881e-c6adcabf6e1a.png)  
 ![image](https://user-images.githubusercontent.com/47416964/123090584-9ba51600-d428-11eb-842d-931decf8cfb5.png)  
 
-##Import the Truth into the Documents
+## Import the Truth into the Documents
 *We will now load the Person and Amount values into the XDoc Fields. It is important that we also find the correct word id's in the document so that the Text Content Locator can see the context of the values to be trained*
 1. Copy the **Amount** and **Person** columns from Excel into a Text File and save it as "C:\temp\moneytransfers\truth.txt"  
 ![image](https://user-images.githubusercontent.com/47416964/123091602-da879b80-d429-11eb-8d77-d695e6bb05fe.png)
@@ -75,13 +75,18 @@ Option Explicit
 
 Private Sub Document_AfterExtract(ByVal pXDoc As CASCADELib.CscXDocument)
    Dim Textline As String, Values() As String, I As Long, FileId As Long, Word As CscXDocWord, FieldNames() As String, W As Long
-   Dim StartWord As CscXDocWord, LastWord As CscXDocWord, F As Long, Field As CscXDocField
-   If pXDoc.CDoc.SourceFiles(0).FileType="TEXT" Then ' Training files in KT need to be an image or pdf file.
-      pXDoc.ReplacePageSourceFile("c:\temp\moneytransfer\1x1.png","TIFF",0,0) ' "TIFF" is also used for PNG files.
+   Dim StartWord As CscXDocWord, LastWord As CscXDocWord, F As Long, Field As CscXDocField, Path As String, ImageName As String
+   Path="c:\temp\moneytransfer\"
+   'Add an image to the file if it is still a text file. To Train the TCL an xdoc must be image-based and not text-based
+   If pXDoc.CDoc.SourceFiles(0).FileType="TEXT" Then
+      ImageName=Replace(pXDoc.FileName, ".xdc",".png")
+      FileCopy Path & "1x1.png", ImageName
+      pXDoc.ReplacePageSourceFile(ImageName,"TIFF",0,0)
    End If
+
    'Convert the XDocument Filename "moneytransfer\0007.xdc" to 7.
    FileId=CLng(Replace(Mid(pXDoc.FileName,InStrRev(pXDoc.FileName,"\")+1),".xdc",""))
-   Open "c:\temp\moneytransfer\truth.txt" For Input As #1
+   Open Path & "truth.txt" For Input As #1
    Line Input #1, Textline
    'the first line of the truth file has the field names
    FieldNames=Split(Textline,vbTab)
@@ -118,7 +123,9 @@ Sub Phrase_FindInWords(searchText As String ,Words As CscXDocWords,ByRef StartWo
    Set LastWord=Words(W+UBound(Split(searchText," ")))
 End Sub
 ```
-1. Select your documents and **Extract (F6)**. You will see the correct values in the Extraction results with confidence=100%, a green check mark and in the document window
+1. Press the **Reload Document Set** icon so that Project Builder sees that these are image files and not text files. The document icon is no longer a letter "A".
+![image](https://user-images.githubusercontent.com/47416964/123135180-cb1c4880-d451-11eb-9450-c4db2514a56a.png)
+3. Select your documents and **Extract (F6)**. You will see the correct values in the Extraction results with confidence=100%, a green check mark and in the document window
 ![image](https://user-images.githubusercontent.com/47416964/123102044-f04e8e00-d434-11eb-8970-23d1d969837f.png)  
 1. If there is an error in your data, the script will crash with an error message. Correct your text file and try again.  
 *In this example I had "Erich" in the text, but was looking for "Erick".*  
