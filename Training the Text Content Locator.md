@@ -5,7 +5,7 @@ The [**Text Content Locator**](https://docshield.kofax.com/KTT/en_US/6.3.0-v15o2
 
 *   purely text based and does not use any word coordinates.
 *   the only locator that ignores line-wrapping.
-*   requires training from many documents.
+*   requires training from many documents. You should have many hundreds if not thousands of documents.  
 *   can be trained to find any values in the text. The Text Content Locator internally [tokenizes](https://www.analyticsvidhya.com/blog/2020/05/what-is-tokenization-nlp/) the text and then extracts any values you have trained for. The Named Entity Locator looks for specific Named Entities amongst the tokens.
 
 This guide will assume that you have an Excel file with the following format, where the exact text is in one cell and the exact values (**Amount** and **Person**) perfectly match the text. _It is VERY important that the spelling of the field values **perfectly** matches the spelling in the text, because the Text Content Locator needs to learn the context of each value. For example "600$" is directly before the word "Stone" and two words before "Rob"._
@@ -42,4 +42,20 @@ End Sub
 1. Your training files have now been created.  
 ![image](https://user-images.githubusercontent.com/47416964/123088977-abbbf600-d426-11eb-99b2-b9d02fb99e2a.png)
 ## Import the Text Files into Kofax Transformation
-1. Create a project in Kofax Transformation Project Builder
+1. Create a project in Kofax Transformation Project Builder.
+2. Add a class called **moneytransfer** and add the Fields **Person** and **Amount**.
+3. Add a Text Content Locator with Subfields **Person** and **Amount**.  
+![image](https://user-images.githubusercontent.com/47416964/123089625-7b288c00-d427-11eb-8333-f10cd27d85a7.png)
+1. Assign the Locator Subfields to the fields.  
+![image](https://user-images.githubusercontent.com/47416964/123089706-94313d00-d427-11eb-9911-1cfe05955aad.png)
+1. Import the Text Files by selecting **Text Files** as the Source Files.  
+![image](https://user-images.githubusercontent.com/47416964/123089825-bd51cd80-d427-11eb-9965-3d620952f492.png)
+1. Select all of your documents and assign them to the class **money transfer**.  *This will be needed for benchmarking later*
+![image](https://user-images.githubusercontent.com/47416964/123090021-f25e2000-d427-11eb-9d04-39ebd5e268ef.png)
+1. Select all of your documents and **Extract (F6)** them. *This will assign fields to all of the documents. You will see that they contain no values at 0%. This is because the Text Content Locator has found nothing.  
+![image](https://user-images.githubusercontent.com/47416964/123090274-3fda8d00-d428-11eb-800f-e419c0ca1045.png)
+
+
+
+
+
