@@ -50,10 +50,26 @@ End Sub
 ![image](https://user-images.githubusercontent.com/47416964/123089706-94313d00-d427-11eb-9911-1cfe05955aad.png)
 1. Import the Text Files by selecting **Text Files** as the Source Files.  
 ![image](https://user-images.githubusercontent.com/47416964/123089825-bd51cd80-d427-11eb-9965-3d620952f492.png)
-1. Select all of your documents and assign them to the class **money transfer**.  *This will be needed for benchmarking later*
+1. Select all of your documents and assign them to the class **money transfer**.  *This will be needed for benchmarking later.*
 ![image](https://user-images.githubusercontent.com/47416964/123090021-f25e2000-d427-11eb-9d04-39ebd5e268ef.png)
-1. Select all of your documents and **Extract (F6)** them. *This will assign fields to all of the documents. You will see that they contain no values at 0%. This is because the Text Content Locator has found nothing.  
+1. Select all of your documents and **Extract (F6)** them. *This will assign fields to all of the documents. You will see that they contain no values at 0%. This is because the Text Content Locator has found nothing.*  
 ![image](https://user-images.githubusercontent.com/47416964/123090274-3fda8d00-d428-11eb-800f-e419c0ca1045.png)
+1. Open the **Choose Details** window and select **Person**and **Amount**. You can now see all the values in the Document list.  
+![image](https://user-images.githubusercontent.com/47416964/123090521-86c88280-d428-11eb-9be3-c63205a35b88.png)  
+![image](https://user-images.githubusercontent.com/47416964/123090547-9051ea80-d428-11eb-881e-c6adcabf6e1a.png)  
+![image](https://user-images.githubusercontent.com/47416964/123090584-9ba51600-d428-11eb-842d-931decf8cfb5.png)  
+
+##Import the Truth into the Documents
+*We will now load the Person and Amount values into the XDoc Fields. It is important that we also find the correct word id's in the document so that the Text Content Locator can see the context of the values to be trained*
+1. Copy the **Amount** and **Person** columns from Excel into a Text File and save it as "C:\temp\moneytransfers\truth.txt"  
+![image](https://user-images.githubusercontent.com/47416964/123091602-da879b80-d429-11eb-8d77-d695e6bb05fe.png)
+1. Add the following script to **Document_AfterExtract** in the class **moneytransfer** 
+*(The script event **Document_AfterExtract** is often misused to set field values in projects. This should normally be done in a script locator. However in this case we need to use **Document_AfterExtract** for the following reasons)*
+* We don't want to break the connection between **Text Content Locator** and the two fields.
+* We will be training the **unformatted** amounts and so be avoiding the number formatter that your project should be using.
+* 
+
+
 
 
 
