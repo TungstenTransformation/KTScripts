@@ -63,7 +63,8 @@ End Sub
 *We will now load the Person and Amount values into the XDoc Fields. It is important that we also find the correct word id's in the document so that the Text Content Locator can see the context of the values to be trained*
 1. Copy the **Amount** and **Person** columns from Excel into a Text File and save it as "C:\temp\moneytransfers\truth.txt"  
 ![image](https://user-images.githubusercontent.com/47416964/123091602-da879b80-d429-11eb-8d77-d695e6bb05fe.png)
-1. Add the following script to **Document_AfterExtract** in the class **moneytransfer** 
+1. Download this [1 pixel image](1x1.png) and save it into C:\temp\moneytransfers\1x1.png". *Kofax Transformation requires that every training file contains an image*
+3. Add the following script to **Document_AfterExtract** in the class **moneytransfer** 
 *(The script event **Document_AfterExtract** is often misused to set field values in projects. This should normally be done in a script locator. However in this case we need to use **Document_AfterExtract** for the following reasons)*
 * We don't want to break the connection between **Text Content Locator** and the two fields.
 * We will be training the **unformatted** amounts and so be avoiding the number formatter that your project should be using.
@@ -75,6 +76,9 @@ Option Explicit
 Private Sub Document_AfterExtract(ByVal pXDoc As CASCADELib.CscXDocument)
    Dim Textline As String, Values() As String, I As Long, FileId As Long, Word As CscXDocWord, FieldNames() As String, W As Long
    Dim StartWord As CscXDocWord, LastWord As CscXDocWord, F As Long, Field As CscXDocField
+   If pXDoc.CDoc.SourceFiles(0).FileType="TEXT" Then ' Training files in KT need to be an image or pdf file.
+      pXDoc.ReplacePageSourceFile("c:\temp\moneytransfer\1x1.png","TIFF",0,0) ' "TIFF" is also used for PNG files.
+   End If
    'Convert the XDocument Filename "moneytransfer\0007.xdc" to 7.
    FileId=CLng(Replace(Mid(pXDoc.FileName,InStrRev(pXDoc.FileName,"\")+1),".xdc",""))
    Open "c:\temp\moneytransfer\truth.txt" For Input As #1
