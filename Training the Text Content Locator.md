@@ -112,21 +112,16 @@ You are now ready to run the first benchmark and see the zero results. After tra
 ![image](https://user-images.githubusercontent.com/47416964/123104917-a87d3600-d437-11eb-91c6-4475c766847e.png)
 2. Remove the **Document_AfterExtract** from the script and re-run the Extraction Benchmark.  Here you will see that there are no results, and that the project has 100% [false negatives](https://en.wikipedia.org/wiki/False_positives_and_false_negatives) (yellow).  
 ![image](https://user-images.githubusercontent.com/47416964/123105088-cba7e580-d437-11eb-805f-85b4f39e15f8.png)
-3. Drag all of your documents to the **Extract Set** to train them.  
+3. Drag all of your documents to the **Extract Set** to add them to the extraction training documents.  
 ![image](https://user-images.githubusercontent.com/47416964/123105407-14f83500-d438-11eb-8fc8-1b7b07caec17.png)
-3. 
-
-
-
-
-
-
-
-
-
-
-
-
+1. Click on **Extraction Set**, select all your documents, right-click and select **Use for Training** 
+![image](https://user-images.githubusercontent.com/47416964/123435730-2c692680-d5ce-11eb-833b-df005d724b7e.png)
+1. Click on **Process/Train/Extraction** on the Ribbon to train the Text Content Locator.
+![image](https://user-images.githubusercontent.com/47416964/123435821-460a6e00-d5ce-11eb-8b11-ea716a1033f5.png)
+1. Right-click on **Test Set** and select **Convert to Benchmark Set** to convert your test set into a benchmark set.  
+![image](https://user-images.githubusercontent.com/47416964/123437533-0f355780-d5d0-11eb-8aa6-bb6c59223a77.png)
+1. Run the Extraction Benchmark from Ribbon **View/Extraction Benchmark** to see the performance of the Text Content Locator.  
+![image](https://user-images.githubusercontent.com/47416964/123437635-2e33e980-d5d0-11eb-8246-92d4dbcecc18.png)
 
 
 
