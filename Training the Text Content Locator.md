@@ -25,7 +25,6 @@ This guide will assume that you have an Excel file with the following format, wh
 1.  Paste the following code. Check the starting cell "A2" and the output path "C:\\temp\\moneytransfer"  
 ```vba
 Option Explicit
-
 ' Class script: moneytransfer
 
 Private Sub Document_AfterExtract(ByVal pXDoc As CASCADELib.CscXDocument)
@@ -57,20 +56,33 @@ Private Sub Document_AfterExtract(ByVal pXDoc As CASCADELib.CscXDocument)
       Set Field=pXDoc.Fields.ItemByName(FieldNames(F))
       'find the start and last word in the text matching the value
       Phrase_FindInWords(Values(F),pXDoc.Words, StartWord, LastWord)
-      'add the entire phrase to the field. Now the fields know the word id's and the Text Locator can train
-      For W= StartWord.IndexOnDocument To LastWord.IndexOnDocument
-         Field.Words.Append(pXDoc.Words(W))
-      Next
-      Field.Confidence=1.00 ' it is the truth! so set the confidence to 100%
-      Field.ExtractionConfident=True
+      If Not StartWord Is Nothing Then
+         'add the entire phrase to the field. Now the fields know the word id's and the Text Locator can train
+         For W= StartWord.IndexOnDocument To LastWord.IndexOnDocument
+            Field.Words.Append(pXDoc.Words(W))
+         Next
+         Field.Confidence=1.00 ' it is the truth! so set the confidence to 100%
+         Field.ExtractionConfident=True
+      End If
    Next
 End Sub
 
 Sub Phrase_FindInWords(searchText As String ,Words As CscXDocWords,ByRef StartWord As CscXDocWord, ByRef LastWord As CscXDocWord)
    'Find a phrase in a longer text and return the first and last word of that phrase
-   Dim W As Long, Start As String, C As Long
-   If InStr(Words.Text,searchText)<1 Then Err.Raise(1234,,"Cannot find '" & searchText & "' in ' " & Words.Text & "'.")
-   Start=Left(Words.Text,InStr(Words.Text,searchText)-1)
+   Dim W As Long, Start As String, C As Long, Pos As Long
+   Set StartWord=Nothing
+   Set LastWord=Nothing
+   If searchText="" Then Exit Sub
+   Pos=InStr(LCase(Words.Text),LCase(searchText))
+   Select Case Pos
+   Case Is <1
+      Exit Sub 'Nothing to search for. Err.Raise(1234,,"Cannot find '" & searchText & "' in ' " & Words.Text & "'.")
+   Case 1
+      Start="" 'first word of text is a match
+   Case Else ' match found in middle of text
+      Start=Left(Words.Text,Pos-1)
+   End Select
+
    For C=1 To Len(Start)
       If Mid(Start,C,1)=" " Then W=W+1
    Next
