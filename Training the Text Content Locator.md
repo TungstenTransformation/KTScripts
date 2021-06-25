@@ -24,51 +24,6 @@ This guide will assume that you have an Excel file with the following format, wh
 ![](https://user-images.githubusercontent.com/47416964/123086578-df495100-d423-11eb-9d58-a4728cd78361.png)
 1.  Paste the following code. Check the starting cell "A2" and the output path "C:\\temp\\moneytransfer"  
 ```vba
-Sub MakeTextFiles()
-    Dim Cell As Range, I As Long
-    I = 1
-    Set Cell = ActiveSheet.Range("A2")
-    While Cell.Value <> ""
-       Open "C:\temp\moneytransfer\" & Format(I, "0000") & ".txt" For Output As #1
-       Print #1, Cell.Value
-       Close #1
-       I = I + 1
-       Set Cell = Cell.Offset(1, 0) ' Get next cell below
-    Wend
-End Sub
-```
-6.  Run the script by pressing **Play (F5)**.  
-![](https://user-images.githubusercontent.com/47416964/123088227-c5a90900-d425-11eb-84fb-5bd8d88713a1.png)
-1. Your training files have now been created.  
-![image](https://user-images.githubusercontent.com/47416964/123088977-abbbf600-d426-11eb-99b2-b9d02fb99e2a.png)
-## Import the Text Files into Kofax Transformation
-1. Create a project in Kofax Transformation Project Builder.
-2. Add a class called **moneytransfer** and add the Fields **Person** and **Amount**.
-3. Add a Text Content Locator with Subfields **Person** and **Amount**.  
-![image](https://user-images.githubusercontent.com/47416964/123089625-7b288c00-d427-11eb-8333-f10cd27d85a7.png)
-1. Assign the Locator Subfields to the fields.  
-![image](https://user-images.githubusercontent.com/47416964/123089706-94313d00-d427-11eb-9911-1cfe05955aad.png)
-1. Import the Text Files by selecting **Text Files** as the Source Files.  
-![image](https://user-images.githubusercontent.com/47416964/123089825-bd51cd80-d427-11eb-9965-3d620952f492.png)
-1. Select all of your documents and assign them to the class **money transfer**.  *This will be needed for benchmarking later.*
-![image](https://user-images.githubusercontent.com/47416964/123090021-f25e2000-d427-11eb-9d04-39ebd5e268ef.png)
-1. Select all of your documents and **Extract (F6)** them. *This will assign fields to all of the documents. You will see that they contain empty values with confidence 0%. This is because the Text Content Locator has found nothing.*  
-![image](https://user-images.githubusercontent.com/47416964/123090274-3fda8d00-d428-11eb-800f-e419c0ca1045.png)
-1. Open the **Choose Details** window and select **Person**and **Amount**. You can now see all the values in the Document list.  
-![image](https://user-images.githubusercontent.com/47416964/123090521-86c88280-d428-11eb-9be3-c63205a35b88.png)  
-![image](https://user-images.githubusercontent.com/47416964/123090547-9051ea80-d428-11eb-881e-c6adcabf6e1a.png)  
-![image](https://user-images.githubusercontent.com/47416964/123090584-9ba51600-d428-11eb-842d-931decf8cfb5.png)  
-
-## Import the Truth into the Documents
-*We will now load the Person and Amount values into the XDoc Fields. It is important that we also find the correct word id's in the document so that the Text Content Locator can see the context of the values to be trained*
-1. Copy the **Amount** and **Person** columns from Excel into a Text File and save it as "C:\temp\moneytransfers\truth.txt"  
-![image](https://user-images.githubusercontent.com/47416964/123091602-da879b80-d429-11eb-8d77-d695e6bb05fe.png)
-1. Download this [1 pixel image](1x1.png) and save it into C:\temp\moneytransfers\1x1.png". *Kofax Transformation requires that every training file contains an image*
-3. Add the following script to **Document_AfterExtract** in the class **moneytransfer** 
-*(The script event **Document_AfterExtract** is often misused to set field values in projects. This should normally be done in a script locator. However in this case we need to use **Document_AfterExtract** for the following reasons)*
-* We don't want to break the connection between **Text Content Locator** and the two fields.
-* We will be training the **unformatted** amounts and so be avoiding the number formatter that your project should be using.
-```vba
 Option Explicit
 
 ' Class script: moneytransfer
