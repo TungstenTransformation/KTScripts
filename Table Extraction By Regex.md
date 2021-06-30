@@ -48,8 +48,6 @@ End Sub
 Private Sub Table_AddRowsFromAlternatives(Table As CscXDocTable, Alts As CscXDocFieldAlternatives,Pattern As String, pXDoc As CscXDocument)
    'Add reference to Kofax Cascade Table Locator
    Dim Row As CscXDocTableRow, a As Long, Words As CscXDocWords, Cell As CscXDocTableCell, W As Long, results() As String, R As Long, c As Long
-   Dim TableLoc As CscTableLocator
-   Set TableLoc= Project.ClassByName("mizan").Locators.ItemByName("TL").LocatorMethod
    Table.Rows.Clear
    For a=0 To Alts.Count-1
       Set Words=Alts(a).Words
@@ -69,7 +67,7 @@ Private Sub Table_AddRowsFromAlternatives(Table As CscXDocTable, Alts As CscXDoc
 End Sub
 
 Function min(a,b)
-   Return IIf(a>b,a,b)
+   Return IIf(a<b,a,b)
 End Function
 
 Function String_CountSpaces(a As String) As Long
