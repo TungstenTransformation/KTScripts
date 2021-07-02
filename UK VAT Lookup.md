@@ -1,5 +1,5 @@
 # UK VAT Lookup
-This uses a UK government [webservice](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/vat-registered-companies-api/1.0#_get-a-vat-registration_get_accordion) to check a VAT Number. It may not work outside of the UK without a login.
+This Script Locator uses a UK government [webservice](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/vat-registered-companies-api/1.0#_get-a-vat-registration_get_accordion) to check a VAT Number. It may not work outside of the UK without a login.
 
 ```vb
 '#Language "WWB-COM"
