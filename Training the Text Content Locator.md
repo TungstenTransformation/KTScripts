@@ -24,6 +24,25 @@ This guide will assume that you have an Excel file with the following format, wh
 ![](https://user-images.githubusercontent.com/47416964/123086578-df495100-d423-11eb-9d58-a4728cd78361.png)
 1.  Paste the following code. Check the starting cell "A2" and the output path "C:\\temp\\moneytransfer"  
 ```vba
+Sub WriteTextFiles()
+    Dim Cell As Range, t As String
+    Set Cell = ActiveSheet.Range("e2")
+    While Cell.Text <> ""
+        If True Then 'Cell.Offset(0, 7).Value = True Then
+            Filename = "C:\Document Transformation\Projects\TCL_test\samples\sickleave2\" + Format(Cell.Row - 1, "0000") & ".txt"
+            Open Filename For Output As #1
+            Print #1, Cell.Text
+            Close #1
+        End If
+        Set Cell = Cell.Offset(1, 0)
+    Wend
+
+End Sub
+```
+2. Put the Cursor into the function and press F5 to run it. This will generate a text file for each row.
+2. Add the following script to Kofax Transformation Document Class 
+
+```vba
 '#Language "WWB-COM"
 Option Explicit
 
