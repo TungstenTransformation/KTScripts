@@ -1,4 +1,4 @@
-# Training the Text Content Locator
+# Training the Text Content Locator with Text Files
 *(This guide is compatible with KTM, KTA, RPA, KTT and RTTI.)*
 
 The [**Text Content Locator**](https://docshield.kofax.com/KTT/en_US/6.3.0-v15o2fs281/help/PB/ProjectBuilder/450_Extraction/TextContentLocator/c_TextContentLocator.html) is a [**Natural Language Processing**](https://en.wikipedia.org/wiki/Natural_language_processing) **(NLP)** locator for finding any tokens in a text. The other NLP locator in Kofax Transfromation is the Named Entity Locator, which is not trainable.
@@ -24,23 +24,23 @@ This guide will assume that you have an Excel file with the following format, wh
 ![](https://user-images.githubusercontent.com/47416964/123086578-df495100-d423-11eb-9d58-a4728cd78361.png)
 1.  Paste the following code. Check the starting cell "A2" and the output path "C:\\temp\\moneytransfer"  
 ```vba
+'#Language "WWB-COM"
 Option Explicit
-' Class script: moneytransfer
 
 Private Sub Document_AfterExtract(ByVal pXDoc As CASCADELib.CscXDocument)
-   Dim Textline As String, Values() As String, I As Long, FileId As Long, Word As CscXDocWord, FieldNames() As String, W As Long
-   Dim StartWord As CscXDocWord, LastWord As CscXDocWord, F As Long, Field As CscXDocField, Path As String, ImageName As String
-   Path="c:\temp\moneytransfer\"
-   'Add an image to the file if it is still a text file. To Train the TCL an xdoc must be image-based and not text-based
-   If pXDoc.CDoc.SourceFiles(0).FileType="TEXT" Then
-      ImageName=Replace(pXDoc.FileName, ".xdc",".png")
-      FileCopy Path & "1x1.png", ImageName
-      pXDoc.ReplacePageSourceFile(ImageName,"TIFF",0,0)
-   End If
+   XDocument_CreateImageFromText(pXDoc)
+   XDocument_LoadTruth(pXDoc)
+End Sub
 
-   'Convert the XDocument Filename "moneytransfer\0007.xdc" to 7.
+Sub XDocument_LoadTruth(pXDoc As CscXDocument)
+   Dim Textline As String, Values() As String, I As Long
+   Dim FileId As Long, Word As CscXDocWord, FieldNames() As String, W As Long
+   Dim StartWord As CscXDocWord, LastWord As CscXDocWord, F As Long, Field As CscXDocField, Path As String, ImageName As String, Image As CscImage
+   Dim width As Long, height As Long
+   Path=Left(pXDoc.FileName,InStrRev(pXDoc.FileName,"\"))
    FileId=CLng(Replace(Mid(pXDoc.FileName,InStrRev(pXDoc.FileName,"\")+1),".xdc",""))
-   Open Path & "truth.txt" For Input As #1
+   If pXDoc.Fields(0).Confidence>1.0 Then Exit Sub
+   Open Path & "truth.dat" For Input As #1
    Line Input #1, Textline
    'the first line of the truth file has the field names
    FieldNames=Split(Textline,vbTab)
@@ -56,11 +56,15 @@ Private Sub Document_AfterExtract(ByVal pXDoc As CASCADELib.CscXDocument)
       Set Field=pXDoc.Fields.ItemByName(FieldNames(F))
       'find the start and last word in the text matching the value
       Phrase_FindInWords(Values(F),pXDoc.Words, StartWord, LastWord)
+      While Field.Words.Count>0
+         Field.Words.Remove(0)
+      Wend
       If Not StartWord Is Nothing Then
          'add the entire phrase to the field. Now the fields know the word id's and the Text Locator can train
          For W= StartWord.IndexOnDocument To LastWord.IndexOnDocument
             Field.Words.Append(pXDoc.Words(W))
          Next
+         Field.Text=Field.Words.Text 'prevent any text reduplication
          Field.Confidence=1.00 ' it is the truth! so set the confidence to 100%
          Field.ExtractionConfident=True
       End If
@@ -73,14 +77,18 @@ Sub Phrase_FindInWords(searchText As String ,Words As CscXDocWords,ByRef StartWo
    Set StartWord=Nothing
    Set LastWord=Nothing
    If searchText="" Then Exit Sub
-   Pos=InStr(LCase(Words.Text),LCase(searchText))
+   searchText=Trim(searchText) 'some Excel text cells end or start with space
+   searchText=Replace(searchText,"(", "( ")
+   searchText=Replace(searchText,")", " )")
+
+   Pos=InStr(LCase(Replace(Words.Text,vbCrLf," ")),LCase(searchText))
    Select Case Pos
    Case Is <1
       Exit Sub 'Nothing to search for. Err.Raise(1234,,"Cannot find '" & searchText & "' in ' " & Words.Text & "'.")
    Case 1
       Start="" 'first word of text is a match
    Case Else ' match found in middle of text
-      Start=Left(Words.Text,Pos-1)
+      Start=Left(Replace(Words.Text,vbCrLf," "),Pos-1)
    End Select
 
    For C=1 To Len(Start)
@@ -89,6 +97,112 @@ Sub Phrase_FindInWords(searchText As String ,Words As CscXDocWords,ByRef StartWo
    Set StartWord=Words(W)
    Set LastWord=Words(W+UBound(Split(searchText," ")))
 End Sub
+
+Sub XDocument_CreateImageFromText(pXDoc As CscXDocument)
+   'Download the font you want from https://github.com/KofaxRPA/Sentiment/tree/master/font
+   'along with the widths.bin file
+
+   Const FontName="Arial"
+   Const FontSize=12  'point
+   Const PageWidth=210  'mm   A4
+   Const PageHeight=297  'mm  A4
+   Const PageBorder=20 'mm   so we don't write text to the edge of the page
+   Const DPI=100    'Dots Per Inch. A normal KT scanned image needs 300 dpi B&W . This image will never need OCR, It is full color with https://en.wikipedia.org/wiki/Subpixel_rendering and so 100 dpi is completely adequate.
+   Const Res=DPI/25.4   'dots per mm = dots per inch/25.4
+   Const CharacterWidth = 20 'pixels . The grid size in the font images
+   Const CharacterHeight = 20 'pixels height of character in the font image
+   Const SpaceWidth = 5 ' pixels width for the space between words
+
+   Dim Page As New CscImage, P As Long, W As Long, Word As CscXDocWord, Fonts() As CscImage, F As Long
+   Dim x As Long, Y As Long, width As Long, Widths() As Byte, FontPath As String, C As Long, Ch As String, Unicode As Long
+   Dim TL As Long, FileName As String
+
+   'The path that stores all 64 font images and the widths file
+   FontPath=Left(Project.FileName,InStrRev(Project.FileName,"\")) & "font\"
+   FontPath=FontPath & "font_" & FontName & "_" & CStr(FontSize) & "_"
+
+
+   'Open the font width file - this stores the pixel width of all 65536 Unicode characters in the font, so that we get proportional spacing
+   FileName=FontPath & "widths.bin"
+   Open FileName For Binary Access Read As #1
+   ReDim Widths(LOF(1))
+   Get #1,, Widths
+   Close #1
+   If UBound(Widths)<>65536 Then Err.Raise (574,, "Widths file is invalid. Download '" & FileName & "' from https://github.com/KofaxRPA/Sentiment/tree/master/font")
+   ReDim Fonts(63) ' to store all 64 pages of Unicode Plane 0 which includes most languages including Chinese, Japanese & Korean https://en.wikipedia.org/wiki/Unicode#Code_planes_and_blocks
+   ' Page 0    = Latin, Greek
+   ' Page 1    = Cyrillic, Amharic, Hebrew, Arabic...
+   ' Page 2-7  = Indian
+   ' Page 8    = €, arrows, mathematical symbols, long dashes, fractions.
+   ' Page 11.. = Chinese, Japanese, etc
+
+   Page.CreateImage(CscImgColFormatRGB24,PageWidth*Res, PageHeight*Res,DPI,DPI) ' create a full color A4 image @ 100 DPI
+
+   x=PageBorder*Res  'set the cursor at top left corner of page considering the page margins
+
+   Y=PageBorder*Res
+   For TL=0 To pXDoc.TextLines.Count-1  'loop through all paragraphs of the text
+      For W=0 To pXDoc.TextLines(TL).Words.Count-1  'loop through all words of the paragraph
+         Set Word = pXDoc.TextLines(TL).Words(W)
+         Word.Text=Replace(Word.Text,vbCr,"")
+         Word.Text=Replace(Word.Text,vbLf,"")
+         'check that the word will still fit on this line
+         width=SpaceWidth
+         For C=1 To Len(Word.Text)
+            Ch=Mid(Word.Text,C,1)
+            Unicode=(AscW(Ch)+65536) Mod 65536 'AscW returns a number between -32768 & 32767 - we need it 0-65536. This affects Japanese characters
+            width=width+Widths(Unicode)
+         Next
+         If x+width>=Page.Width-PageBorder*Res Then 'place the word on the next line
+            x=PageBorder
+            Y=Y+CharacterHeight
+         End If
+         Word.Left=x 'update the coordinates of the word in the XDocument
+         Word.Top=Y
+         Word.Height=18
+         'copy each character of the word from the font images to the page
+         For C=1 To Len(Word.Text)
+            Ch=Mid(Word.Text,C,1)
+            Unicode=(AscW(Ch)+65536) Mod 65536
+            F=Unicode\32^2 ' each image contains 32*32=1024 characters. This finds the correct font page from 0-63.
+            If Fonts(F) Is Nothing Then 'only load each font page as needed
+               Set Fonts(F)=New CscImage
+               FileName=FontPath & Format(F,"00") & ".png"
+                If Not File_Exists(FileName) Then
+                  Err.Raise (575,,"Font file is missing. Download '" & FileName & "' from https://github.com/KofaxRPA/Sentiment/tree/master/font")
+                End If
+               Fonts(F).Load(FileName)
+            End If
+            ' "print" the character onto the page
+            Page.CopyRect(Fonts(F),(Unicode Mod 32) * CharacterWidth+3, ((Unicode Mod 32^2) \ 32 )*CharacterHeight,x,Y,Widths(Unicode),CharacterHeight) ' Each font character has 3 pixels left padding
+            x=x+Widths(Unicode) 'move the cursor by the character width
+         Next
+         Word.Width=x-Word.Left ' update the Width of the Word In the XDocument
+         x=x+SpaceWidth ' add a space between words
+      Next
+      x=PageBorder  'new line for each text line
+      Y=Y+CharacterHeight*2 'double spacing for each new paragraph=textline
+      'todo: wrap over to other pages
+   Next
+   Y=Y+PageBorder*Res
+   'TODO: Page.cre(Page,0,0,0,0,Page.Width,Y)  'crop the bottom off the page
+   Select Case pXDoc.CDoc.SourceFiles(0).FileType
+   Case "TEXT"
+      FileName=Left(pXDoc.CDoc.SourceFiles(0).FileName,InStrRev(pXDoc.CDoc.SourceFiles(0).FileName,".")) & "png"
+      Page.Save(FileName,CscImgFileFormatPNG)
+      pXDoc.ReplacePageSourceFile(FileName,"TIFF",0,0)  ' even PNG files are called 'TIFF' inside the XDoc!
+   Case Else
+      Page.Save(pXDoc.CDoc.SourceFiles(0).FileName,CscImgFileFormatPNG)
+   End Select
+   pXDoc.Representations(0).AnalyzeLines ' recalculate all the textlines as the words have changed coordinates and maybe pages
+End Sub
+
+Function File_Exists(file As String) As Boolean
+      On Error GoTo ErrorHandler
+      Return (GetAttr(file) And vbDirectory) = 0
+      Exit Function
+  ErrorHandler:
+End Function
 ```
 1. Press the **Reload Document Set** icon so that Project Builder sees that these are image files and not text files. The document icon is no longer a letter "A".
 ![image](https://user-images.githubusercontent.com/47416964/123135180-cb1c4880-d451-11eb-9450-c4db2514a56a.png)
