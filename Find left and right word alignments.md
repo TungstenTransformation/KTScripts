@@ -1,6 +1,9 @@
 # Find left and right word alignments
-This script finds left and right aligned blocks of text and marks them as such. It seperates them into subfields, that can be viewed. To use it, make a locator called SL_ALignments and create three subfields called type, left and right respectively. Then paste this code into the script window. \
-![image](https://user-images.githubusercontent.com/87315965/125292552-dbbe3100-e322-11eb-84f4-4a573f94b5c0.png)
+This script finds left and right aligned blocks of text and marks them as such. It seperates them into subfields, that can be viewed.  
+To use it, make a locator called **SL_Alignment** and create three subfields called type, left and right respectively. Then paste this code into the script window.  
+![image](https://user-images.githubusercontent.com/87315965/125295023-1a54eb00-e325-11eb-9f56-4aed3003c069.png)  
+An example result would look like this:  
+![image](https://user-images.githubusercontent.com/87315965/125295224-4d977a00-e325-11eb-8381-f132bc2425d2.png)
 ```vba
 Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
    Dim PageWidth As Long, Histogram As CscXDocFieldAlternatives, Words As CscXDocWords, Word As CscXDocWord, W As Long, BucketSize As Double, Count As Long
@@ -48,7 +51,7 @@ Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocume
          Side="right"
       End If
       Count = Histogram(H).SubFields.ItemByName(Side).Words.Count
-      For T=0 To Histogram(H).Words.Count-1
+      For T=0 To Histogram(H).SubFields.ItemByName(Side).Words.Count-1
          Sum=Sum+Histogram(H).SubFields.ItemByName(Side).Words(T).Left
          If Side="right" Then
             Sum=Sum+Histogram(H).SubFields.ItemByName(Side).Words(T).Width
