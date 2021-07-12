@@ -1,5 +1,5 @@
 # Find left and right word alignments
-This script finds left and right aligned blocks of text and marks them as such. It seperates them into subfields, that can be viewed. To use it, make a locator called SL_ALignments and create three subfields called type, left and right respectively. Then paste this code into the script window.
+This script finds left and right aligned blocks of text and marks them as such. It seperates them into subfields, that can be viewed. To use it, make a locator called SL_ALignments and create three subfields called type, left and right respectively. Then paste this code into the script window. \
 ![image](https://user-images.githubusercontent.com/87315965/125292552-dbbe3100-e322-11eb-84f4-4a573f94b5c0.png)
 ```vba
 Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
