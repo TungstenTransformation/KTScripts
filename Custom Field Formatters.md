@@ -1,13 +1,13 @@
 # Custom Field Formatters
-A good customer Field Formatter uses the standard field formatters instead of trying to replace them. When formatting amounts or dates, use the Default Amount Formatter or Default Date Formatter  - they is very powerful and robust. This example shows how to *extend* the default formatters to make them do more. 
+A good custom Field Formatter uses the standard field formatters instead of trying to replace them. When formatting amounts or dates, use the Default Amount Formatter or Default Date Formatter  - they are very powerful and robust. This example shows how to *extend* the default formatters to make them do more. 
 
 You can use this script to correct OCR errors in amounts before running the DefaultAmountFormatter. 
 
 ## Custom Amount Formatter
-This example deals with numbers that contain "D" after the number to mark "debit". The "D" will be removed and make the number negative, and then it calls the default amount formatter.  
+This example deals with numbers that contain "D" after the number to mark "debit". The "D" will be removed and a "-" will be added before the number, and then it calls the default amount formatter.  
 ![image](https://user-images.githubusercontent.com/47416964/87158143-8ee2ed00-c2bf-11ea-977b-9974abd9729b.png)
 
-This example also converts any "B" in an number to an "8", and any "S" into a "5".
+This example also converts any "B" in an number to an "8", and any "S" into a "5", correcting typical OCR errors.
 
 1. Make a **Custom Script Formatter**  
 ![image](https://user-images.githubusercontent.com/47416964/87157009-dff1e180-c2bd-11ea-9837-e68d7fa39285.png)
