@@ -1,5 +1,5 @@
 # Find left and right word alignments
-This script finds left and right aligned blocks of text and marks them as such. It seperates them into subfields, that can be viewed.  
+This script finds left and right aligned blocks of text and marks them as such. It seperates them into subfields, that can be viewed. The 'type' subfield shows whether the text is right or left aligned and the distance from the left side of the page in pixels.  
 To use it, make a locator called **SL_Alignment** and create three subfields called type, left and right respectively. Then paste this code into the script window.  
 ![image](https://user-images.githubusercontent.com/87315965/125295023-1a54eb00-e325-11eb-9f56-4aed3003c069.png)  
 An example result would look like this:  
