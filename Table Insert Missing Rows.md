@@ -10,6 +10,7 @@ Public Sub Table_InsertMissingRows(LocatorName As String,pXDoc As CscXDocument)
    'This does NOT insert rows at the beginning of the table, nor after the end of the table
    Dim Table As CscXDocTable, Row As CscXDocTableRow, T As Long
    Set Table=pXDoc.Locators.ItemByName(LocatorName).Alternatives(0).Table
+   If Table.Rows.Count<2 Then Exit Sub 'We need at least two table rows to be able to "insert"
    Set Row=Table.Rows(0)
    'Loop through all the textlines that are in the table.
    For T=Table.Rows(0).TextlineIndexStart To Table.Rows(Table.Rows.Count-1).TextlineIndexEnd
