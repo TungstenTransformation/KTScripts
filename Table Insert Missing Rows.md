@@ -17,6 +17,7 @@ Private Sub Document_AfterLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal L
       Table_InsertMissingWords(LocatorName,pXDoc)
    End Select
 End Sub
+
 Public Sub Table_InsertMissingRows(LocatorName As String,pXDoc As CscXDocument)
    'This script finds textlines that were skipped in the table locator and inserts them
    'This does NOT insert rows at the beginning of the table, nor after the end of the table
