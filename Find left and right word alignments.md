@@ -1,14 +1,14 @@
 # Find left and right word alignments
-This script finds left and right aligned blocks of text and marks them as such. It seperates them into subfields, that can be viewed. The 'type' subfield shows whether the text is right or left aligned, the distance from the left side of the page in pixels and the number of words in that subfield.
-To use it, make a locator called **SL_Alignment** and create three subfields called type, left and right respectively. Then paste this code into the script window.  
-![image](https://user-images.githubusercontent.com/87315965/125295023-1a54eb00-e325-11eb-9f56-4aed3003c069.png)  
+This script finds left and right aligned blocks of text and marks them as such. To use it, create a Locator called **SL_Alignment** and paste this code.  
+The text displays whether the column is right or left aligned, It's distance in pixels from The left edge and The number of words in that column.  
+![image](https://user-images.githubusercontent.com/87315965/125619632-37eb02b5-f308-4089-a0d8-37587d0614a0.png)  
 An example result would look like this:  
-![image](https://user-images.githubusercontent.com/87315965/125295224-4d977a00-e325-11eb-8381-f132bc2425d2.png)
+![image](https://user-images.githubusercontent.com/87315965/125619734-d8511753-de2d-45d4-8dfb-e2f635c8550e.png)  
 ```vba
 Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
    Dim PageWidth As Long, Histogram As CscXDocFieldAlternatives, Words As CscXDocWords, Word As CscXDocWord, W As Long, BucketSize As Double, Count As Long
-   Dim H As Long, T As Long, TextLine As CscXDocTextLine, BiggestBucket As CscXDocSubField, Sum As Double, Side As String, ExitAll As Boolean, sf As String
-   Dim OldHistogramSize As Long, AcceptableOverlap As Integer, Side2 As String, Distance As Long, Page As Long, AcceptableSpacing As Double
+   Dim H As Long, T As Long, TextLine As CscXDocTextLine, Sum As Double, Page As Long, AcceptableSpacing As Double, Distance As Long
+   Dim OldHistogramSize As Long, AcceptableOverlap As Integer, LeftDistance As Double, RightDistance As Double, Side As String
    Page=0
    PageWidth=pXDoc.CDoc.Pages(Page).Width
    BucketSize=6
@@ -17,23 +17,19 @@ Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocume
       With Histogram.Create
          '.Text=CStr(H)
          .Confidence=1-H/10000
-         For Each sf In Split("type left right")
-            .SubFields.Create(sf)
-         Next
       End With
    Next
    For T=5 To pXDoc.Pages(Page).TextLines.Count-5
+      'Adds the words to the buckets
       Set TextLine=pXDoc.Pages(Page).TextLines(T)
       For W=0 To TextLine.Words.Count-1
          Set Word=TextLine.Words(W)
          H=Word.Left/BucketSize
-         Histogram(H).SubFields.ItemByName("left").Words.Append(Word)
-         H=(Word.Left+Word.Width)/BucketSize
-         Histogram(H).SubFields.ItemByName("right").Words.Append(Word)
+         Histogram(H).Words.Append(Word)
       Next
    Next
    For H=Histogram.Count-1 To 0 Step -1
-      If Histogram(H).SubFields.ItemByName("left").Words.Count=0 And Histogram(H).SubFields.ItemByName("right").Words.Count=0 Then
+      If Histogram(H).Words.Count=0 Then
          Histogram.Remove(H)
       End If
    Next
@@ -42,36 +38,26 @@ Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocume
       'This script combines horizontally overlapping buckets
       OldHistogramSize = Histogram.Count
       For H=Histogram.Count-2 To 0 Step -1
-         If Histogram(H).SubFields.ItemByName("left").Words.Count > 0 Then
-            Side="left"
-         Else
-            Side="right"
-         End If
-         If Histogram(H+1).SubFields.ItemByName("left").Words.Count > 0 Then
-            Side2="left"
-         Else
-            Side2="right"
-         End If
-         If Object_OverlapHorizontal(Histogram(H).SubFields.ItemByName(Side), Histogram(H+1).SubFields.ItemByName(Side2)) > 0 Then
+         If Object_OverlapHorizontal(Histogram(H), Histogram(H+1)) > 0 Then
             AcceptableOverlap=1
-            For T=0 To Histogram(H).SubFields.ItemByName(Side).Words.Count-1
-               If Histogram(H).SubFields.ItemByName(Side).Words(T).Left + Histogram(H).SubFields.ItemByName(Side).Words(T).Width > Histogram(H+1).SubFields.ItemByName(Side2).Left Then
+            For T=0 To Histogram(H).Words.Count-1
+               If Histogram(H).Words(T).Left + Histogram(H).Words(T).Width > Histogram(H+1).Left Then
                   AcceptableOverlap = AcceptableOverlap-1
                End If
                If AcceptableOverlap<1 Then Exit For
             Next
             If AcceptableOverlap < 1 Then
-               If Histogram(H).SubFields.ItemByName(Side).Words.Count > Histogram(H+1).SubFields.ItemByName(Side2).Words.Count Then
-                  For T=0 To T=Histogram(H+1).SubFields.ItemByName(Side2).Words.Count-1
-                     If Not Word_Inside(Histogram(H+1).SubFields.ItemByName(Side2).Words(T),Histogram(H).SubFields.ItemByName(Side).Words) Then
-                        Histogram(H).SubFields.ItemByName(Side).Words.Append(Histogram(H+1).SubFields.ItemByName(Side2).Words(T))
+               If Histogram(H).Words.Count > Histogram(H+1).Words.Count Then
+                  For T=0 To T=Histogram(H+1).Words.Count-1
+                     If Not Word_Inside(Histogram(H+1).Words(T),Histogram(H).Words) Then
+                        Histogram(H).Words.Append(Histogram(H+1).Words(T))
                      End If
                   Next
                   Histogram.Remove(H+1)
                Else
-                  For T=0 To Histogram(H).SubFields.ItemByName(Side).Words.Count-1
-                     If Not Word_Inside(Histogram(H).SubFields.ItemByName(Side).Words(T),Histogram(H+1).SubFields.ItemByName(Side2).Words) Then
-                        Histogram(H+1).SubFields.ItemByName(Side2).Words.Append(Histogram(H).SubFields.ItemByName(Side).Words(T))
+                  For T=0 To Histogram(H).Words.Count-1
+                     If Not Word_Inside(Histogram(H).Words(T),Histogram(H+1).Words) Then
+                        Histogram(H+1).Words.Append(Histogram(H).Words(T))
                      End If
                   Next
                   Histogram.Remove(H)
@@ -82,29 +68,21 @@ Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocume
    Wend
    For H=Histogram.Count-2 To 1 Step -1
       'This script adds tiny buckets to the nearest large bucket
-      If Histogram(H).SubFields.ItemByName("left").Words.Count > 0 Then
-         Side="left"
-      ElseIf Histogram(H).SubFields.ItemByName("right").Words.Count > 0 Then
-         Side="right"
+      Distance=pXDoc.CDoc.Pages(0).Width
+      AcceptableSpacing=6
+      If Abs(Histogram(H).Left - (Histogram(H-1).Left+Histogram(H-1).Width)) < Distance Then
+         Distance=Abs(Histogram(H).Left - (Histogram(H-1).Left+Histogram(H-1).Width))
+         T=-1
       End If
-      If Histogram(H).SubFields.ItemByName(Side).Words.Count < 6 Then
-         Distance=pXDoc.CDoc.Pages(0).Width
-         For Each sf In Split("left right")
-            If Abs(Histogram(H).SubFields.ItemByName(Side).Left - (Histogram(H-1).SubFields.ItemByName(sf).Left+Histogram(H-1).SubFields.ItemByName(sf).Width)) < Distance Then
-               Distance=Abs(Histogram(H).SubFields.ItemByName(Side).Left - (Histogram(H-1).SubFields.ItemByName(sf).Left+Histogram(H-1).SubFields.ItemByName(sf).Width))
-               T=-1
-               Side2=sf
-            End If
-            If Abs((Histogram(H).SubFields.ItemByName(Side).Left+Histogram(H).SubFields.ItemByName(Side).Width) - Histogram(H+1).SubFields.ItemByName(sf).Left) < Distance Then
-               Distance=Abs((Histogram(H).SubFields.ItemByName(Side).Left+Histogram(H).SubFields.ItemByName(Side).Width) - Histogram(H+1).SubFields.ItemByName(sf).Left)
-               T=1
-               Side2=sf
-            End If
-         Next
-         If Histogram(H).SubFields.ItemByName(Side).Words.Count > 0 Then
-            For W=0 To Histogram(H).SubFields.ItemByName(Side).Words.Count-1
-               If Not Word_Inside(Histogram(H).SubFields.ItemByName(Side).Words(W), Histogram(H+T).SubFields.ItemByName(Side2).Words) Then
-                  Histogram(H+T).SubFields.ItemByName(Side2).Words.Append(Histogram(H).SubFields.ItemByName(Side).Words(W))
+      If Abs((Histogram(H).Left+Histogram(H).Width) - Histogram(H+1).Left) < Distance Then
+         Distance=Abs((Histogram(H).Left+Histogram(H).Width) - Histogram(H+1).Left)
+         T=1
+      End If
+      If Histogram(H).Words.Count < 6 Or Distance < AcceptableSpacing Then
+         If Histogram(H).Words.Count > 0 Then
+            For W=0 To Histogram(H).Words.Count-1
+               If Not Word_Inside(Histogram(H).Words(W), Histogram(H+T).Words) Then
+                  Histogram(H+T).Words.Append(Histogram(H).Words(W))
                End If
             Next
          End If
@@ -113,19 +91,22 @@ Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocume
    Next
    For H=0 To Histogram.Count-1
       Sum=0
-      If Histogram(H).SubFields.ItemByName("left").Words.Count > 0 Then
-         Side = "left"
-      Else
-         Side="right"
-      End If
-      Count = Histogram(H).SubFields.ItemByName(Side).Words.Count
-      For T=0 To Histogram(H).SubFields.ItemByName(Side).Words.Count-1
-         Sum=Sum+Histogram(H).SubFields.ItemByName(Side).Words(T).Left
-         If Side="right" Then
-            Sum=Sum+Histogram(H).SubFields.ItemByName(Side).Words(T).Width
-         End If
+      LeftDistance=0
+      RightDistance=0
+      Count = Histogram(H).Words.Count
+      For T=0 To Histogram(H).Words.Count-1
+         Sum=Sum+Histogram(H).Words(T).Left
       Next
-      Histogram(H).SubFields(0).Text=Side & " " & Format(Sum/Count, "0.00") & " " & CStr(Count)
+      For T=0 To Histogram(H).Words.Count-1
+         LeftDistance=LeftDistance+Abs(Histogram(H).Left-Histogram(H).Words(T).Left)
+         RightDistance=RightDistance+Abs(Histogram(H).Left+Histogram(H).Width-Histogram(H).Words(T).Left-Histogram(H).Words(T).Width)
+      Next
+      If LeftDistance>RightDistance Then
+         Side="right"
+      Else
+         Side="left"
+      End If
+      Histogram(H).Text=Side & " " & Format(Sum/Count, "0.00") & " " & CStr(Count)
    Next
 End Sub
 
