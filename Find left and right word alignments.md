@@ -1,8 +1,8 @@
 # Find left and right word alignments
 This script finds left and right aligned blocks of text and marks them as such. To use it, create a Locator called **SL_Alignment** and paste this code.  
-The text displays whether the column is right or left aligned, It's distance in pixels from The left edge and The number of words in that column.  
+The text displays whether the column is right or left aligned, its distance in pixels from the left edge and the number of words in that column. That would look like this:  
 ![image](https://user-images.githubusercontent.com/87315965/125619632-37eb02b5-f308-4089-a0d8-37587d0614a0.png)  
-An example result would look like this:  
+An example result of the document would look like this:  
 ![image](https://user-images.githubusercontent.com/87315965/125619734-d8511753-de2d-45d4-8dfb-e2f635c8550e.png)  
 ```vba
 Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
