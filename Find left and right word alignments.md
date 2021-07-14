@@ -121,5 +121,4 @@ Function Word_Inside(Word As CscXDocWord, List As CscXDocWords) As Boolean
    Next
    Return False
 End Function
-End Function
 ```
