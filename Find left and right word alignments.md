@@ -8,10 +8,10 @@ An example result of the document would look like this:
 Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
    Dim PageWidth As Long, Histogram As CscXDocFieldAlternatives, Words As CscXDocWords, Word As CscXDocWord, W As Long, BucketSize As Double, Count As Long
    Dim H As Long, T As Long, TextLine As CscXDocTextLine, Sum As Double, Page As Long, AcceptableSpacing As Double, Distance As Long
-   Dim OldHistogramSize As Long, AcceptableOverlap As Integer, LeftDistance As Double, RightDistance As Double, Side As String
+   Dim OldHistogramSize As Long, AcceptableOverlap As Long, LeftDistance As Double, RightDistance As Double, Side As String, AllSpaces As Long
    Page=0
    PageWidth=pXDoc.CDoc.Pages(Page).Width
-   BucketSize=6
+   BucketSize=20
    Set Histogram=pLocator.Alternatives
    For H=0 To PageWidth/BucketSize
       With Histogram.Create
@@ -19,6 +19,8 @@ Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocume
          .Confidence=1-H/10000
       End With
    Next
+   RightDistance=0
+   AllSpaces=0
    For T=5 To pXDoc.Pages(Page).TextLines.Count-5
       'Adds the words to the buckets
       Set TextLine=pXDoc.Pages(Page).TextLines(T)
@@ -111,12 +113,13 @@ Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocume
 End Sub
 
 Function Word_Inside(Word As CscXDocWord, List As CscXDocWords) As Boolean
-   Dim I As Integer
+   Dim I As Long
    For I=0 To List.Count-1
       If Word.IndexOnDocument = List(I).IndexOnDocument Then
          Return True
       End If
    Next
    Return False
+End Function
 End Function
 ```
