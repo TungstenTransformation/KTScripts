@@ -13,7 +13,7 @@ Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocume
    PageWidth=pXDoc.CDoc.Pages(Page).Width
    BucketSize=20
    Set Histogram=pLocator.Alternatives
-   For H=0 To PageWidth/BucketSize
+   For H=0 To PageWidth/BucketSize 'Creates the buckets
       With Histogram.Create
          '.Text=CStr(H)
          .Confidence=1-H/10000
@@ -31,13 +31,14 @@ Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocume
       Next
    Next
    For H=Histogram.Count-1 To 0 Step -1
+      'Deletes empty buckets
       If Histogram(H).Words.Count=0 Then
          Histogram.Remove(H)
       End If
    Next
    OldHistogramSize = Histogram.Count+1
    While Histogram.Count < OldHistogramSize
-      'This script combines horizontally overlapping buckets
+      'Combines horizontally overlapping buckets
       OldHistogramSize = Histogram.Count
       For H=Histogram.Count-2 To 0 Step -1
          If Object_OverlapHorizontal(Histogram(H), Histogram(H+1)) > 0 Then
@@ -49,8 +50,8 @@ Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocume
                If AcceptableOverlap<1 Then Exit For
             Next
             If AcceptableOverlap < 1 Then
-               If Histogram(H).Words.Count > Histogram(H+1).Words.Count Then
-                  For T=0 To T=Histogram(H+1).Words.Count-1
+               If Histogram(H).Words.Count >= Histogram(H+1).Words.Count Then
+                  For T=0 To Histogram(H+1).Words.Count-1
                      If Not Word_Inside(Histogram(H+1).Words(T),Histogram(H).Words) Then
                         Histogram(H).Words.Append(Histogram(H+1).Words(T))
                      End If
@@ -69,7 +70,7 @@ Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocume
       Next
    Wend
    For H=Histogram.Count-2 To 1 Step -1
-      'This script adds tiny buckets to the nearest large bucket
+      'Adds tiny buckets to the nearest large bucket and combines columns that are very close to each other
       Distance=pXDoc.CDoc.Pages(0).Width
       AcceptableSpacing=6
       If Abs(Histogram(H).Left - (Histogram(H-1).Left+Histogram(H-1).Width)) < Distance Then
@@ -92,6 +93,7 @@ Private Sub SL_Alignment_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocume
       End If
    Next
    For H=0 To Histogram.Count-1
+      'Calculates the size of the buckets and the alignment of the words
       Sum=0
       LeftDistance=0
       RightDistance=0
