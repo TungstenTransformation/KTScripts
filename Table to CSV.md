@@ -10,9 +10,11 @@ Private Sub Document_AfterExtract(ByVal pXDoc As CASCADELib.CscXDocument)
 End Sub
 
 Public Sub Table_ToCSV(Table As CscXDocTable, FileName As String)
+   'Output a Table Field to a CSV file.
    Dim R As Long, Row As CscXDocTableRow, C As Long, Cell As CscXDocTableCell, Delimiter As String
    Delimiter = vbTab  ' or "," or ";"
    Open FileName For Output As #1
+   print #1, vbUTF8BOM;  'To make a UTF-8 text file instead of an ANSI text file.
    'Print headers
    For C=0 To Table.Columns.Count-1
       Print #1, Table.Columns(C).Name & Delimiter;   ' the semicolon suppresses newline
