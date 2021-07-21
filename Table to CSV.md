@@ -11,7 +11,7 @@ End Sub
 
 Public Sub Table_ToCSV(Table As CscXDocTable, FileName As String)
    Dim R As Long, Row As CscXDocTableRow, C As Long, Cell As CscXDocTableCell, Delimiter As String
-   Delimiter = vbTab
+   Delimiter = vbTab  ' or "," or ";"
    Open FileName For Output As #1
    'Print headers
    For C=0 To Table.Columns.Count-1
@@ -23,7 +23,7 @@ Public Sub Table_ToCSV(Table As CscXDocTable, FileName As String)
       Set Row=Table.Rows(R)
       For C=0 To Row.Cells.Count-1
          Set Cell=Row.Cells(C)
-         Print #1, Cell.Text & Delimiter;
+         Print #1, Replace(Cell.Text,Delimiter,"") & Delimiter;  ' Make sure the delimiter is NOT in the table cell!!
       Next
       Print #1,
    Next
