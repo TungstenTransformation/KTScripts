@@ -33,7 +33,7 @@ There are 3 places where scripts can contribute to table locator extraction:
     * correct procedure codes??
     * check (and correct?) running total rows in the tables
  1. **Post Processing**
-    * Remove from all tables the rows and columns that are of no interest to HealthLogic. (We may have extracted more than they need)
+    * Remove from all tables the rows and columns that are of no interest to the customer. (We may have extracted more than they need)
     * Generate table metadata for benchmarking tables in a locator **SL_TableMetadata**
       * TableRowCount 
       * TableCellCount (ignore empty cells)
