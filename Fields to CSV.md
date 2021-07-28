@@ -1,4 +1,4 @@
-# Export Xdocument Fields to a CSV File
+# Export XDocument Fields to a CSV File
 This script can be used in Project Designer to export Fields to a CSV file for testing, reporting and benchmarking.  
 To run it just Extract the Document (F6) in Project Designer.
 
