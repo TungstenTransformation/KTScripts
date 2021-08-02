@@ -5,7 +5,7 @@ To run it just Extract the Document (F6) in Project Designer.
 Private Sub Document_AfterExtract(ByVal pXDoc As CASCADELib.CscXDocument)
    'Check that we are in the Designer and not in runtime
    If Project.ScriptExecutionMode = CscScriptExecutionMode.CscScriptModeServerDesign Then
-      Table_ToCSV(pXDoc.Fields.ItemByName("Table").Table, "C:\temp\table.csv")
+      Table_ToCSV(pXDoc.Fields.ItemByName("Table").Table, Replace(pXDoc.Filename,".xdc", "_table.csv")
    End If
 End Sub
 
