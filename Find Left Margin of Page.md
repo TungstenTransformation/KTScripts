@@ -26,7 +26,7 @@ Function Page_LeftMargin(pXDoc As CscXDocument, PageIndex As Long) As Double
    'Average the left edge of each word in this bucket
    With Hist.Alternatives(B).Words
       For T=0 To .Count-1
-         Page_LeftEdge=Page_LeftEdge+.ItemByIndex(0).Left
+         Page_LeftMargin=Page_LeftMargin+.ItemByIndex(0).Left
       Next
       Page_LeftMargin=Page_LeftMargin/.Count
    End With
