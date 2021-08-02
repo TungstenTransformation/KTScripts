@@ -2,7 +2,7 @@
 This finds the left margin of the text on a page. It also stores the value in the XDocument's XValues for future reference, so it doens't need to be recalculated.  
 This is useful for aligning scanned pages with each other, as the scanner may have cropped the left edge of the image.  
 Table Algorithms need to know the left margin so that text columns align correctly from page to page.  
-```
+```vb
 Function Page_LeftMargin(pXDoc As CscXDocument, PageIndex As Long) As Double
    'Find the left text margin of the text of the document. Store in XValues for future use
    Dim Hist As New CscXDocField, T As Long, B As Long, TextLine As CscXDocTextLine, XValue As String
