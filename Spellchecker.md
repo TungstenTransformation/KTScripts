@@ -1,6 +1,6 @@
 # Spellchecker  
 This script uses a fuzzy database to spellcheck a string. To use it simply make a Locator called SL_Spellcheck 
-and make it a Script Locator. Then paste the code below into the script field.  
+and make it a Script Locator. Then paste the code below into the script field.  Make sure that your database is of type "Associative Search"
 ```vba
 Private Sub SL_Spellcheck_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
    Dim Test As String, Results As CscXDocFieldAlternatives, NumWords As Long, R As Long, T As Long, Word As String, Words() As String
