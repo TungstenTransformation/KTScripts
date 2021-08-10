@@ -49,7 +49,7 @@ Private Sub Document_AfterLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal L
    End Select
 End Sub
 ```
-* Test! *The results contain the precise locations and unique labels required by a following locator to process*.
+* Test! *The results contain the precise locations and unique labels required by a following locator to process*. Note that their is an OCR error (confidence= 98.06%) in the 3rd value, which didn't matter. Fuzzy matching with long phrases is very robust.  
 ![image](https://user-images.githubusercontent.com/47416964/128853742-a1d92d5e-97b1-4c50-bc23-7f9b3322632a.png)
 
 
