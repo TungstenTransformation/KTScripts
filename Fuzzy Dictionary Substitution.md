@@ -20,7 +20,7 @@ and inserting the dictionary into a format locator
 ## Example 2 - Finding Text Anchors for values in large documents.  
 This can be useful for parsing large tables with identifying labels or finding checkboxes and OCR fields scattered throughout a large document.  
 Consider this example.  
-![image](https://user-images.githubusercontent.com/47416964/128855138-93ce459a-657f-4789-ab96-c1b7bfffda82.png)
+![image](https://user-images.githubusercontent.com/47416964/128855138-93ce459a-657f-4789-ab96-c1b7bfffda82.png)  
 And say you are interested in extracting these results:
 
 | id | amount |
