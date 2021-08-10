@@ -29,7 +29,7 @@ And say you are interested in extracting these results:
 | 3a | 9,4 |
 | 12 | 0 |
 
-Note we want *3a*, which is not even on the document, which has *3-a)*
+Note we want **3a**, which is not even on the document, which has **3-a)**
 * Make a dictionary to find these important phrases and **auto-replace** them to unique codes. Make sure the phrases are **long** and **unique**.  
 ![image](https://user-images.githubusercontent.com/47416964/128852949-3edd2ba8-d9e9-4a25-8c4a-683a655f02be.png)
 * Add this dictionary to the project with **auto-replace** turned on.  
