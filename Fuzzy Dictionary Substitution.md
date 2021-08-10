@@ -36,7 +36,7 @@ Note we want **3a**, which is not even on the document, which has **3-a)**
 ![image](https://user-images.githubusercontent.com/47416964/128853186-f0859ffa-e06b-48cc-b087-7423bf22cf3f.png)
 * Add to a format locator.  
 ![image](https://user-images.githubusercontent.com/47416964/128853365-fa69f07e-5055-49d6-886c-90fa49d8226e.png)
-* Add this script to remove results from the format locator with a confidence less than 80%.
+* Add this script to [customize the format locator](Customize%20Locators.md) to remove alternatives with a confidence less than 80%.
 ```vb
 Private Sub Document_AfterLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal LocatorName As String)
    Dim A As Long, Alternatives As CscXDocFieldAlternatives
@@ -49,7 +49,7 @@ Private Sub Document_AfterLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal L
    End Select
 End Sub
 ```
-* Test! *The results contain the precise locations and unique labels required by a following locator to process*. Note that there is an OCR error (confidence= 98.06%) in the 3rd value, which didn't matter. Fuzzy matching with long phrases is very robust.  In this example, the 3 textlines of the results can be used to retrieve the last word on each textline and insert into a [custom table locator](https://github.com/KofaxRPA/KTScripts/blob/master/Customize%20Locators.md).
+* Test! *The results contain the precise locations and unique labels required by a following locator to process*. Note that there is an OCR error (confidence= 98.06%) in the 3rd value, which didn't matter. Fuzzy matching with long phrases is very robust.  In this example, the 3 textlines of the results can be used to retrieve the last word on each textline and insert into a [custom table locator](Customize%20Locators.md).
 ![image](https://user-images.githubusercontent.com/47416964/128853742-a1d92d5e-97b1-4c50-bc23-7f9b3322632a.png)
 
 
