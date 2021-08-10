@@ -1,6 +1,6 @@
 # Page Classification
 This script allows you to classify individual pages within a document dynamically.  
-This can be combined with Page Locators to find specific pages within large documents and apply locators to those pages directly, especially when the particular page you are looking for could be anywhere within the doucment, or perhaps is missing.  
+This can be combined with [Page Locators](Page_Locators.md) to find specific pages within large documents and apply locators to those pages directly, especially when the particular page you are looking for could be anywhere within the doucment, or perhaps is missing.  
 This technique uses the not-well-known [**Classification Locator**](https://docshield.kofax.com/KTT/en_US/6.3.0-v15o2fs281/help/PB/ProjectBuilder/450_Extraction/ClassificationLocator/c_ClassificationLocator.html) which **embeds** a *reference project* within another project and is compatible with KTA, RPA, KTM, KTT and KMC.
 ## Create a Page Classification Project
 1. Open a new Project Builder and create a new project purely for Page Classification.
