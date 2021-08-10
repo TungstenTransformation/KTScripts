@@ -3,7 +3,7 @@ This is a powerful script-free technique to find and unique label parts of a doc
 When a dictionary is added to a format locator you retrieve **all occurences including duplicates** of dictionary entries on a document using **fuzzy matching**.  
 In comparison, a Fuzzy Database Locator only returns **ONE** occurance of an entry, not **ALL**. 
 ## Example 1 - Finding more information than is actually on the document
-In the example below Fuzzy Dictionary Substitution was used to find the name **Patricia** on the document.  
+In the example below, Fuzzy Dictionary Substitution was used to find the name **Patricia** on the document.  
 ![image](https://user-images.githubusercontent.com/47416964/128848989-941a9e6b-49e4-48ba-9112-f869f7c4645b.png)  
 But instead of returning **Patricia** as the value, the dictionary returned **Patricia_1077** via **auto replacement**. 1077 out of 100,000 American females are called Patricia ([US Census Data 2010](https://namecensus.com/female_names.htm))
 and so I retrieve 5 pieces of information to use in other locators.
