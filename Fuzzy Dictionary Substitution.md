@@ -20,7 +20,7 @@ and inserting the dictionary into a format locator
 ## Example 2 - Finding Text Anchors for values in large documents.  
 This can be useful for parsing large tables with identifying labels or finding checkboxes and OCR fields scattered throughout a large document.  
 Consider this example.  
-![image](https://user-images.githubusercontent.com/47416964/128854014-c0b3a114-4bcb-4ab7-a843-f9a8b84be7f9.png)  
+![image](https://user-images.githubusercontent.com/47416964/128855138-93ce459a-657f-4789-ab96-c1b7bfffda82.png)
 And say you are interested in extracting these results:
 
 | id | amount |
@@ -28,6 +28,8 @@ And say you are interested in extracting these results:
 | 1 | 10 |
 | 3a | 9,4 |
 | 12 | 0 |
+
+Note we want *3a*, which is not even on the document, which has *3-a)*
 * Make a dictionary to find these important phrases and **auto-replace** them to unique codes. Make sure the phrases are **long** and **unique**.  
 ![image](https://user-images.githubusercontent.com/47416964/128852949-3edd2ba8-d9e9-4a25-8c4a-683a655f02be.png)
 * Add this dictionary to the project with **auto-replace** turned on.  
