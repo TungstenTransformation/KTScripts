@@ -18,7 +18,7 @@ This is achieved using a fuzzy database with **auto replacement values** in it.
  
 and inserting a dictionary into a format locator  
 ![image](https://user-images.githubusercontent.com/47416964/128849585-1d2f3dce-6609-4f7e-abc5-68ded174ebb0.png)  
-## Example 2 Finding Text Anchors for values in large documents.  
+## Example 2 - Finding Text Anchors for values in large documents.  
 This can be useful for parsing large tables with identifying labels or finding checkboxes and OCR fields scattered throughout a large document.  
 Consider this example.  
 ![image](https://user-images.githubusercontent.com/47416964/128854014-c0b3a114-4bcb-4ab7-a843-f9a8b84be7f9.png)  
