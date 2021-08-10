@@ -1,4 +1,20 @@
+Public Sub SL_CustomZones(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
+   'Script Locator
+   Dim Zone As New CscXDocFieldAlternative, OCR_Chars As CscXDocChars
+   Set Zone= pLocator.Alternatives.Create
+   Zone.PageIndex=0 ' First Page
+   Zone.Left=50 ' Pixels
+   Zone.Width=25
+   Zone.Top=300
+   Zone.Height=25
+   Set OCR_Chars=XDocument_ZonalOCR(pXDoc,Zone,"FR_HandAlphanum")
+   Zone.Text=OCR_Chars.Text
+   Zone.Confidence=OCR_Chars.ConfAvg
+   End With
+End Sub
+
 Public Function XDocument_ZonalOCR(ByVal pXDoc As CscXDocument, zone As Object, ProfileName As String) As CscXDocChars
+   'Zone can be a cscxdocfield, cscxdocword, cscxdocfieldalternative
    'Add reference to C:\Program Files (x86)\Common Files\Kofax\Components\MpsForms.6.0.dll
    'Perform zonal ocr on the CSCXDOCFIELD or CSCXDocSubfield passed in.
    Dim ZR As New MpsZoneRecognizing, ZonalProfile As IMpsRecogProfile, Image As CscImage, chars As CscXDocChars
