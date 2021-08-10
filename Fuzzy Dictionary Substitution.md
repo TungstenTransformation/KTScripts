@@ -16,7 +16,7 @@ and so I retrieve 5 pieces of information to use in other locators.
 This is achieved using a fuzzy database with **auto replacement values** in it.  
 ![image](https://user-images.githubusercontent.com/47416964/128849883-b6d5dd0d-c4f4-4964-8159-62e1fd8fcab1.png)  
  
-and inserting a dictionary into a format locator  
+and inserting the dictionary into a format locator  
 ![image](https://user-images.githubusercontent.com/47416964/128849585-1d2f3dce-6609-4f7e-abc5-68ded174ebb0.png)  
 ## Example 2 - Finding Text Anchors for values in large documents.  
 This can be useful for parsing large tables with identifying labels or finding checkboxes and OCR fields scattered throughout a large document.  
