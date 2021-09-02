@@ -6,7 +6,7 @@ For example, you are looking for **Medicare Claims** on this document.
 The normal format locator will find **Medicare** as one result with 57% and **Claims** will be a second result with 43%.    
 ![image](https://user-images.githubusercontent.com/47416964/131869506-e3b641f4-5920-45e0-bb81-777a9c0dea94.png)
 
-The script below returns the following results. **Medicare Claims** with 100%. The Green Box looks wrong, but that is the box that surrounds the word **Medicare** and **Claims**.  
+The script below returns the following results. **Medicare Claims** with 100%. The Green Box looks wrong, but that is the box that surrounds the words **Medicare** and **Claims**.  
 ![image](https://user-images.githubusercontent.com/47416964/131869748-7ea8063c-ef80-497b-83f2-16b7bb7dea74.png)
 
 
