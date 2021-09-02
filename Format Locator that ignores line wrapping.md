@@ -53,22 +53,21 @@ Sub Locator_ExtractFromAllText(pXDoc As CscXDocument, ClassName As String, Locat
    Next
    'recalculate the textlines that locators look at. There will be only one text line
    Temp.Representations(0).AnalyzeLines
-
+   'Run the required Locator on the Temp document
    With Project.ClassByName(ClassName)
       .Locate(Temp,.Locators.ItemByName(LocatorName).Index)
    End With
    Set Alts=Temp.Locators.ItemByName(LocatorName).Alternatives
+   'Copy the results back to the script locator.
    For A=0 To Alts.Count-1
       If Alts(A).Confidence > Threshold Then
-      Set Result=Results.Create
-      Result.Confidence=Alts(A).Confidence
+         Set Result=Results.Create
+         Result.Confidence=Alts(A).Confidence
          For W=0 To Alts(A).Words.Count-1
             Result.Words.Append(pXDoc.Words(Alts(A).Words(W).IndexOnDocument))
          Next
       End If
    Next
-   Set Temp = Nothing
-
+   Set Temp = Nothing 'Delete the temp document
 End Sub
-
 ```
