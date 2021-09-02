@@ -25,7 +25,7 @@ Option Explicit
 ' Class script: Document
 
 Private Sub SL_Phrases_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
-   Locator_ExtractFromAllText(pXDoc,"WholeText","FL_Phrase",0.75,pLocator.Alternatives)
+   Locator_ExtractFromAllText(pXDoc,"Phrases","FL_Phrase",0.75,pLocator.Alternatives)
 End Sub
 
 
