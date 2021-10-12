@@ -1,12 +1,12 @@
 # Selecting an AZL subfield to be used for OCR correction
 This script solves the problem that an AZL may be looking at various locations on a document for possibilities of a field. You want in script to control which zone is assigned to a Field and that character correction is available for that field.
 
-1. Assign any subfield of the AZL to a Field. This is needed so that you can set the checkbox for **Display Field in Correction**  
+1. Assign any subfield of the AZL to a Field. This is needed so that you can set the checkbox for **Display Field in Correction**.  
 ![image](https://user-images.githubusercontent.com/47416964/136926804-c96b929c-3a19-42d4-89f0-8bd46b49ac52.png)
 1. Open Document Validation Form Designer **Menu/Design/ValidationForms/Customize/Step1**. 
 1. *click exactly where the mouse cursor is in the image to see the Validation Form Settings*.  
   ![image](https://user-images.githubusercontent.com/47416964/136927154-90424493-f6ba-430d-a71e-14ca87e49149.png)
-1. Make sure the Character Correction is Enabled in the Form Settings
+1. Make sure the Character Correction is Enabled in the Form Settings  
 ![image](https://user-images.githubusercontent.com/47416964/136926944-2a870e1f-8bc3-45d8-8142-acd73276cd77.png)
 1. Add this script to the Document Class. This example forces the Field **FirstName** to use the second subfield from the Advanced Zone Locator.
 ```vba
