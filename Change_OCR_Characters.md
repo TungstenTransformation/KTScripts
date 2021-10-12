@@ -6,8 +6,10 @@ This script solves the problem that an AZL may be looking at various locations o
 1. Open Document Validation Form Designer **Menu/Design/ValidationForms/Customize/Step1**. 
 1. *click exactly where the mouse cursor is in the image to see the Validation Form Settings*.  
   ![image](https://user-images.githubusercontent.com/47416964/136927154-90424493-f6ba-430d-a71e-14ca87e49149.png)
-1. Make sure the Character Correction is Enabled in the Form Settings  
+1. Make sure that **Character Exact Editing** is Enabled in the Form Settings  
 ![image](https://user-images.githubusercontent.com/47416964/136926944-2a870e1f-8bc3-45d8-8142-acd73276cd77.png)
+1. Make sure that **Thin Client Character Correction** is selected in the Project Settings if you are using the Thin Client.  
+![image](https://user-images.githubusercontent.com/47416964/136928005-724235b8-20fd-452d-a910-dd17fa2b6e97.png)
 1. Add this script to the Document Class. This example forces the Field **FirstName** to use the second subfield from the Advanced Zone Locator.
 ```vba
 Private Sub Document_AfterExtract(ByVal pXDoc As CASCADELib.CscXDocument)
