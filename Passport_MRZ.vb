@@ -24,7 +24,7 @@ Public Sub MRZ_Parse(MRZ As Object, details As CscXDocSubFields, MRZID As Long)
    MRZ.Text=Replace(MRZ.Text,"«","<") 'Finereader often finds «
    MRZ.Text=Replace(MRZ.Text," ","") 'Remove Spaces that OCR engines might insert
    width=CDbl(MRZ.Width/Len(MRZ.Text)) 'find the width of each character as this is a fixed space font
-   For Each legend In Split(key(MRZID-1)) 'Split the key to "Type:1:1" and "Country:3:3", etc.
+   For Each legend In Split(key(MRZID)) 'Split the key to "Type:1:1" and "Country:3:3", etc.
       part=Split(legend,":")              'Split to "Type" & "1" and "1"
       If Left(part(0),5)="Check" Then
          field=Split(part(0),"_")(1)
