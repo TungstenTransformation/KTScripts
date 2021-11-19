@@ -50,10 +50,11 @@ Public Sub MRZ_Parse(MRZ As Object, details As CscXDocSubFields, MRZID As Long)
          sf.Top=MRZ.Top
          sf.Height=MRZ.Height
          sf.Confidence=.11 'Set all confidences to something really low, since we don't trust the OCR engine. The checksum doesn't include the text
+         sf.Text=Trim(Replace(sf.Text,"<"," ")) 'Trim "<" after running checksums (Australian ID number has leading "<")
       End If
    Next
    For pos=0 To details.Count-1
-      details(pos).Text=Trim(Replace(sf.Text,"<"," ")) 'Trim "<" after running checksums (Australian ID number has leading "<")
+      
    Next
 End Sub
 
