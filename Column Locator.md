@@ -89,4 +89,7 @@ Sub Object_SortWords(a As Object, pXDoc As CscXDocument)
    Next
 End Sub
 
+Public Function Object_HorizontalDistance( a As Object, b As Object) As Long
+   Return Max(Abs(b.Left+b.Width/2-a.Left-a.Width/2)-b.Width/2-a.Width/2,0)
+End Function
 ```
