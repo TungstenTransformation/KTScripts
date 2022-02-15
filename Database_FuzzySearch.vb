@@ -1,11 +1,10 @@
-Public Function Database_FuzzySearch(dbname As String, column As String, Searchstring As String, numberHits As Integer, minimimConfidence As Double, Optional allColumns As Boolean=False) As CscXDocFieldAlternatives
-   'Searches inside a fuzzy database for the searchstring and returns the results in the alternatives of a new CSCField Object.
+Public Function Database_FuzzySearch(dbname As String, column As String, Searchstring As String, numberHits As Integer, minimimConfidence As Double, Results As CSCXDocFieldAlternatives, Optional allColumns As Boolean=False) As CscXDocFieldAlternatives
+   'Searches inside a fuzzy database for the searchstring and returns the results in the alternatives object 
    'if column="" then all columns are returned as subfields, otherwise returns only the chosen column in the alternatives.
    'Set minimimConfidence=1.0 for exact match search.
    Dim DB As CscDatabase, Fields() As String,FieldIDs() As Long
    Dim col As Integer,c As Integer,i As Integer
    Dim hits As CscDatabaseResItems, alt As CscXDocFieldAlternative
-   Dim results As New CscXDocField  'You are allowed to create a standalone field
    Dim value As String, substitute As String
    If Searchstring="" Then Return results.Alternatives
    Set DB=Project.Databases.ItemByName(dbname)
@@ -39,7 +38,7 @@ Public Function Database_FuzzySearch(dbname As String, column As String, Searchs
 
    For i = 0 To hits.Count-1
       If hits(i).Score>= minimimConfidence Then
-         Set alt= results.Alternatives.Create()
+         Set alt= results.Create()
          alt.Confidence=hits(i).Score
          If allColumns Then  'the column is "", so we return all fields
             For c = 0 To DB.FieldCount-1
