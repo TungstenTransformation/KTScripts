@@ -1,12 +1,13 @@
-Public Function Database_FuzzySearch(dbname As String, column As String, Searchstring As String, numberHits As Integer, minimimConfidence As Double, Results As CSCXDocFieldAlternatives, Optional allColumns As Boolean=False) As CscXDocFieldAlternatives
-   'Searches inside a fuzzy database for the searchstring and returns the results in the alternatives object 
+Public Function Database_FuzzySearch(dbname As String, column As String, Searchstring As String, numberHits As Integer, minimimConfidence As Double, Results As CSCXDocFieldAlternatives, Optional allColumns As Boolean=False)
+   'Searches inside a fuzzy database for the searchstring and stores the results in the Alternatives of the existing Results object 
+   'Call this script from a Script locator and pass pLocator.Alternatives as the 6th parameter
    'if column="" then all columns are returned as subfields, otherwise returns only the chosen column in the alternatives.
    'Set minimimConfidence=1.0 for exact match search.
    Dim DB As CscDatabase, Fields() As String,FieldIDs() As Long
    Dim col As Integer,c As Integer,i As Integer
    Dim hits As CscDatabaseResItems, alt As CscXDocFieldAlternative
    Dim value As String, substitute As String
-   If Searchstring="" Then Return results.Alternatives
+   If Searchstring="" Then Exit Sub
    Set DB=Project.Databases.ItemByName(dbname)
    ' Replace all delimiters by blank
    For i = 1 To Len(DB.AdditionalDelimiterChars)
@@ -53,5 +54,4 @@ Public Function Database_FuzzySearch(dbname As String, column As String, Searchs
          End If
       End If
    Next
-   Return results.Alternatives
 End Function
