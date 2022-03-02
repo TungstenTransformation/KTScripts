@@ -7,7 +7,7 @@ Public Function Database_FuzzySearch(dbname As String, column As String, Searchs
    Dim col As Integer,c As Integer,i As Integer
    Dim hits As CscDatabaseResItems, alt As CscXDocFieldAlternative
    Dim value As String, substitute As String
-   If Searchstring="" Then Exit Sub
+   If Searchstring="" Then Exit Function
    Set DB=Project.Databases.ItemByName(dbname)
    ' Replace all delimiters by blank
    For i = 1 To Len(DB.AdditionalDelimiterChars)
