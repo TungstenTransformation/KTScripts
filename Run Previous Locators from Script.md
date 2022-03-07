@@ -2,10 +2,10 @@
 When testing in Project Builder, it is possible that locators "forget" their test results, and hence following locator don't get the input they need.
 Here are 3 solutions to solve this problem
 1. Open the "Test" Button in the Locator and select "Run all previous Locators"
-2. Test a previous locator Locator.
+2. Test a previous locator.
   * Don't close it (that can make it forget)
   * Rather, double-click the next locator you need. This double-clicking closes the current locator WITHOUT forgeting it's results.
-  * Use the following script, where you can tell the script locator what the previous locators are, and they are run dynamically if they have "forgotten" their results.
+3. Use the following script, where you can tell the script locator what the previous locators are, and they are run dynamically if they have "forgotten" their results.
 
 # Running previous locators via script.
 *Your XDoc **must** be classified for this to work. You will get an error if the XDoc is unclassified. It needs to be classified so that the script can find the locators in the Class Tree.
