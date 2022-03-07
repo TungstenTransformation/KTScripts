@@ -8,8 +8,7 @@ Here are 3 solutions to solve this problem
 3. Use the following script, where you can tell the script locator what the previous locators are, and they are run dynamically if they have "forgotten" their results.
 
 # Running previous locators via script.
-*Your XDoc **must** be classified for this to work. You will get an error if the XDoc is unclassified. It needs to be classified so that the script can find the locators in the Class Tree.
-If you don't classify the XDocument, then the script will assume the Default Class.*
+*Your XDoc **must** be classified for this to work (Press F5 or F6 to classify the XDoc to the Class selected in the tree). If the XDoc is unclassified, the script will assume the Default Class. If the locator is not found on that class then an error will occur. *
 
 ```vb
 Private Function XDoc_PreviousLocator(ByVal pXDoc As CASCADELib.CscXDocument,LocatorName As String) As CscXDocFieldAlternatives
