@@ -1,7 +1,7 @@
 # Moving zones by script.
 The zones in the Advanced Zone locator (AZL) can be moved around by 3 different methods.
-* Using Locators as Anchors.  
-  *This is the prefered method and requires no scripting.*
+* Using Locators as Anchors. 
+  *This is the prefered method and requires no scripting. You cannot use a script locator as an anchor.*
 * Adding Zones to the Default Representation by Script.  
 *This method is explained below*
 * Editing the Zone Locator itself.  
