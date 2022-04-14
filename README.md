@@ -24,6 +24,13 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 * [Copy Subfields into a Table](Copy%20a%20Locator's%20Subfields%20into%20a%20Table.md)
 * [Fast Table Lassoing](FastTableLassoing.avi) *quickly and interactively select table columns and rows in the Validation Interface*
 * [3-way Line Item Matching demo](LIMLocDemo.7z) *a complete project showing Line Item Matching Locator, 3-way matching and interactive SQL database lookup in Validation*
+* [Table Detection by Gridlines](Table%20Detection%20by%20Table%20Grid%20Lines.vbs)
+* [Table Extraction by Regex](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20Extraction%20By%20Regex.md)
+* [Table Header Pack Parser](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20Header%20Pack%20Parser.md)
+* [Insert Missing Rows into a Table](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20Insert%20Missing%20Rows.md) *automatically finds missing rows that the table locator missed*
+* [Force Table Locator to use a particular algorithm](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20Locator%20Force%20Algorithm.md) *the table locator has 5 internal algorithms that are all run and voted against. Here you decide which algorithm wins always*
+* [Validate Table Rows with a Fuzzy Database](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20Validate%20Rows%20with%20Fuzzy%20Database.md)
+* [Write Table to CSV](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20to%20CSV.md)
 # Locator Customization
 * [How to customize any locator](Customize%20Locators.md)
 * [Force Format Locator to search across multiple lines](Format%20Locator%20that%20ignores%20line%20wrapping.md) *the format locator only searches within each line of text. This makes it search further..*
@@ -39,9 +46,9 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 * [Page Classification](Page_Classification.md)
 * [Page Locators](https://github.com/KofaxTransformation/KTScripts/blob/master/Page_Locators.md) **VERY POWERFUL** * write locators at the page level*
 * [Paragraph Classification](Paragraph%20Classification.md)
-* 
+* [String Classification](String_Classify.vb) **VERY POWERFUL** *classify any string, even a word or phrase!*
 # Pages
-* [Page Classification](Page_Classification.md) *
+* [Page Classification](Page_Classification.md)
 * [Split a page horizontally or vertically](Split%20a%20Page.md)
 # Geometry Functions
 * [Find Left Margin of a Page](Find%20Left%20Margin%20of%20Page.md) *very precise and fuzzy with sub-pixel accuracy for the left margin of a page. Useful for comparing two pages and paragraph detection*
@@ -55,8 +62,10 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 * [IBAN validation](IBAN.md)
 * [JSON](JSON.md) *quick and dirty JSON parser*
 * [Quicksort](https://github.com/KofaxTransformation/KTScripts/blob/master/QuickSort.vb) **VERY POWERFUL** *sort alternatives fast by confidence, alphabetically, coordinates, page, textline, etc.*
+* [String Regex](String_Regex.vb) *Split a string via regex. eg "2004-12-23" into "2004","12","23"
 # Output
 * [Write Fields to CSV](https://github.com/KofaxTransformation/KTScripts/blob/master/Fields%20to%20CSV.md)
+* [Write Table to CSV](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20to%20CSV.md)
 # Integration
 * [Kofax Total Agility](20%20-%20Integrating%20Kapow%20with%20Total%20Agility.pdf)
 # Benchmarking
@@ -64,6 +73,6 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 # Images
 * [Detect Page Size](Detect%20Page%20Size.md) *detects whether a page is A4, A3, US Letter, Foolscap, etc. Landscape vs Portrait. Works well on cropped images too*
 # Documents
-* [Convert PDF to TIFF](PDFtoTiff.md) **VERY POWRFUL** *convert your PDF samples to TIFF while preserving the Text layer. Speeds locator testing *10 !*
+* [Convert PDF to TIFF](PDFtoTiff.md) **VERY POWERFUL** *convert your PDF samples to TIFF while preserving the Text layer. Speeds locator testing x10 !*
 * [Gibberish/Nonsense/Bad OCR Detection](GibberishDetection.md) *check if a document is mostly unreadable OCR or corrupted/encrpyted PDF. Useful for language detection as well*
 * [How to read Russian Invoices](How%20to%20Read%20Russian%20Invoices.md)
