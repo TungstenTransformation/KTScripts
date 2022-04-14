@@ -2,6 +2,8 @@
 A collection of mostly very useful scripts containing various algorithms.  
 These scripts are provided as-is. There is no guarantee that they will work. You will need to understand them to use them in your projects.  
 Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) to provide feedback.
+# Guides
+* [How to Train the Text Content Locator](Training%20the%20Text%20Content%20Locator.md)
 # Script Locators
 * [Column Locator](Column%20Locator.md) *detects text columns in a document*
 * [Dynamic Fuzzy Search Locator](DynamicFuzzySearchLocator.md) **POWERFUL** *fuzzy search a document for values from a previous locator!*
@@ -9,10 +11,13 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 * [NLP (Natural Language Prcessing)](NLP%20via%20script.md)
 * [Passport MRZ Locator](Passport_MRZ.vb)
 * [Run Previous Locators from Script](Run%20Previous%20Locators%20from%20Script.md) **VERY POWERFUL** *your script locators now **know** which locators they are dependent on and run then on-demand only if needed, saving you valuble time. Just press **Test** on the locator and everything is automatically calculated!*
+* [UK VAT Locator](UK%20VAT%20Lookup.md) *look up VAT id's online at UK government. Only works inside UK.*
+* [Webservice](Webservice.md)
 # Field Formatters
 * [Scripting Field Formatters](Custom%20Field%20Formatters.md)
 * [Fuzzy Field Formatter](Fuzzy%20Formatter%20%26%20Validation%20Rule.md) *useful to make a spellchecker!*
 * [Name Suggestor Demo](NameSuggestor.mp4)
+* [UK VAT Formatter](UKVAT_Formatter.md)
 # Validation Rules
 * [Fuzzy Validation Rule](Fuzzy%20Formatter%20%26%20Validation%20Rule.md) *useful for finding unusual spellings and suggesting potential corrections*
 # Zones
@@ -25,12 +30,13 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 * [Fast Table Lassoing](FastTableLassoing.avi) *quickly and interactively select table columns and rows in the Validation Interface*
 * [3-way Line Item Matching demo](LIMLocDemo.7z) *a complete project showing Line Item Matching Locator, 3-way matching and interactive SQL database lookup in Validation*
 * [Table Detection by Gridlines](Table%20Detection%20by%20Table%20Grid%20Lines.vbs)
-* [Table Extraction by Regex](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20Extraction%20By%20Regex.md)
-* [Table Header Pack Parser](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20Header%20Pack%20Parser.md)
-* [Insert Missing Rows into a Table](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20Insert%20Missing%20Rows.md) *automatically finds missing rows that the table locator missed*
-* [Force Table Locator to use a particular algorithm](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20Locator%20Force%20Algorithm.md) *the table locator has 5 internal algorithms that are all run and voted against. Here you decide which algorithm wins always*
-* [Validate Table Rows with a Fuzzy Database](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20Validate%20Rows%20with%20Fuzzy%20Database.md)
-* [Write Table to CSV](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20to%20CSV.md)
+* [Table Extraction by Regex](Table%20Extraction%20By%20Regex.md)
+* [Table Header Pack Parser](Table%20Header%20Pack%20Parser.md)
+* [Insert Missing Rows into a Table](Table%20Insert%20Missing%20Rows.md) *automatically finds missing rows that the table locator missed*
+* [Force Table Locator to use a particular algorithm](Table%20Locator%20Force%20Algorithm.md) *the table locator has 5 internal algorithms that are all run and voted against. Here you decide which algorithm wins always*
+* [Validate Table Rows with a Fuzzy Database](Table%20Validate%20Rows%20with%20Fuzzy%20Database.md)
+* [Write Table to CSV](Table%20to%20CSV.md)
+* [Table Scripting Framework](TableScriptingFramework.md) *a powerfu&  generic approach to enhance table locators*
 # Locator Customization
 * [How to customize any locator](Customize%20Locators.md)
 * [Force Format Locator to search across multiple lines](Format%20Locator%20that%20ignores%20line%20wrapping.md) *the format locator only searches within each line of text. This makes it search further..*
@@ -44,9 +50,10 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 * Fast Table Lassoing [demo video](FastTableLassoing.avi) and [script](Interactive%20Fast%20Table%20Lassoing.vbs) *quickly and interactively select table columns and rows in the Validation Interface*
 # Classification
 * [Page Classification](Page_Classification.md)
-* [Page Locators](https://github.com/KofaxTransformation/KTScripts/blob/master/Page_Locators.md) **VERY POWERFUL** * write locators at the page level*
+* [Page Locators](Page_Locators.md) **VERY POWERFUL** * write locators at the page level*
 * [Paragraph Classification](Paragraph%20Classification.md)
 * [String Classification](String_Classify.vb) **VERY POWERFUL** *classify any string, even a word or phrase!*
+* [Text Layout Classification](Text%20Layout%20Classification%20and%20Registration.md) **VERY POWERFUL** *a completely new classification strategy. No configuration required. It classifies a page based on the position of every word on the page. It is very sensitive to subtle changes between similar documents. If your forms only vary slightly, this will detect that!*
 # Pages
 * [Page Classification](Page_Classification.md)
 * [Split a page horizontally or vertically](Split%20a%20Page.md)
@@ -61,11 +68,13 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 * [Fuzzy Match Text](FuzzyMatch.vb) **VERY POWERFUL** *fuzzy match any two pieces of text. 0%=no match, 100%=exact match*
 * [IBAN validation](IBAN.md)
 * [JSON](JSON.md) *quick and dirty JSON parser*
-* [Quicksort](https://github.com/KofaxTransformation/KTScripts/blob/master/QuickSort.vb) **VERY POWERFUL** *sort alternatives fast by confidence, alphabetically, coordinates, page, textline, etc.*
+* [Quicksort](QuickSort.vb) **VERY POWERFUL** *sort alternatives fast by confidence, alphabetically, coordinates, page, textline, etc.*
 * [String Regex](String_Regex.vb) *Split a string via regex. eg "2004-12-23" into "2004","12","23"
+* [Numbers to Text](TurkishNumbers.md) *Convert numbers to text eg "1234" to "one thousand two hundred and thirty four". Useful for checking that numbers match their text form*
 # Output
-* [Write Fields to CSV](https://github.com/KofaxTransformation/KTScripts/blob/master/Fields%20to%20CSV.md)
-* [Write Table to CSV](https://github.com/KofaxTransformation/KTScripts/blob/master/Table%20to%20CSV.md)
+* [Write Fields to CSV](Fields%20to%20CSV.md)
+* [Write Table to CSV](Table%20to%20CSV.md)
+* [Write Fields to Excel](Write%20to%20Excel.md) *including colors, formats, images and more!*
 # Integration
 * [Kofax Total Agility](20%20-%20Integrating%20Kapow%20with%20Total%20Agility.pdf)
 # Benchmarking
@@ -73,6 +82,7 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 # Images
 * [Detect Page Size](Detect%20Page%20Size.md) *detects whether a page is A4, A3, US Letter, Foolscap, etc. Landscape vs Portrait. Works well on cropped images too*
 # Documents
+* [Text Deskew](Table%20to%20CSV.md) *If a document is not deskewed before or during OCR the textlines can be messed up. This calculates the page skew AFTER OCR and then realigns all the words into their correct text lines.
 * [Convert PDF to TIFF](PDFtoTiff.md) **VERY POWERFUL** *convert your PDF samples to TIFF while preserving the Text layer. Speeds locator testing x10 !*
 * [Gibberish/Nonsense/Bad OCR Detection](GibberishDetection.md) *check if a document is mostly unreadable OCR or corrupted/encrpyted PDF. Useful for language detection as well*
 * [How to read Russian Invoices](How%20to%20Read%20Russian%20Invoices.md)
