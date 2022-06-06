@@ -21,12 +21,15 @@ Private Function XDocument_SearchLineFuzzy(ByVal pXDoc As CscXDocLib.CscXDocumen
 End Function
 
 
-Public Function String_LevenshteinDistance(a As String ,b As String) as Long
+   Public Function String_LevenshteinDistance(a As String ,b As String, Optional IgnoreCase as Boolean = true) as Long
    'http://en.wikipedia.org/wiki/Levenshtein_distance
    'Levenshtein distance between two strings, used for fuzzy matching
    'Returns the number of character differences between the two strings.
    'eg LevenshteinDistance("kitten","kitchen") = 2 = insertion of "c" + substitution of "t" for "h"
-
+   If IgnoreCase Then
+      a=UCase(a)
+      b=UCase(b)
+   End If
    Dim i As Long, j As Long, cost As Long, d() As Long
    Dim ins As Long, del As Long, subs As Long  ' for counting insertions, deletions and substitutions
    If Len(a) = 0 Then Return Len(b)
