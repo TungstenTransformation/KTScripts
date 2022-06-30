@@ -16,7 +16,7 @@ This technique uses the not-well-known [**Classification Locator**](https://docs
 ## Add the Page Classification Project to your main project
 This technique uses **Page Level Locators**
 1. Add a top-level class **Page** to your project. Deselect **Valid classification Result** for it.  
-2. Add a [**Classification Locator**](https://docshield.kofax.com/KTT/en_US/6.3.0-v15o2fs281/help/PB/ProjectBuilder/450_Extraction/ClassificationLocator/c_ClassificationLocator.html) to the Page Class and call it **CL_Page**
+2. Add a [**Classification Locator**](https://docshield.kofax.com/KTT/en_US/6.3.0-v15o2fs281/help/PB/ProjectBuilder/450_Extraction/ClassificationLocator/c_ClassificationLocator.html) to the Page Class and call it **CL_Page**  
 ![image](https://user-images.githubusercontent.com/47416964/128837230-2cafc86c-8e3e-460c-8a00-d81181d27408.png)
 3. In your "Main" document class add a Script Locator **SL_ClassifyPages**
 ```vb
