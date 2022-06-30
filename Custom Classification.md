@@ -16,4 +16,5 @@ This is a simple and not-recommended way to classify documents. It is a lot of w
  Locators that are added to the Project Level of a Class are executed BEFORE classification and can be used to classify documents. 
  ### Barcode Classification
  1. Add a Barcode Locator to the Project Level.
- 
+ ![image](https://user-images.githubusercontent.com/103566874/176593343-374e048e-b3d9-42fa-8ad5-627086514410.png)
+
