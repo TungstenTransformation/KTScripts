@@ -49,6 +49,7 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 # Validation Interface Script
 * Fast Table Lassoing [demo video](FastTableLassoing.avi) and [script](Interactive%20Fast%20Table%20Lassoing.vbs) *quickly and interactively select table columns and rows in the Validation Interface*
 # Classification
+* [Custom Classification](Custom%20Classification.md)  
 * [Page Classification](Page_Classification.md)
 * [Page Locators](Page_Locators.md) **VERY POWERFUL** * write locators at the page level*
 * [Paragraph Classification](Paragraph%20Classification.md)
