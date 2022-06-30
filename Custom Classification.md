@@ -29,7 +29,7 @@ This is a simple and not-recommended way to classify documents. It is a lot of w
       Set Alternative=.ItemByIndex(0)
    End With
    'Check that the Barcode contains a valid class name
-   For C=1 To Project.ClassCount
+   For C=0 To Project.ClassCount-1
       If Project.ClassByIndex(C).Name=Alternative.Text Then
          Match=True
          Exit For
