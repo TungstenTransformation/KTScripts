@@ -17,7 +17,7 @@ This is a simple and not-recommended way to classify documents. It is a lot of w
  ### Barcode Classification
  _This simple example will assume that the barcode contains the exact name of the document class._
  1. Add a Barcode Locator to the Project Level.
- 2. Accept the warning because, yes this is exactly what we want!
+ 2. Accept the warning because, yes this is exactly what we want!  
  ![image](https://user-images.githubusercontent.com/103566874/176593343-374e048e-b3d9-42fa-8ad5-627086514410.png)  
  2. Configure the Barcode Locator to search for only the kind of locator that classifies for you. _Barcode locators are very slow and it is recommended to restrict them to precisely the type and length of barcodes you are looking for for speed and accuracy._
  2. Add this script to the Project Level Class.
