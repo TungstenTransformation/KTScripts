@@ -8,5 +8,7 @@ This Classification Locator is finding the language of a document.
 ## Language Classification
 1. Find the training samples in the install directory of **Kofax Transformation**. Mine are in **C:\Program Files (x86)\Kofax\Transformation Toolkit\Samples**
 2. Unzip **ClsLoc_Language.zip** into an empty folder.  
-![image](https://user-images.githubusercontent.com/103566874/176842802-2a15268f-06ff-4f04-90dc-4938481ca762.png)
+![image](https://user-images.githubusercontent.com/103566874/176842802-2a15268f-06ff-4f04-90dc-4938481ca762.png)  
+
+This [RPA Robot](https://github.com/KofaxTransformation/KTScripts/tree/master/LanguageClassification) downloads training and test data from Wikipedia to improve the langauge classification project.
 
