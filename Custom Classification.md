@@ -1,6 +1,6 @@
 # Custom Classification
 Kofax Transformation classifies each page of a document as part of classification and separation.  
-Classification has 4 steps.
+Classification has 4 steps. (Trainable Document Separation also uses these same 4 steps)  
 1. Layout Classification.
 2. Text Classification.
 3. Instruction Classification.
