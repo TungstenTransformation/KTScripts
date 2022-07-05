@@ -35,7 +35,7 @@ This is a simple and not-recommended way to classify documents. It is a lot of w
          Exit For
       End If
    Next
-   If Not Match Then Exit Sub ' The barcode does not contain a valid classs name
+   If Not Match Then Exit Sub ' The barcode does not contain a valid class name
    pXDoc.Reclassify(Alternative.Text, Alternative.Confidence) ' reclassify the document according to the barcode
 End Sub
  ```
