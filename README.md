@@ -21,8 +21,8 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 # Validation Rules
 * [Fuzzy Validation Rule](Fuzzy%20Formatter%20%26%20Validation%20Rule.md) *useful for finding unusual spellings and suggesting potential corrections*
 # Zones
-* (Move Zones by Script)[Move%20Zone%20by%20Script.md]
-* (Perform Zone OCR in script)[OCR.vb]
+* [Move Zones by Script](Move%20Zone%20by%20Script.md)
+* [Perform Zone OCR in script](OCR.vb)
 # Tables
 * [How to Use Table Locators](Knowhow%20-%20How%20to%20use%20KT%20Table%20Locators.docx)
 * [Copy Zones into to Table](Copy%20Zones%20to%20Table.md)
