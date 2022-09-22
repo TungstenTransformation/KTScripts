@@ -195,19 +195,20 @@ This algorithm is very useful when you need to perform OCR on a document and the
 * has MANY background words on the page, as is typical on a US government or insurance form
 * is highly stretched in one direction. 
 * has a strong zoom (e.g. a photo from a mobile phone with the camera far back) 
-* came from a mobile phone and the camera was at an angle to the paper
+* came from a mobile phone and the camera was at an angle to the paper.
+* has zones shifted more than 10mm.
 
-TL uses almost every word on the page as an anchor. This is much better than manually configuring a few anchors yourself.  
+TL uses every unique word on the page as an anchor. This is much better than manually configuring a few anchors yourself.  
 
 **NOTICE** Please test the Advanced Zone Locator** with the following registration settings *before* you try this algorithm.
-Usually these settings mean you do not 
+Usually these settings mean you do not need to use my custom algorithm.
 1. Make sure Registration Type is **custom**
 1. Disable **Anchors** (don't use anchors as they are lots of work and don't do as good a job 
 1. Enable **Lines** if your document has many vertical and horizontal lines on it
 1. Enable **OCR** if your document has a lot of background text (which is what Layout Classification uses as well!)
 1. Enable **Layout**
 1. Enable **Account for Local Distortion**.   (TL checks for distortion across the whole page)
-1. Set **Local re-registration** to max of 10 mm horizontally and vertically. (TL has unlimited distance)
+1. Set **Local re-registration** to max of 10 mm horizontally and vertically. (my algorithm has unlimited re-registration distance)
 1. Disable **Registration Failure makes zone invalid** as you want to see where the zones would be found.
 ![image](https://user-images.githubusercontent.com/47416964/87690499-d66aec80-c789-11ea-8bcc-618a41180ae1.png)
 
