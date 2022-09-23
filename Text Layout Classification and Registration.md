@@ -191,6 +191,11 @@ End Sub
  After a document is either classified as **B** or **B1** to **B6**, TL tests the document with all 7 classes with the *Text Layout* algorithm and assigns the document to the class with the best match.
 
 ## Text Layout Registration
+improvements on 23 September 2022
+* mismatched words are ignored. (outliers to the linear regression are removed and the line of best fit is recalculated) This makes the algorithm precise and robust.
+* It now only requires a single script locator essentially for debugging. The script event **Document_BeforeLocate** is now used to run the zone shifting from *within* the Advanced Zone Locator. 
+* improved documentation. 
+
 This algorithm is very useful when you need to perform OCR on a document and the document 
 * has MANY background words on the page, as is typical on a US government or insurance form
 * is highly stretched in one direction. 
@@ -213,20 +218,19 @@ Usually these settings mean you do not need to use my custom algorithm.
 ![image](https://user-images.githubusercontent.com/47416964/87690499-d66aec80-c789-11ea-8bcc-618a41180ae1.png)
 
 Kofax Transformation has support for adjusting the zones of a Zone Locator by script - we will use this technique here as well.
-## How TL Works
-TL uses the following algorithm
+## How Text Layout Registration Works
 1. Find all unique words on Document A (This is the document you want to classify or register) using a Dictionary object. This is very fast.
 2. Find all unique words on Document B (This is either the classification sample document or Zone Locator's sample document)
 3. Find all unique words on Document A that are on Document B. These are the anchor words we will use to align the documents.
 4. Plot the X coordinate of each word in Document A against the X coordinate of each word in Document B and calculate the line passing through them using [linear regression](https://www.easycalculation.com/statistics/learn-regression.php), a High School math technique.  
-![image](https://user-images.githubusercontent.com/47416964/87692847-817ca580-c78c-11ea-9846-476fc5966edb.png)
+![image](https://user-images.githubusercontent.com/47416964/191963260-bea2e2cd-7478-4559-8b6d-87a70ce34d8d.png)
+
 5. Linear Regression calculates 
-* the **slope**, M, of the line, which corresponds to the **stretch**. In the example you see that the document has 97.8% of the width of the original document and 96.0% of the height.
-* the **intercept**, B, of the line, which corresponds to the **shift**. In the example you see that the document has shifted 118.2 pixels horizontally and 65.3 pixels vertically
-* the **R**, R, of the line, shows how well the dots fit on a straight line. 1.000 is perfect alignment. In this case we have perfect alignment horizontally and vertically. 
-![image](https://user-images.githubusercontent.com/47416964/87693114-d7e9e400-c78c-11ea-90d2-cd76fac3cfa2.png)
-
-
+* the slope, M, of the line corresponds to the **scale**. In the example you see that the document is 2.091 times *wider* than the original document and 2.090 times *higher*.
+* the intercept, B, of the line corresponds to the **pixel shift**. In the example you see that the document has shifted -37.2 pixels horizontally and 189.7 pixels vertically
+* the **Confidence**, R, of the line, shows how well the dots fit on a straight line. 1.0000 shows perfect both horizontally and vertically.
+* This example used 75 unique words that matched between the two documents as anchors.   
+![image](https://user-images.githubusercontent.com/47416964/191963050-dba951ae-575e-41cc-9547-626c4b9f9ba9.png)
 
 ```vb
 '#Language "WWB-COM"
@@ -234,14 +238,27 @@ TL uses the following algorithm
 Option Explicit
 'This script uses all unique words on a page to register OCR and OMR zones to subpixel accuracy.
 '!!! IMPORTANT !!!!
-' Add on Menu/Edit/References... "Microsoft Scripting Runtime" for Dictionary
-'Create Locators
-'  SL_UniqueWords (used for debugging so you can see the unique words)
-'  SL_CalculatePageShift (with subfields M, B, Smoothness, N, Resolution, Direction
-'  SL_MoveZones (this moves all the OCR and OMR zones for the AZL)
+' Add on Menu/Edit/References...
+'           "Microsoft Scripting Runtime" for Dictionary to find and match unique words
+'           "Kofax Cascade Advanced Zone Locator" for retrieving the Zone Definitions
+'Create One Locator
+'  SL_CalculatePageShift (used for debugging, with subfields Scale, Shift, Confidence, Words, DPI.)
 '  AZL (on the Registration Tab set to "None")
 
-Private Sub SL_UniqueWords_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
+' Class script: document
+
+Private Sub Document_BeforeLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal LocatorName As String)
+   If LocatorName = "AZL" Then
+      'Move the Zones in the Advanced Zone Locator based on the Shifts and Scale
+      Dim Shifts As CscXDocFieldAlternatives
+      Dim Zones As CscXDocSubFields, AZL As CscAdvZoneLocator
+      Set Shifts=pXDoc.Locators.ItemByName("SL_CalculatePageShift").Alternatives
+      Set AZL = Project.ClassByName(pXDoc.ExtractionClass).Locators.ItemByName(LocatorName).LocatorMethod
+      Zones_Shift(AZL.Zones,Shifts,pXDoc.Representations(0))
+   End If
+End Sub
+
+Private Sub SL_CalculatePageShift_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
    'Your document MUST be classified before calling this locator, in order to be able to find the sample image in the AZL.
    'This function is purely here for debugging. it is so that you can see the unique words that are used for matching
    Dim I As Long, StartWordIndexRef As Long, StartWordIndex As Long, EndWordIndexRef As Long, EndWordIndex As Long
@@ -253,40 +270,6 @@ Private Sub SL_UniqueWords_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocu
    For I=0 To pXDoc.Pages.Count - 1
       Pages_Compare(AZLSampleDoc.Pages(I),pXDoc.Pages(I),pLocator.Alternatives,pXDoc.CDoc.Pages(I).XRes,pXDoc.CDoc.Pages(I).YRes)
    Next
-End Sub
-
-Private Sub SL_CalculatePageShift_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
-   'this works out the page shift between the pages
-   Dim P As Long
-   Dim AZLSampleDoc As CscXDocument, LeftShift As Double, DownShift As Double, Tolerance As Double, Confidence As Double
-   Dim AZLSampleDocFileName As String
-   AZLSampleDocFileName =Left(Project.FileName,InStrRev(Project.FileName,"\")) & "Samples\" & Class_GetClassPath(pXDoc.ExtractionClass) & "\Sample0.xdc"
-   Set AZLSampleDoc = New CscXDocument
-   AZLSampleDoc.Load(AZLSampleDocFileName)
-   For P=0 To pXDoc.Pages.Count - 1
-      Pages_Compare(AZLSampleDoc.Pages(P),pXDoc.Pages(P),pLocator.Alternatives,pXDoc.CDoc.Pages(P).XRes,pXDoc.CDoc.Pages(P).YRes)
-   Next
-End Sub
-
-Private Function Class_GetClassPath(ClassName As String) As String
-   'Recursively work out the ClassPath
-   Dim ParentClass As CscClass
-   Set ParentClass=Project.ClassByName(ClassName).ParentClass
-   If ParentClass Is Nothing Then
-      Return ClassName
-   Else
-      Return Class_GetClassPath(ParentClass.Name) & "\" & ClassName
-   End If
-End Function
-
-Private Sub SL_MoveZones_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
-   'Move the Zones in the Advanced Zone Locator based on the Shifts,scale and smoothness
-   'Add reference to "Kofax Advanced Zone Locator 4.0"
-   Dim Shifts As CscXDocFieldAlternatives
-   Dim Zones As CscXDocSubFields, AZL As CscAdvZoneLocator
-   Set Shifts=pXDoc.Locators.ItemByName("SL_CalculatePageShift").Alternatives
-   Set AZL = Project.ClassByName(pXDoc.ExtractionClass).Locators.ItemByName("AZL").LocatorMethod
-   Zones_Shift(AZL.Zones,Shifts,pXDoc.Representations(0))
 End Sub
 
 Public Sub Pages_Compare(page1 As CscXDocPage, page2 As CscXDocPage,Results As CscXDocFieldAlternatives, XRes As Long, YRes As Long)
@@ -302,6 +285,7 @@ Public Sub Pages_Compare(page1 As CscXDocPage, page2 As CscXDocPage,Results As C
    Set Words1=Page_GetUniqueWords(page1,0,page1.Words.Count-1)
    Set Words2=Page_GetUniqueWords(page2,0,page2.Words.Count-1)
    'Build a list of the unique words that appear on BOTH pages
+   'Open "C:\temp\words.txt" For Output As #1
    For Each WordText In Words1.Keys
      If Len(WordText) >= 6  And IsNumeric(WordText) = False Then 'only match words with 6 or more characters
          If Words2.Exists(WordText) Then 'This unique word appears on both pages
@@ -313,12 +297,67 @@ Public Sub Pages_Compare(page1 As CscXDocPage, page2 As CscXDocPage,Results As C
             Vector.Width=Word2.Left+Word2.Width/2
             Vector.Height=Word2.Top+Word2.Height/2
             Vector.Text=Word1.Text
+    '        Print #1, Vector.Text & vbTab & CStr(Vector.Left) & vbTab & CStr(Vector.Top) & vbTab & CStr(Vector.Width) & vbTab & CStr(Vector.Height)
          End If
     End If
    Next
+   'Close #1
+   LinearRegression(Vectors,True,Results.Create,XRes,Results.Count-1) 'Calculate horizontal shift, scale and smoothness
+   LinearRegression(Vectors,False,Results.Create,YRes,Results.Count-1) 'Calculate vertical shift, scale and smoothness
+   Line_RemoveOutliers(Vectors,Results, 3.0) ' remove all outlier points (mismatched words) more than 3.0 times the average distance away.
+   While Results.Count>0
+      Results.Remove(0)
+   Wend
+   'recalculate the lines without the outlier points
    LinearRegression(Vectors,True,Results.Create,XRes,Results.Count-1) 'Calculate horizontal shift, scale and smoothness
    LinearRegression(Vectors,False,Results.Create,YRes,Results.Count-1) 'Calculate vertical shift, scale and smoothness
 End Sub
+
+Public Sub Line_RemoveOutliers(Vectors As CscXDocFieldAlternatives, Results As CscXDocFieldAlternatives, Tolerance As Double)
+   Dim V As Long, Vector As CscXDocFieldAlternative, Result As CscXDocFieldAlternative
+   Dim AverageDistance As Double
+   Set Result=Results(Results.Count-2)
+   'Calculate average distance for horizontal points
+   AverageDistance=0
+   For V=Vectors.Count-1 To 0 Step 0-1
+      Set Vector=Vectors(V)
+      Vector.Confidence=Line_Distance(Vector.Left,Vector.Width,Result)
+      AverageDistance=AverageDistance+Vector.Confidence
+   Next
+   AverageDistance=AverageDistance/Vectors.Count
+   'remove points with horizontal distance 3 times the average
+   For V=Vectors.Count-1 To 0 Step 0-1
+      Set Vector=Vectors(V)
+      If Vector.Confidence>AverageDistance*Tolerance Then
+         Vectors.Remove(V)
+      End If
+   Next
+   Set Result=Results(Results.Count-1)
+   'Calculate average distance for vertical points
+   AverageDistance=0
+   For V=Vectors.Count-1 To 0 Step 0-1
+      Set Vector=Vectors(V)
+      Vector.Confidence=Line_Distance(Vector.Top,Vector.Height,Result)
+      AverageDistance=AverageDistance+Vector.Confidence
+   Next
+   AverageDistance=AverageDistance/Vectors.Count
+   'remove points with vertical distance 3 times the average
+   For V=Vectors.Count-1 To 0 Step 0-1
+      Set Vector=Vectors(V)
+      If Vector.Confidence>AverageDistance*3 Then
+         Vectors.Remove(V)
+      End If
+   Next
+End Sub
+
+Public Function Line_Distance(A As Double, B As Double, LR As CscXDocFieldAlternative)
+   'Calculates the distance from a point (A,B) to a line y= Scale *x + Shift.
+   'https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line#Line_defined_by_an_equation
+   Dim Scale As Double, Shift As Double
+   Scale=LR.SubFields.ItemByName("Scale").Confidence
+   Shift=LR.SubFields.ItemByName("Shift").Confidence
+   Return Abs(Scale*A - B + Shift)/Sqr(Scale^2+Shift^2)
+End Function
 
 Public Function Page_GetUniqueWords(page As CscXDocPage,StartWordIndex As Long,EndWordIndex As Long) As Dictionary
    'Add Reference to "Microsoft Scripting Runtime" for Dictionary
@@ -339,14 +378,14 @@ Public Function Page_GetUniqueWords(page As CscXDocPage,StartWordIndex As Long,E
    Return Words
 End Function
 
-Public Sub LinearRegression(Vectors As CscXDocFieldAlternatives, Vector As Boolean, Result As CscXDocFieldAlternative, Resolution As Long,AlternativeIndex As Double)
+Public Sub LinearRegression(Vectors As CscXDocFieldAlternatives, Horizontal As Boolean, Result As CscXDocFieldAlternative, Resolution As Long,AlternativeIndex As Double)
    'http://en.wikipedia.org/wiki/Simple_linear_regression' https://www.easycalculation.com/statistics/learn-regression.php
-   'The 1st Alternative has the horizonatal Scaling=M, displacement=B, and Confidence=flatness of the paper.
-   'The 2nd Alternative has the vertical    Scaling=M, displacement=B, and Confidence=flatness of the paper.
+   'The 1st Alternative has the horizonatal Scaling=M, Shift=B, and Confidence=flatness of the paper.
+   'The 2nd Alternative has the vertical    Scaling=M, Shift=B, and Confidence=flatness of the paper.
    Dim X As Double, Y As Double, Sx As Double, Sy As Double, Sxy As Double, Sxx As Double, Syy As Double, V As Long
    Dim B As Double, M As Double, N As Long, R As Double
    For V= 0 To Vectors.Count-1
-      If Vector Then
+      If Horizontal Then
          X=Vectors(V).Left
          Y=Vectors(V).Width
       Else
@@ -363,29 +402,29 @@ Public Sub LinearRegression(Vectors As CscXDocFieldAlternatives, Vector As Boole
    M=(N*Sxy-Sx*Sy)/(N*Sxx-Sx^2)  'slope of linear regression
    B=(Sy-M*Sx)/N                 'y intercept of linear regression
    R=(N*Sxy-Sx*Sy)/Sqr((N*Sxx-Sx^2)*(N*Syy-Sy^2))  'correlation 1.00=perfect fit= smooth paper
-   With Result.SubFields.Create("M")
+   With Result.SubFields.Create("Scale")
       .Confidence=M
       .Text=Format(M,"0.000")
    End With
-   With Result.SubFields.Create("B")
+   With Result.SubFields.Create("Shift")
       .Confidence=B
       .Text=Format(B,"0.000")
    End With
-   With Result.SubFields.Create("Smoothness")
+   With Result.SubFields.Create("Confidence")
       .Confidence=R
       .Text=Format(R,"0.0000")
    End With
-   With Result.SubFields.Create("N")
+   With Result.SubFields.Create("Words")
       .Confidence=N
       .Text=CStr(N)
    End With
-   With Result.SubFields.Create("Resolution")
+   With Result.SubFields.Create("DPI")
       .Confidence=Resolution
       .Text=CStr(Resolution)
    End With
    With Result.SubFields.Create("Direction")
       .Confidence=1
-      .Text=IIf(Vector,"Horizontal","Vertical")
+      .Text=IIf(Horizontal,"Horizontal","Vertical")
    End With
 
    ' Result.Confidence=IIf(Vector,1.1,1.0)
@@ -395,7 +434,6 @@ Public Sub LinearRegression(Vectors As CscXDocFieldAlternatives, Vector As Boole
 End Sub
 
 Public Sub Zones_Shift(AZLZones As CscAdvZoneLocZones, Shifts As CscXDocFieldAlternatives, Rep As CscXDocRepresentation)
-   'Add reference to
    Dim Z As Long, XDocZone As CscXDocZone
    While Rep.Zones.Count>0
       Rep.Zones.Remove(0)
@@ -435,18 +473,33 @@ End Function
 Public Sub Coordinate_Shift(ByRef X As Double, ByRef Y As Double, Shifts As CscXDocFieldAlternatives, page As Integer)
    Dim XRes As Long, YRes As Long, xm As Double, xb As Double, ym As Double, yb As Double
    With Shifts(page*2)
-      xm=.SubFields.ItemByName("M").Confidence
-      xb=.SubFields.ItemByName("B").Confidence
-      XRes=.SubFields.ItemByName("Resolution").Confidence
+      xm=.SubFields.ItemByName("Scale").Confidence
+      xb=.SubFields.ItemByName("Shift").Confidence
+      XRes=.SubFields.ItemByName("DPI").Confidence
    End With
    With Shifts(page*2+1)
-      ym=.SubFields.ItemByName("M").Confidence
-      yb=.SubFields.ItemByName("B").Confidence
-      YRes=.SubFields.ItemByName("Resolution").Confidence
+      ym=.SubFields.ItemByName("Scale").Confidence
+      yb=.SubFields.ItemByName("Shift").Confidence
+      YRes=.SubFields.ItemByName("DPI").Confidence
    End With
    X=X/25.4*XRes
    Y=Y/25.4*YRes
    X=xm*X+xb  'The Linear regression function gave us these slopes m and intercepts b.
    Y=ym*Y+yb
 End Sub
+
+
+
+Private Function Class_GetClassPath(ClassName As String) As String
+   'Recursively work out the ClassPath
+   If ClassName = "" Then Err.Raise(345,,"The XDocument must be classified before this locator is called!")
+   Dim ParentClass As CscClass
+   Set ParentClass=Project.ClassByName(ClassName).ParentClass
+   If ParentClass Is Nothing Then
+      Return ClassName
+   Else
+      Return Class_GetClassPath(ParentClass.Name) & "\" & ClassName
+   End If
+End Function
+
 ```
