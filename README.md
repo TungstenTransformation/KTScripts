@@ -23,6 +23,7 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 # Zones
 * [Move Zones by Script](Move%20Zone%20by%20Script.md)
 * [Perform Zone OCR in script](OCR.vb)
+* [Register Zones on difficult pages](https://github.com/KofaxTransformation/KTScripts/blob/master/Text%20Layout%20Classification%20and%20Registration.md#text-layout-registration).
 # Tables
 * [How to Use Table Locators](Knowhow%20-%20How%20to%20use%20KT%20Table%20Locators.docx)
 * [Copy Zones into to Table](Copy%20Zones%20to%20Table.md)
