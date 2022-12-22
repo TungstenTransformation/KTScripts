@@ -11,7 +11,7 @@ In the following example, which is a speeding ticket in German, we want the Text
 | License | 3AK8017 |
 | Date | 12.10.2022 |
 | Time | 15:18 |
-| Location | A38, AD Drammetal, km 0,492, Rampe zur A7, in Rtg. Kassel |
+| Location | [A38, AD Drammetal, km 0,492, Rampe zur A7, in Rtg. Kassel](https://www.google.com/maps/@51.4529281,9.8648204,189m/data=!3m1!1e3) |
 | Law | § 24 StVG |
 
 Only Vehicle and License are single words. Date, Time, Location and Law are all multiword phrases, called **tokens**.  
