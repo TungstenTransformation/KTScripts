@@ -2,7 +2,7 @@
 The Text Content locator [tokenizes](https://en.wikipedia.org/wiki/Lexical_analysis) [natural text](https://en.wikipedia.org/wiki/Natural_language_processing) in a document to extract fields.
 
 In the following example, which is a speeding ticket in German, we want the Text Content Locator to retrieve the following fields from this text.  
-![image](https://user-images.githubusercontent.com/103566874/209105656-c36bbac3-7a9c-4313-8937-8c783de80bea.png)
+![image](https://user-images.githubusercontent.com/103566874/209109037-433680ff-71e3-4ba3-9a2c-42cf122afec1.png)
 
 
 | Field | Value |
@@ -10,15 +10,16 @@ In the following example, which is a speeding ticket in German, we want the Text
 | Vehicle Type | PKW |
 | License | 3AK8017 |
 | Date | 12.10.2022 |
-| Time | 15:18 Uhr |
+| Time | 15:18 |
 | Location | A38, AD Drammetal, km 0,492, Rampe zur A7, in Rtg. Kassel |
 | Law | § 24 StVG |
 
 Only Vehicle and License are single words. Date, Time, Location and Law are all multiword phrases, called **tokens**.  
 The Location coontains 12 words that wrap around.  It is very important the Text Content Locator sees all 12 of these words, so that it knows that **in** is the first word before the field and **folgende** is the first word after the first.  
 The text is tokenized as   
-*dem Führer des {Vehicle Type}, {License} wird vorgeworfen, am {Date}, um {Time} in {Location} folgende Ordnungswidrigkeit nach {Law} begangen zu
+*dem Führer des {Vehicle Type}, {License} wird vorgeworfen, am {Date}, um {Time} Uhr in {Location} folgende Ordnungswidrigkeit nach {Law} begangen zu
 haben*
+Note that ALL the information is inside the {tokens} and that all of the words are just the **Text Context** but don't contain any field information. The Text Content locator will now learn that **um** comes 1 token after {Date} and is one token before {Time}. It will also learn that **um** is 4 tokens in front of {Location}. This is why you need t give the TCL many training samples so it can learn all of the possibilities, and also have the power to tokenize sentenece that it has not seen before.  
 
 In Kofax Transformation Validation it can be difficult to put the correct words in the field because of line wrapping. 
 
