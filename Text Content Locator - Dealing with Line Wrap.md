@@ -1,7 +1,19 @@
 # Dealing with line wrapped text in the Text Content Locator.
 The Text Content locator [tokenizes](https://en.wikipedia.org/wiki/Lexical_analysis) [natural text](https://en.wikipedia.org/wiki/Natural_language_processing) in a document to extract fields.
 
-In the following example we want the Text Content Locator to retrieve the following fields from this text.
+In the following example, which is a speeding ticket in German, we want the Text Content Locator to retrieve the following fields from this text.  
+
+
+| Field | Value |
+|-------|-------|
+| Vehicle | PKW |
+| License | 3AK8017 |
+| Date | 12.10.2022 |
+| Time | 15:18 Uhr |
+| Location | A38, AD Drammetal, km 0,492, Rampe zur A7, in Rtg. Kassel |
+| Law | § 24 StVG |
+
+Only Vehicle and License are single words. Date, Time, Location and Law are all multiword phrases, called **tokens**.
 
 
 The following script runs after document validation (not in KTA) and correctly inserts all of the words in a field that are between the first and the last word.
