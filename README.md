@@ -89,3 +89,7 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 * [Convert PDF to TIFF](PDFtoTiff.md) **VERY POWERFUL** *convert your PDF samples to TIFF while preserving the Text layer. Speeds locator testing x10 !*
 * [Gibberish/Nonsense/Bad OCR Detection](GibberishDetection.md) *check if a document is mostly unreadable OCR or corrupted/encrpyted PDF. Useful for language detection as well*
 * [How to read Russian Invoices](How%20to%20Read%20Russian%20Invoices.md)
+# Project Manipulation
+These are advanced scripting techniques to access to project and locator settings via script. This gives you the power to create, delete and edit classses, fields, locators, and almost any setting in the project. This is very dangerous and can destroy your projects. Also note that the Project Builder will not be updated with changes you make to the project and will cause GUI errors. Tread carefully and  - you are on your own - don't expect support from Tech Support!
+
+* [How to Read Locator Settings](How%20To%20Read%20Locator%20Settings.md)
