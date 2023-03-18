@@ -18,7 +18,8 @@ Public Sub Fields_ToCSV(Fields As CscXDocFields, FileName As String)
    Print #1, vbUTF8BOM;  'To make a UTF-8 text file instead of an ANSI text file.
    'Print headers
    For F=0 To Fields.Count-1
-      Select Case Field.FieldType
+      'Select Case Field.FieldType - Field has not been assigned yet, David - use Fields[F]
+      Select Case Fields(F).FieldType
       Case CscFieldTypeSimpleField
          Print #1, Fields(F).Name & Delimiter;   ' the semicolon suppresses newline
       Case CscFieldTypeTable
