@@ -6,32 +6,33 @@ Public Function DataBase_IsStringWithinColumn(dbname As String, column As String
 End Function
 
 
-Public Function DataBase_SearchString(dbname As String, column As String, searchString As String,ByRef Confidence As Double) As String
+Public Function DataBase_SearchString(dbname As String, column As String, searchString As String, ByRef Confidence As Double) As String
    'This returns the value in the chosen column based on the searchstring from the best search result.
+
    'the searchstring does not need to be in the column you want to retrieve. So you could return a first name based on a search for account number
-   Dim results As CscXDocField
-   Set results = Database_Search(dbname,column,searchString,2,Confidence)
-   If results.Alternatives.Count=0 Then
-      DataBase_SearchString=""
+   Dim results As CscXDocFieldAlternatives
+   Set results = Database_Search(dbname, column, searchString, 2, Confidence)
+   If results.Count = 0 Then
+      DataBase_SearchString = ""
       Exit Function
    End If
-   Dim a,besta As Integer
+   Dim a, besta As Integer
    Dim bestScore As Double
-   bestScore=0
+   bestScore = 0
    'We cannot assume that the first result is the best
-   With results.Alternatives
-      For a = 0 To .Count-1
+   With results
+      For a = 0 To .Count - 1
             'The database locator will return 100% for "ABCDE" when querying "ABC". We need to drop the score
             Dim ratio As Double
-            ratio=Len(.ItemByIndex(a).Text)/Len(searchString)
-            If ratio<1 Then .ItemByIndex(a).Confidence=.ItemByIndex(a).Confidence* ratio
-         If .ItemByIndex(a).Confidence>bestScore Then
-            besta=a
-            bestScore=.ItemByIndex(a).Confidence
+            ratio = Len(.ItemByIndex(a).Text) / Len(searchString)
+            If ratio<1 Then .ItemByIndex(a).Confidence = .ItemByIndex(a).Confidence * ratio
+         If .ItemByIndex(a).Confidence > bestScore Then
+            besta = a
+            bestScore = .ItemByIndex(a).Confidence
          End If
       Next
-      Confidence=bestScore
-      return results.Alternatives(besta).Text
+      Confidence = bestScore
+      Return results(besta).Text
    End With
 End Function
 
