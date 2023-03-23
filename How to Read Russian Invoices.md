@@ -139,7 +139,7 @@ Option Explicit
         Dim n, x, t As Double
         Dim valid As Boolean
         Dim daf As CASCADELib.ICscFieldFormatter
-        daf = Project.FieldFormatters(Project.DefaultAmountFormatter)
+        Set daf = Project.FieldFormatters(Project.DefaultAmountFormatter)
         n = Table_SumColumn(table, table.Columns.ItemByName("Net Amount").IndexInTable, daf, valid)
         x = Table_SumColumn(table, table.Columns.ItemByName("Tax Amount").IndexInTable, daf, valid)
         t = Table_SumColumn(table, table.Columns.ItemByName("Total Price").IndexInTable, daf, valid)
