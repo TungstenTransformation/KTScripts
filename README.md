@@ -39,6 +39,7 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 * [Validate Table Rows with a Fuzzy Database](Table%20Validate%20Rows%20with%20Fuzzy%20Database.md)
 * [Write Table to CSV](Table%20to%20CSV.md)
 * [Table Scripting Framework](TableScriptingFramework.md) *a powerfu&  generic approach to enhance table locators*
+* [Reading unknown table layouts and tables in tables](Tables_ReadingUnknownTableLayouts.md) Powerful new algorithms for automatically analyzing unknown tables layouts, including tables in tables.
 # Locator Customization
 * [How to customize any locator](Customize%20Locators.md)
 * [Force Format Locator to search across multiple lines](Format%20Locator%20that%20ignores%20line%20wrapping.md) *the format locator only searches within each line of text. This makes it search further..*
