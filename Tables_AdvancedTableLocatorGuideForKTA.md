@@ -61,7 +61,13 @@ You want this project small and fast for rapid development and testing.
 * Add a Field Group **TableBenchmark** and the fields **TableRowCount**, **TableRowAlignment**, **TableColumnAligment**, **TableTP**, **TableFN**, **TableTN**, **TableFP**, which will be used for the table benchmarking.
 ![image](https://github.com/KofaxTransformation/KTScripts/assets/47416964/6f826fd4-d457-47a7-b115-7b7700ddbb8c)  
 * Add the **Advanced Table Locator** (ATL) and the **Table Locator** (TL)and assign them the table model.
-* Assign your Table Field to the **Table Locator**.  We will use a script to copy the ATL to the TL if it is a better result. This way we can benefit from the online learning of the TL, while the ATL has no online learning.
+* Assign your Table Field to the **Table Locator**.  We will use a script to copy the ATL to the TL if it is a better result. This way we can benefit from the online learning of the TL, while the ATL has no online learning.e
+
+## Training Tables
+* Assign your documents to the current class.
+* Drag your first document into the **Table Extraction Set**.  
+![image](https://github.com/KofaxTransformation/KTScripts/assets/47416964/02b9c6ff-6fca-417d-87b5-b37c89292b94)
+
 
 
 
