@@ -62,6 +62,7 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 * [Page Classification](Page_Classification.md)
 * [Split a page horizontally or vertically](Split%20a%20Page.md)
 # Geometry Functions
+* [Calculate Overlaps](Overlap.md) of fields, zones, rows etc. Fundamental to many geometry algorithms and custom table locators.
 * [Find Left Margin of a Page](Find%20Left%20Margin%20of%20Page.md) *very precise and fuzzy with sub-pixel accuracy for the left margin of a page. Useful for comparing two pages and paragraph detection*
 # OCR scripts
 * [Change_OCR_Characters.md](Change_OCR_Characters.md)
