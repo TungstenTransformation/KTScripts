@@ -27,6 +27,8 @@ Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](h
 * [Automatically Generate Zone Locators from external coordinate data](https://github.com/KofaxTransformation/AutoAdvancedZoneLocator)
 # Tables
 * [How to Use Table Locators](Knowhow%20-%20How%20to%20use%20KT%20Table%20Locators.docx)
+* [Table Benchmark Guide](Table_Benchmark.md)
+* [Advanced Table Locator Guide]([Tables_AdvancedTableLocatorGuideForKTA.md]) (new locator in 2023)
 * [Copy Zones into to Table](Copy%20Zones%20to%20Table.md)
 * [Copy Subfields into a Table](Copy%20a%20Locator's%20Subfields%20into%20a%20Table.md)
 * [Fast Table Lassoing](FastTableLassoing.avi) *quickly and interactively select table columns and rows in the Validation Interface*
