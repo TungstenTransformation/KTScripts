@@ -22,7 +22,7 @@ The **Automatic Table Locator** incorrectly reads the **Total Price** column, wh
 ![Alt text](image.png)
 * Set each field to be always valid.  
 ![Alt text](image-2.png)
-* Add the script (Table_Benchmark.vb) to the class containing your table locator and 5 benchmark fields.
+  * Add the script [Table_Benchmark.vb](Table_Benchmark.vb) to the class containing your table locator and 5 benchmark fields.
 ## Prepare your benchmark.
 * See [Tables_AdvancedTableLocatorGuideForKTA.md] for creating truth documents (golden files) for your benchmark set.
 * Run the Extraction Benchmark.
