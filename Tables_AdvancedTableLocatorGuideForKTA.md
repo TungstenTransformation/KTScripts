@@ -68,8 +68,11 @@ You want this project small and fast for rapid development and testing.
 * Drag your first document into the **Table Extraction Set**.  
 ![image](https://github.com/KofaxTransformation/KTScripts/assets/47416964/02b9c6ff-6fca-417d-87b5-b37c89292b94)
 
-
-
+## KTA
+* to be able to use PDF text and lasso in PDF documents, you need to run image processing.  
+![Image Processing Config](images/image_processing.png)
+* Make sure that in the process settings, you are using PDF Text.  Click on blank-space in process map and Click "Capture" Settings. 
+![Alt text](images/pdf_text_extraction.png)
 
 ## Copying Original FileName into the XDoc.
 2 methods- via xdocs and via input variables
