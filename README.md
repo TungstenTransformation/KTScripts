@@ -1,9 +1,27 @@
 # Kofax Transformation Script Library
-A collection of mostly very useful scripts containing various algorithms.  
+A collection ofvery useful scripts containing various algorithms.  
 These scripts are provided as-is. There is no guarantee that they will work. You will need to understand them to use them in your projects.  
-Requests, fixes, suggestions, and new scripts are welcome. Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) to provide feedback.
-# Guides
-* [How to Train the Text Content Locator](Training%20the%20Text%20Content%20Locator.md)
+Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, fixes, suggestions, and new scripts you want to share.
+# Index
+* [Script Locators](#script-locators)
+* [Field Formatters](#field-formatters)
+* [Validation Rules](#validation-rules)
+* [Zones](#zones)
+* [Tables](#tables)
+* [Locator Customization](#locator-customization)
+* [Text Content Locator](Text%20Content%20Locator%20Training.md)
+* [Databases & Dictionaries](#database--dictionary-scripts)
+* [Classification](#classification)
+* [Page Extraction and Classification](#pages)
+* [Geometry](#geometry-functions)
+* [OCR](#ocr-scripts)
+* [Powerful Functions](#functions)
+* [Output](#output)
+* [Benchmarking](#benchmarking)
+* [Images](#images)
+* [Documents](#documents)
+* [Project Manipulation](#project-manipulation)
+
 # Script Locators
 * [Column Locator](Column%20Locator.md) *detects text columns in a document*
 * [Dynamic Fuzzy Search Locator](DynamicFuzzySearchLocator.md) **POWERFUL** *fuzzy search a document for values from a previous locator!*
