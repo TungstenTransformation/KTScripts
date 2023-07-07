@@ -1,5 +1,5 @@
 Private Sub Folder_SortXDocsByFieldValue(pFolder As CASCADELib.CscXFolder,fieldname As String,path As String,Optional moveDontCopy As Boolean=False)
-   Dim value,filename As String
+   Dim value,FileName As String
    Dim x As Integer
    For x = 0 To pFolder.DocInfos.Count-1
       Dim xdoc As CscXDocument
@@ -11,10 +11,10 @@ Private Sub Folder_SortXDocsByFieldValue(pFolder As CASCADELib.CscXFolder,fieldn
             If Not Dir_Exists(value) Then MkDir(value)
             Dim names() As String
             names=XDocument_GetAllFiles(xdoc,True,True,True,True)
-            For Each filename In names
-               If filename<>"" Then
-                  FileCopy (filename, value & "\" & File_NameWithExtension(filename))
-                  If moveDontCopy Then Kill filename
+            For Each FileName In names
+               If FileName<>"" Then
+                  FileCopy (FileName, value & "\" & File_NameWithExtension(FileName))
+                  If moveDontCopy Then Kill FileName
                End If
             Next
          End If
@@ -52,23 +52,20 @@ Private Function XDocument_GetAllFiles(pXDoc As CscXDocument,xdoc As Boolean,tif
    Return files
 End Function
 
-Function File_Path(ByRef filename As String) As String
+Function File_Path(ByRef FileName As String) As String
    Dim pos As Integer
-   pos=InStrRev(filename,"\")
-   If pos=0 Then Return "" Else Return Left(filename,pos-1)
+   pos=InStrRev(FileName,"\")
+   If pos=0 Then Return "" Else Return Left(FileName,pos-1)
 End Function
 
-  Function File_Exists(file As String) As Boolean
-      On Error GoTo ErrorHandler
-      Return (GetAttr(file) And vbDirectory) = 0
-      Exit Function
-  ErrorHandler:
-  End Function
+Function File_Exists(FileName As String) As Boolean
+   Return Dir(FileName) <> ""
+End Function
 
-Function File_NameWithExtension(ByRef filename As String) As String
+Function File_NameWithExtension(ByRef FileName As String) As String
    Dim pos As Integer
-   pos=InStrRev(filename,"\")
-   If pos=0 Then Return filename Else Return Mid(filename,pos+1)
+   pos=InStrRev(FileName,"\")
+   If pos=0 Then Return FileName Else Return Mid(FileName,pos+1)
 End Function
 
 Function Dir_Exists(DirName As String) As Boolean
@@ -77,10 +74,10 @@ Function Dir_Exists(DirName As String) As Boolean
 ErrorHandler:
 End Function
   
-Function File_NameWithoutExtension(ByRef filename As String) As String
+Function File_NameWithoutExtension(ByRef FileName As String) As String
    Dim pos As Integer
-   pos=InStrRev(filename,"\")
-   If pos>0 Then filename=Mid(filename,pos+1)
-   pos=InStrRev(filename,".")
-   If pos>0 Then return Left(filename,pos-1) else return filename
+   pos=InStrRev(FileName,"\")
+   If pos>0 Then FileName=Mid(FileName,pos+1)
+   pos=InStrRev(FileName,".")
+   If pos>0 Then return Left(FileName,pos-1) else return FileName
 End Function
