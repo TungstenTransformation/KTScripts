@@ -81,3 +81,9 @@ Function File_NameWithoutExtension(ByRef FileName As String) As String
    pos=InStrRev(FileName,".")
    If pos>0 Then return Left(FileName,pos-1) else return FileName
 End Function
+
+Function Path_GetParentFolder(PathName As String) As String
+   'Return the ParentFolder
+   If Right(PathName,1)="\" Then PathName=Left(PathName,Len(PathName)-1)
+   Return Left(PathName,InStrRev(PathName,"\"))
+End Function
