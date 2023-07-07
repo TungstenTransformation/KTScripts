@@ -21,6 +21,7 @@ Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, 
 * [Images](#images)
 * [Documents](#documents)
 * [Project Manipulation](#project-manipulation)
+* [File System functions](/File%20System.vb)
 
 # Script Locators
 * [Column Locator](Column%20Locator.md) *detects text columns in a document*
