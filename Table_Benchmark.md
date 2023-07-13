@@ -58,28 +58,3 @@ The **Automatic Table Locator** incorrectly reads the **Total Price** column, wh
 
 ## In Transformation Designer
 * Add the script [Table_Benchmark.vb](Table_Benchmark.vb) to the class containing your table locator and 5 benchmark fields.
-
-## Copying Original FileName into the XDoc.
-2 methods- via xdocs and via input variables
-https://docshield.kofax.com/KTA/en_US/7.11.0-h49vd5omev/help/SDK_Documentation/latest/class_agility_1_1_sdk_1_1_services_1_1_capture_document_service.html#aaba3bff7a12638891a3cc0dcfa8a4b44
-![image](https://github.com/KofaxTransformation/KTScripts/assets/47416964/32629529-e5bf-49e4-bc26-2b1c90a13207)
-![image](https://github.com/KofaxTransformation/KTScripts/assets/47416964/655f3ac5-3c89-492c-b75d-5f31788cae93)
-### input variables
-use input variables and read them in KT script from project.InputVariables(??)
-![image](https://github.com/KofaxTransformation/KTScripts/assets/47416964/aa7abd2e-f99d-486a-8fd9-dd6eb3192d39)
-![image](https://github.com/KofaxTransformation/KTScripts/assets/47416964/4654f449-b99f-4dbe-86cc-6673319bbbb0)
-
-
-## Making golden files
-* Turn on online learning.
-* import documents into KTA.
-* validate the tables, making them perfect.
-* make sure you add files to online learning.
-* finish validation
-* import new samples into TD.
-* drag these samples into the same folder where the original files are.
-* Extract the new samples. This will run code in Document_AfterExtract that will find the OriginalFileName in XValues, and then copy all the fields into the OriginalFileName.
-* You can now delete the new import samples. the original files contain the truth.
-* Run the benchmark.
-* if you detect that you made mistakes in validation. go back to workqueue in KTA and sleect "Reprocess". Fix them in Validation.
-* when you are happy wiht your golden files you can run the workflow to end to delete the files from KTA.
