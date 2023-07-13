@@ -3,7 +3,6 @@ This in-depth step-by-step guide will take you through the following steps
 * Collecting sample files to build a KT project in KTA.
     *  naming them well to make them easy to sort and work with.
     * creating subsets.
-* Creating a new, simpler KT project for testing locators and documents and building training files, without interupting your main KTA project.
 * Converting TIFF to PDF to dramatically speed up development time without losing PDF-text.
 * Getting the truth into the sample documents.
 * Importing the truth documents from KTA into Transformation Designer and restoring the original file names
@@ -11,9 +10,7 @@ This in-depth step-by-step guide will take you through the following steps
     * Row Count.
     * Row alignment.
     * Column alignment.
-    * True/false positive/negative count.
-    * 1st Row concatenation.
-    * Text Column concatentation.
+    * Cell content matching.
     * Numeric Column sums.
 * Combining Advanced Table Locator (ATL) with Automatic Table Locator, Specific Online Learning and Manual Table Locator to optimize table extraction.
     * "Voting" by script between ATL and TL.
@@ -68,18 +65,3 @@ You want this project small and fast for rapid development and testing.
 * Drag your first document into the **Table Extraction Set**.  
 ![image](https://github.com/KofaxTransformation/KTScripts/assets/47416964/02b9c6ff-6fca-417d-87b5-b37c89292b94)
 
-## KTA
-* to be able to use PDF text and lasso in PDF documents, you need to run image processing.  
-![Image Processing Config](images/image_processing.png)
-* Make sure that in the process settings, you are using PDF Text.  Click on blank-space in process map and Click "Capture" Settings. 
-![Alt text](images/pdf_text_extraction.png)
-
-## Copying Original FileName into the XDoc.
-2 methods- via xdocs and via input variables
-https://docshield.kofax.com/KTA/en_US/7.11.0-h49vd5omev/help/SDK_Documentation/latest/class_agility_1_1_sdk_1_1_services_1_1_capture_document_service.html#aaba3bff7a12638891a3cc0dcfa8a4b44
-![image](https://github.com/KofaxTransformation/KTScripts/assets/47416964/32629529-e5bf-49e4-bc26-2b1c90a13207)
-![image](https://github.com/KofaxTransformation/KTScripts/assets/47416964/655f3ac5-3c89-492c-b75d-5f31788cae93)
-### input variables
-use input variables and read them in KT script from project.InputVariables(??)
-![image](https://github.com/KofaxTransformation/KTScripts/assets/47416964/aa7abd2e-f99d-486a-8fd9-dd6eb3192d39)
-![image](https://github.com/KofaxTransformation/KTScripts/assets/47416964/4654f449-b99f-4dbe-86cc-6673319bbbb0)
