@@ -1,11 +1,11 @@
-## Table Benchmarking in KTA.
+## Table Benchmarking in Kofax Total Agility.
 This article shows you how to add a table benchmark to your Transformation Project. It uses the standard Extraction Benchmark. 
 This process was designed for KTA, though it will also work in KTM and RPA.  
 The benchmark looks like this:  
 ![Alt text](image.png)
 There are 5 Table Benchmark Fields  
 ![Alt text](image-1.png)
-* **TableRowCount** *This table has the correct number of rows 5.*
+* **TableRowCount** *This table has the correct number of rows =5.*
 * **TableTotalPriceSum** *This table has the incorrect column sum of 0.00. it should have 8309.00.*
 * **TableRowAlignment** *81% of the rows are aligned. Rows 1 & 4 are misaligned.*
 * **TableColumnAlignment** *87% of the columns are aligned. Column 7 is misaligned.*
@@ -22,7 +22,7 @@ The **Automatic Table Locator** incorrectly reads the **Total Price** column, wh
 * Create a normal Transformation process in KTA.
 * Make sure image processing is enabled if using PDF documents.
 * Turn on online-learning.
-* Add step for storing the original document name into an XValue.
+* Add Activities for storing the original document name into the XDocument, so Transformation Designer can know the original file name.
 * Collect sample documents. Load them into a test set in Transformation Designer. Convert this to a benchmark set. 
 * Import your benchmark documents into KTA scan application.
 * In KTA Validation validate your documents making sure that every field and table cell is perfect. Add the document to online-learning.
@@ -31,6 +31,7 @@ The **Automatic Table Locator** incorrectly reads the **Total Price** column, wh
 * Add the [Table Benchmark Script](/KofaxTransformation/TableBenchmark/blob/main/tablebenchmark.md) to your project's class script.
 * Extract (F6) your new samples. This will copy the truth into your benchmark training set.
 * Run the Extraction Benchmark.
+* If you made errors in the Benchmark files, then retry those files in KTA Validation and correct your errors.
 
 ## Add the Benchmark fields to your project
 * Add all of the Table Metafields to your project.  
@@ -54,7 +55,28 @@ The **Automatic Table Locator** incorrectly reads the **Total Price** column, wh
 * The *Set filename* activity copies the imported filename (png or tiff) into the XDocument. it as a **.Net** Activity.  
 ![TableBenchmark_SetXValue](images/TableBenchmark_SetXValue.png)
 * Add an **Ordinary activity** called *Stop* after the Validation activity. It is there for to keep the documents in KTA until we are certain that we correctly validated them. Leave the documents there until you have run the benchmark. One of the advantages of a benchmark is that it will show you when you incorrectly validated a document. It gives you the opportunity to send the documents BACK into Validation so that you can fix your validation mistakes without having to import the documents again.
-* The *Stop* activity contains a check box called *Retry* which sends the documents back into Validation.
-
-## In Transformation Designer
-* Add the script [Table_Benchmark.vb](Table_Benchmark.vb) to the class containing your table locator and 5 benchmark fields.
+* The *Stop* activity contains a check box called *Retry* which sends the documents back into Validation.  
+![TableBenchmark_StopActivity](images/TableBenchmark_StopActivity.png)
+* Add a **Branching Rule** to the *Stop* Activity in the *After processing* configuration.  
+![TableBenchmark_BranchingRule](images/TableBenchmark_BranchingRule.png)
+## Configure Transformation Designer
+* Add the [Table_Benchmark script](https://github.com/KofaxTransformation/TableBenchmark/blob/main/tablebenchmark.md) to the class containing your table locator and 5 benchmark fields.
+* Load docmuments into Transformation Designer and convert them to a Benchmark Set. 
+![TableBenchmark_BenchmarkSet](images/TableBenchmark_BenchmarkSet.png)
+## Create Truth Files
+* Import your benchmark files into KTA Scan Job.  
+![TableBenchmark_ImportFiles](images/TableBenchmark_ImportFiles.png)
+* In KTA Validation make your tables Perfect. Use the add/delete/interpolate table row features.
+* Add each document to online learning.
+## Import into Transformation Designer
+* Import new samples from KTA from Menu **Documents/DownloadNewSamples**.  
+![TableBenchmark_DownloadNewSamples](images/TableBenchmark_DownloadNewSamples.png)
+* You will see that they have the correct field and table values, but the table benchmark fields are incorrect.  
+![TableBenchmark_NewSamples](images/TableBenchmark_NewSamples.png)
+* These files cannot be extracted in this folder. Right-click on the documents and select **Open in Windows Explorer**. Copy them into a new folder call *truth files*.  
+![TableBenchmark_TruthFolder](images/TableBenchmark_TruthFolder.png)
+* Open this folder as a Document Set.  
+![TableBenchmark_OpenDocumentSet](images/TableBenchmark_OpenDocumentSet.png)
+* Extract the imported documents. This will add the perfect benchmark fields (100% match for everything) to the original XDoc that is in the benchmark set.
+* reload the benchmark set.
+* run the benchmark.
