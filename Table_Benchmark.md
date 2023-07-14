@@ -1,15 +1,26 @@
 ## Table Benchmarking in Kofax Total Agility.
 This article shows you how to add a table benchmark to your Transformation Project. It uses the standard Extraction Benchmark. 
-This process was designed for KTA, though it will also work in KTM and RPA.  
-The benchmark looks like this:  
-![Alt text](image.png)
+This process was designed for KTA, though it will also work in KTM and RPA.
+
+We'll explain the Table Benchmark with an example.
+
+Here is the **truth** that the Table Locator should have found.
+![Table_Becnchmark_Truth](images/Table_Becnchmark_Truth.png)  
+The **Extraction Benchmark** looks like this:  
+![Table_Benchmark_Screenshot](images/Table_Benchmark_Screenshot.png)
 There are 5 Table Benchmark Fields  
-![Alt text](image-1.png)
-* **TableRowCount** *This table has the correct number of rows =5.*
-* **TableTotalPriceSum** *This table has the incorrect column sum of 0.00. it should have 8309.00.*
-* **TableRowAlignment** *81% of the rows are aligned. Rows 1 & 4 are misaligned.*
-* **TableColumnAlignment** *87% of the columns are aligned. Column 7 is misaligned.*
-* **TableCells** *7 cells contain the wrong text.*
+![TableBenchmark__Fields](images/TableBenchmark__Fields.png)
+* **TableRowCount** *This contains a green *5*, meaning that the locator found 5 **rows** and 5 is the truth.*
+* **TableTotalPriceSum** *The locator found **0.00** as the sum of the **Total Price** column, but it should have found **8309.00**.*
+* **TableRowAlignment** *The table locator matched all the rows to a pixel accuracy of 99%. This means that there are no problems with row detection. Rows 2, 3 and 4 have a discrepancy of only a few pixels.*
+* **TableColumnAlignment** *75% of the columns are aligned. Columns 5 and 7 are wrong.*
+Look at the colored image below
+  * The areas in **green** are where the Table Locator found the correct values.
+  * The areas in **light blue** are where the Table Locator **failed**.  The Table locator failed in 11 cells. It failed to find the 5 Unit cells, missed the 5 amounts in the total price and failed to read the **7** on the last row.
+  * those two horizontal red lines are marking the 25% misalignment between the table locator and the truth
+![TableBenchmark_ColorCoded](images/TableBenchmark_ColorCoded.png)
+
+
 
 This example uses [this sample document].  The correct table seen below, but I manually removed 3 text lines from row 1 and 2 textlines from row 4, just to show how the benchmark works.
 ![image](https://github.com/KofaxTransformation/KTScripts/assets/103566874/f2472ff8-6ff4-4ea8-b0e7-24f8cc54876f)
