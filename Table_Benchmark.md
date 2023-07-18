@@ -17,31 +17,26 @@ There are 5 Table Benchmark Fields
 Look at the colored image below
   * The areas in **green** are where the Table Locator found the correct values.
   * The areas in **light blue** are where the Table Locator **failed**.  The Table locator failed in 11 cells. It failed to find the 5 Unit cells, missed the 5 amounts in the total price and failed to read the **7** on the last row.
-  * those two horizontal red lines are marking the 25% misalignment between the table locator and the truth
+  * those two horizontal red lines are marking the 25% misalignment between the table locator and the truth.  
 ![TableBenchmark_ColorCoded](images/TableBenchmark_ColorCoded.png)
 
-
-
-This example uses [this sample document].  The correct table seen below, but I manually removed 3 text lines from row 1 and 2 textlines from row 4, just to show how the benchmark works.
-![image](https://github.com/KofaxTransformation/KTScripts/assets/103566874/f2472ff8-6ff4-4ea8-b0e7-24f8cc54876f)
-
-The **Automatic Table Locator** incorrectly reads the **Total Price** column, which is really useful for testing a benchmark!  
-![image](https://github.com/KofaxTransformation/KTScripts/assets/103566874/76565a7a-3d2a-4772-b989-f2e23c910ac2)
-
 ## The Overall Process.
-*Here is an overview of each step, which is giving in detail later below.*
-* Create a normal Transformation process in KTA.
-* Make sure image processing is enabled if using PDF documents.
-* Turn on online-learning.
-* Add Activities for storing the original document name into the XDocument, so Transformation Designer can know the original file name.
-* Collect sample documents. Load them into a test set in Transformation Designer. Convert this to a benchmark set. 
+*Here is an overview of each step, which is giving in detail later below. The steps show how to load documents into Designer - run them through Extraction AND Validation in KTA to manually correct table extraction, and how to get the true field values back into the XDocs in Transformation Designer to be able to run Benchmarks.* 
+* In Transformation Designer
+  * Collect sample documents. Load them into a test set in Transformation Designer. Attach test set to the project and Convert this to a benchmark set.
+* In KTA
+  * Create a normal Transformation process in KTA.
+  * Make sure image processing is enabled if using PDF documents.
+  * Turn on online-learning.
+  * Add Activities for storing the original document name into the XDocument, so Transformation Designer can know the original file name.
 * Import your benchmark documents into KTA scan application.
 * In KTA Validation validate your documents making sure that every field and table cell is perfect. Add the document to online-learning.
-* In Transformation Designer import new training samples.
-* Drag these new samples into a new test set.
-* Add the [Table Benchmark Script](/KofaxTransformation/TableBenchmark/blob/main/tablebenchmark.md) to your project's class script.
-* Extract (F6) your new samples. This will copy the truth into your benchmark training set.
-* Run the Extraction Benchmark.
+* In Transformation Designer
+  *import new training samples.
+  * Drag these new samples into a new test set.
+  * Add the [Table Benchmark Script](/KofaxTransformation/TableBenchmark/blob/main/tablebenchmark.md) to your project's class script.
+  * Extract (F6) your new samples. This will copy the truth into your benchmark training set.
+  * Run the Extraction Benchmark.
 * If you made errors in the Benchmark files, then retry those files in KTA Validation and correct your errors.
 
 ## Add the Benchmark fields to your project
@@ -72,7 +67,10 @@ The **Automatic Table Locator** incorrectly reads the **Total Price** column, wh
 ![TableBenchmark_BranchingRule](images/TableBenchmark_BranchingRule.png)
 ## Configure Transformation Designer
 * Add the [Table_Benchmark script](https://github.com/KofaxTransformation/TableBenchmark/blob/main/tablebenchmark.md) to the class containing your table locator and 5 benchmark fields.
-* Load docmuments into Transformation Designer and convert them to a Benchmark Set. 
+* **Load documents** into Transformation Designer.
+* **Attach** your Document Set to the Project. *This is VERY important. it must be attached so that the script can know where the document set is to be able to find the original Xdoc.*   
+![Attach Document Set](images/AttachDocumentSet.png)
+*  **convert** them to a **Benchmark Set**, so that you will be able to run the Extraction Benchmark.   
 ![TableBenchmark_BenchmarkSet](images/TableBenchmark_BenchmarkSet.png)
 ## Create Truth Files
 * Import your benchmark files into KTA Scan Job.  
