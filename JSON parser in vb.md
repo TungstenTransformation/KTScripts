@@ -1,5 +1,6 @@
 Simple and fast JSON parser that converts a JSON file into a dictionary.  
-[source](https://stackoverflow.com/questions/6627652/parsing-json-in-excel-vba)
+[source](https://stackoverflow.com/questions/6627652/parsing-json-in-excel-vba)  
+[description](https://medium.com/swlh/excel-vba-parse-json-easily-c2213f4d8e7a)
 
 ```vb
 '-------------------------------------------------------------------
