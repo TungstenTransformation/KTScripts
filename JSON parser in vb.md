@@ -1,125 +1,118 @@
 Simple and fast JSON parser that converts a JSON file into a dictionary.  
-[source](https://stackoverflow.com/questions/6627652/parsing-json-in-excel-vba)  
-[description](https://medium.com/swlh/excel-vba-parse-json-easily-c2213f4d8e7a)
+Adapted from [[StackOverflow article](https://stackoverflow.com/questions/6627652/parsing-json-in-excel-vba)] [[description by the original Author](https://medium.com/swlh/excel-vba-parse-json-easily-c2213f4d8e7a)].   
+The parser uses a single complex but fast regex to completely tokenize the JSON file, stripping out all structural whitespace and double quotes around strings.  It then uses select statements and recursion to parse objects and arrays. It creates a unique key for every element in the JSON and adds it to a dictionary.  
+```json
+{"status":"succeeded","createdDateTime":"2023-08-07T13:53:55Z","analyzeResult":{"modelId":"prebuilt-document"}}
+```
+becomes
+|key|value|
+|---|-----|
+|js.status|succeeded|
+|js.createdDateTime|2023-08-07T13:53:55Z|
+|js.analyzeResult.modelId|prebuilt-document|
+|js.analyzeResult.modelId.pages(0).words(43).content|address|
+|js.analyzeResult.modelId.pages(0).words._count|245 *(this is a Long, not a String)*|
 
+*Note that the parser leaves everything as strings. It is your responsibility to convert to number, boolean and null.*
+## new features
+* Added Unescape function for strings
+* the dictionary now contains a **_count** key for every array that contains the length of the array as a long. useful for looping over arrays.  For Example:  
+```vb
+For P=0 To JS("js.analyzeResult.pages._count")-1
+```
 ```vb
 '-------------------------------------------------------------------
-' VBA JSON Parser
+' VBA JSON Parser https://github.com/KofaxTransformation/KTScripts/blob/master/JSON%20parser%20in%20vb.md
 '-------------------------------------------------------------------
-Option Explicit
-Private p&, token, dic
-Function ParseJSON(json$, Optional key$ = "obj") As Object
-    p = 1
-    token = Tokenize(json)
+Private t As Long, tokens() As String, dic As Object
+Function JSON_Parse(JSON$, Optional Key$ = "js") As Object
+    t = 1
+    tokens = JSON_Tokenize(JSON)
     Set dic = CreateObject("Scripting.Dictionary")
-    If token(p) = "{" Then ParseObj key Else ParseArr key
-    Set ParseJSON = dic
+    If tokens(t) = "{" Then JSON_ParseObj(Key) Else JSON_ParseArr(Key)
+    Return dic
 End Function
-Function ParseObj(key$)
-    Do: p = p + 1
-        Select Case token(p)
-            Case "]"
-            Case "[":  ParseArr key
-            Case "{"
-                       If token(p + 1) = "}" Then
-                           p = p + 1
-                           dic.Add key, "null"
-                       Else
-                           ParseObj key
-                       End If
-            
-            Case "}":  key = ReducePath(key): Exit Do
-            Case ":":  key = key & "." & token(p - 1)
-            Case ",":  key = ReducePath(key)
-            Case Else: If token(p + 1) <> ":" Then dic.Add key, token(p)
-        End Select
+Function JSON_ParseObj(Key$)
+    Do
+      t = t + 1
+     Select Case tokens(t)
+         Case "]"
+         Case "[":  JSON_ParseArr(Key)
+         Case "{"
+                    If tokens(t + 1) = "}" Then
+                        t = t + 1
+                        dic.Add(Key, "null")
+                    Else
+                        JSON_ParseObj(Key)
+                    End If
+
+         Case "}":  Key = JSON_ParentPath(Key): Exit Do
+         Case ":":  Key = Key & "." & tokens(t - 1) 'previous token was a key - remember it
+         Case ",":  Key = JSON_ParentPath(Key)
+         Case Else 'we are in a string. if next is not ":" then we are value - so add to dict!
+            If tokens(t + 1) <> ":" Then dic.Add(Key, tokens(t))
+     End Select
     Loop
 End Function
-Function ParseArr(key$)
-    Dim e&
-    Do: p = p + 1
-        Select Case token(p)
-            Case "}"
-            Case "{":  ParseObj key & ArrayID(e)
-            Case "[":  ParseArr key
-            Case "]":  Exit Do
-            Case ":":  key = key & ArrayID(e)
-            Case ",":  e = e + 1
-            Case Else: dic.Add key & ArrayID(e), token(p)
-        End Select
-    Loop
+Function JSON_ParseArr(Key$)
+   Dim A As Long
+   Do
+      t = t + 1
+      Select Case tokens(t)
+         Case "}"
+         Case "{":  JSON_ParseObj(Key & JSON_ArrayID(A))
+         Case "[":  JSON_ParseArr(Key)
+         Case "]":  Exit Do
+         Case ":":  Key = Key & JSON_ArrayID(A)
+         Case ",":  A = A + 1
+         Case Else: dic.Add(Key & JSON_ArrayID(A), tokens(t))
+      End Select
+   Loop
+   dic.Add(Key & "._count",A+1) 'store array length in dictionary
 End Function
-'-------------------------------------------------------------------
-' Support Functions
-'-------------------------------------------------------------------
-Function Tokenize(s$)
-    Const Pattern = """(([^""\\]|\\.)*)""|[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?|\w+|[^\s""']+?"
-    Tokenize = RExtract(s, Pattern, True)
-End Function
-Function RExtract(s$, Pattern, Optional bGroup1Bias As Boolean, Optional bGlobal As Boolean = True)
-  Dim c&, m, n, v
-  With CreateObject("vbscript.regexp")
-    .Global = bGlobal
-    .MultiLine = False
-    .IgnoreCase = True
-    .Pattern = Pattern
-    If .TEST(s) Then
-      Set m = .Execute(s)
-      ReDim v(1 To m.Count)
+
+Function JSON_Tokenize(S As String) 'completely split the JSON string fast into an array of tokens for the parsers
+   Dim C As Long, m As Object, n As Object, tokens() As String
+   Const Pattern = """(([^""\\]|\\.)*)""|[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?|\w+|[^\s""']+?"
+   With CreateObject("vbscript.regexp")
+      .Global = True
+      .Multiline = False
+      .IgnoreCase = True
+      .Pattern = Pattern
+      Set m = .Execute(S)
+      ReDim tokens(1 To m.Count)
       For Each n In m
-        c = c + 1
-        v(c) = n.value
-        If bGroup1Bias Then If Len(n.submatches(0)) Or n.value = """""" Then v(c) = n.submatches(0)
-      Next
-    End If
-  End With
-  RExtract = v
-End Function
-Function ArrayID$(e)
-    ArrayID = "(" & e & ")"
-End Function
-Function ReducePath$(key$)
-    If InStr(key, ".") Then ReducePath = Left(key, InStrRev(key, ".") - 1)
-End Function
-Function ListPaths(dic)
-    Dim s$, v
-    For Each v In dic
-        s = s & v & " --> " & dic(v) & vbLf
-    Next
-    Debug.Print s
-End Function
-Function GetFilteredValues(dic, match)
-    Dim c&, i&, v, w
-    v = dic.keys
-    ReDim w(1 To dic.Count)
-    For i = 0 To UBound(v)
-        If v(i) Like match Then
-            c = c + 1
-            w(c) = dic(v(i))
+        C = C + 1
+        tokens(C) = n.Value
+        If True Then ' bGroup1Bias=?? when is this needed
+           If Len(n.SubMatches(0)) Or n.Value = """""" Then
+              tokens(C) = n.SubMatches(0)
+           End If
         End If
-    Next
-    ReDim Preserve w(1 To c)
-    GetFilteredValues = w
+      Next
+  End With
+  Return tokens
 End Function
-Function GetFilteredTable(dic, cols)
-    Dim c&, i&, j&, v, w, z
-    v = dic.keys
-    z = GetFilteredValues(dic, cols(0))
-    ReDim w(1 To UBound(z), 1 To UBound(cols) + 1)
-    For j = 1 To UBound(cols) + 1
-         z = GetFilteredValues(dic, cols(j - 1))
-         For i = 1 To UBound(z)
-            w(i, j) = z(i)
-         Next
-    Next
-    GetFilteredTable = w
+
+Function JSON_ArrayID(e) As String
+    Return "(" & e & ")"
 End Function
-Function OpenTextFile$(f)
-    With CreateObject("ADODB.Stream")
-        .Charset = "utf-8"
-        .Open
-        .LoadFromFile f
-        OpenTextFile = .ReadText
-    End With
+
+Function JSON_ParentPath(Key As String) As String 'go to the parent key
+    If InStr(Key, ".") Then Return Left(Key, InStrRev(Key, ".") - 1)
+    'else?
+End Function
+
+Public Function JSON_Unescape(A As String) As String
+   'https://www.json.org/json-en.html
+   A=Replace(A,"\""","""") 'double quote
+   A=Replace(A,"\\","\") 'backslash
+   A=Replace(A,"\/","/") 'forward slash
+   A=Replace(A,"\b","") 'backspace
+   A=Replace(A,"\f","") 'form feed
+   A=Replace(A,"\n","") 'new line
+   A=Replace(A,"\r","") 'carraige return
+   A=Replace(A,"\t","") 'tab
+   Return A
 End Function
 ```
