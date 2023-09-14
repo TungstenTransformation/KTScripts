@@ -23,7 +23,7 @@ Private Function XDoc_PreviousLocator(ByVal pXDoc As CASCADELib.CscXDocument,Loc
    End With
 End Function
 
-Private Sub Scriptlocator_Altneratives(ByVal pXDoc As CASCADELib.CscXDocument,pLocator As CSCXDocField)
+Private Sub Scriptlocator_Alternatives(ByVal pXDoc As CASCADELib.CscXDocument,pLocator As CSCXDocField)
    Dim PONumbers as CSCXDocFieldAlternatives
    Set PONumbers=XDoc_PreviousLocator(pXDoc,"AE_PONumber")  ' This will get all the alternatives found by the locator "AE_PONumber". The locator will be executed if empty.
    If PONumbers.Count=0 Then Exit Sub
