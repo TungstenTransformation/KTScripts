@@ -93,18 +93,20 @@ Sub Field_Copy(A As Object, B As Object,Optional Append As Boolean=False)
       Next
    End If
 
-   If TypeOf A Is ICscXDocLine And Not TypeOf B Is ICscXDocLine Then
+   If TypeOf A Is ICscXDocLine And Not TypeOf B Is ICscXDocLine And Not Append Then
       B.Top=A.StartY
       B.Left=A.StartX
       B.Width=A.EndX-A.StartX
       B.Height=A.EndY-A.StartY
       B.PageIndex=A.PageIndex
    Else
-      B.Top=A.Top
-      B.Left=A.Left
-      B.Width=A.Width
-      B.Height=A.Height
-      B.PageIndex=A.PageIndex
+      If Not Append Then
+         B.Top=A.Top
+         B.Left=A.Left
+         B.Width=A.Width
+         B.Height=A.Height
+         B.PageIndex=A.PageIndex
+      End If
       If Append AndAlso Not (TypeOf A Is CscXDocFieldAlternative And TypeOf B Is CscXDocFieldAlternative) Then 
          B.Text=Trim(Replace(B.Text & " " & A.Text,"  "," ")) 
       Else 
