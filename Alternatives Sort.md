@@ -39,15 +39,12 @@ Sub Alternatives_Sort(Alts As CscXDocFieldAlternatives, pXDoc As CscXDocument, S
    Set SortedList=CreateObject("System.Collections.Sortedlist")
    AltsCount=Alts.Count
    For A=0 To AltsCount-1 'Sort all the Alts
-      If Alts(A).Words(0).Text="account" Then
-         A=A
-      End If
       SortedList.Add(Scorer.Invoke(Alts(A),pXDoc),A)
    Next
    For A=0 To AltsCount-1 'Copy all the Alts to the end of the list in sorted order
       Field_Copy (Alts(SortedList.getbyindex(A)), Alts.Create)
    Next
-   While Alts.Count>AltsCount
+   While Alts.Count  AltsCount
       Alts.Remove(0)
    Wend
    For A=0 To Alts.Count-1 'rescore everything so they sort in Locator's test window
