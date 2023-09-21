@@ -63,6 +63,25 @@ Sub Field_Copy(A As Object, B As Object,Optional Append As Boolean=False)
       Exit Sub
    End If
 
+   If TypeOf A Is CscXDocWords Then 'copy a list of words into a field
+      If Not Append Then
+         If Not TypeOf B Is CscXDocTableCell  Then
+            While B.Words.Count>0
+               B.Words.Remove(0)
+            Wend
+         End If
+         B.Text=""
+      End If
+      For I=0 To A.Count-1
+         If TypeOf B Is CscXDocTableCell Then
+            B.AddWordData(A(I))
+         Else
+            B.Words.Append(A(I))
+         End If
+      Next
+      Exit Sub
+   End If
+
    If TypeOf B Is CscXDocTableCell Then
       Set Word=New CscXDocWord
       Field_Copy(A,Word)
@@ -70,7 +89,7 @@ Sub Field_Copy(A As Object, B As Object,Optional Append As Boolean=False)
       Set Word=Nothing
       Exit Sub
    End If
-
+                                 
    If Not Append Then
       If TypeOf B Is CscXDocField Then
          Alternatives_Clear(B.Alternatives)
