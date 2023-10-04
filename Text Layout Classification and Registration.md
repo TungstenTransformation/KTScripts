@@ -96,8 +96,8 @@ Public Function Pages_Compare(page1 As CscXDocPage, page2 As CscXDocPage,XRes As
    For Each WordText In Words1.Keys
      If Len(WordText) >= 6  And IsNumeric(WordText) = False Then 'only match words with 6 or more characters
          If Words2.Exists(WordText) Then 'This unique word appears on both pages
-            Set Word1=Words1(WordText)
-            Set Word2=Words2(WordText)
+            Set Word1=Words1(WordText)(0)
+            Set Word2=Words2(WordText)(0)
             Set Vector=Vectors.Create
             Vector.Left=Word1.Left+Word1.Width/2
             Vector.Top=Word1.Top+Word1.Height/2
@@ -112,21 +112,20 @@ Public Function Pages_Compare(page1 As CscXDocPage, page2 As CscXDocPage,XRes As
    Return Results
 End Function
 
-Public Function Page_GetUniqueWords(page As CscXDocPage,StartWordIndex As Long,EndWordIndex As Long) As Dictionary
+Public Function Page_GetUniqueWords(Page As CscXDocPage,StartWordIndex As Long,EndWordIndex As Long) As Dictionary
    'Add Reference to "Microsoft Scripting Runtime" for Dictionary
    'Find all words on the page that only appear once
    Dim w As Long, Word As CscXDocWord, WordText As String
    Dim Words As New Dictionary
    For w=StartWordIndex To EndWordIndex
-      Set Word=page.Words(w)
-      If Words.Exists(Word.Text) Then
-         Set Words(Word.Text) = Nothing 'this word is not unique
-      Else
-         Words.Add(Word.Text,Word)
+      Set Word=Page.Words(w)
+      If Not Words.Exists(Word.Text) Then
+         Words.Add(Word.Text,New CscXDocWords)
       End If
+      Words(Word.Text).Append(Word)
    Next
    For Each WordText In Words.Keys 'Remove the non-unique words
-      If Words(WordText) Is Nothing Then Words.Remove(WordText)
+      If Words(WordText).Count>1 Then Words.Remove(WordText)
    Next
    Return Words
 End Function
@@ -289,8 +288,8 @@ Public Sub Pages_Compare(page1 As CscXDocPage, page2 As CscXDocPage,Results As C
    For Each WordText In Words1.Keys
      If Len(WordText) >= 6  And IsNumeric(WordText) = False Then 'only match words with 6 or more characters
          If Words2.Exists(WordText) Then 'This unique word appears on both pages
-            Set Word1=Words1(WordText)
-            Set Word2=Words2(WordText)
+            Set Word1=Words1(WordText)(0)
+            Set Word2=Words2(WordText)(0)
             Set Vector=Vectors.Create
             Vector.Left=Word1.Left+Word1.Width/2
             Vector.Top=Word1.Top+Word1.Height/2
@@ -359,21 +358,20 @@ Public Function Line_Distance(A As Double, B As Double, LR As CscXDocFieldAltern
    Return Abs(Scale*A - B + Shift)/Sqr(Scale^2+Shift^2)
 End Function
 
-Public Function Page_GetUniqueWords(page As CscXDocPage,StartWordIndex As Long,EndWordIndex As Long) As Dictionary
+Public Function Page_GetUniqueWords(Page As CscXDocPage,StartWordIndex As Long,EndWordIndex As Long) As Dictionary
    'Add Reference to "Microsoft Scripting Runtime" for Dictionary
    'Find all words on the page that only appear once
    Dim w As Long, Word As CscXDocWord, WordText As String
    Dim Words As New Dictionary
    For w=StartWordIndex To EndWordIndex
-      Set Word=page.Words(w)
-      If Words.Exists(Word.Text) Then
-         Set Words(Word.Text) = Nothing 'this word is not unique
-      Else
-         Words.Add(Word.Text,Word)
+      Set Word=Page.Words(w)
+      If Not Words.Exists(Word.Text) Then
+         Words.Add(Word.Text,New CscXDocWords)
       End If
+      Words(Word.Text).Append(Word)
    Next
    For Each WordText In Words.Keys 'Remove the non-unique words
-      If Words(WordText) Is Nothing Then Words.Remove(WordText)
+      If Words(WordText).Count>1 Then Words.Remove(WordText)
    Next
    Return Words
 End Function
