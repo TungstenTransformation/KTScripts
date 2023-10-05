@@ -316,8 +316,8 @@ Public Sub Pages_Compare(page1 As CscXDocPage, page2 As CscXDocPage,Results As C
    LinearRegression(Vectors,True,Results.Create,XRes,Results.Count-1) 'Calculate horizontal shift, scale and smoothness
    LinearRegression(Vectors,False,Results.Create,YRes,Results.Count-1) 'Calculate vertical shift, scale and smoothness
    Line_RemoveOutliers(Vectors,Results, 3.0) ' remove all outlier points (mismatched words) more than 3.0 times the average distance away.
-   While Results.Count>0
-      Results.Remove(0)
+   While Results.Count>page1.words(0).pageIndex
+      Results.Remove(Results.Count-1)
    Wend
    'recalculate the lines without the outlier points
    LinearRegression(Vectors,True,Results.Create,XRes,Results.Count-1) 'Calculate horizontal shift, scale and smoothness
