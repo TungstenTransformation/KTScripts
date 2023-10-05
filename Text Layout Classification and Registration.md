@@ -266,8 +266,20 @@ Private Sub SL_CalculatePageShift_LocateAlternatives(ByVal pXDoc As CASCADELib.C
    AZLSampleDocFileName =Left(Project.FileName,InStrRev(Project.FileName,"\")) & "Samples\" & Class_GetClassPath(pXDoc.ExtractionClass) & "\Sample0.xdc"
    Set AZLSampleDoc = New CscXDocument
    AZLSampleDoc.Load(AZLSampleDocFileName)
+   'Find which pages have zones on them
+   Dim AZLDef As CscAdvZoneLocator, ZonesExist() As Boolean, Z As Long
+   Set AZLDef=Project.ClassByName(pXDoc.ExtractionClass).Locators.ItemByName(LocatorName).LocatorMethod
+   ReDim ZonesExist((pXDoc.Pages.Count-1))
+      For Z=0 To AZLDef.Zones.Count-1
+         ZonesExist(AZLDef.Zones(Z).PageNr)=True
+      Next
    For I=0 To pXDoc.Pages.Count - 1
-      Pages_Compare(AZLSampleDoc.Pages(I),pXDoc.Pages(I),pLocator.Alternatives,pXDoc.CDoc.Pages(I).XRes,pXDoc.CDoc.Pages(I).YRes)
+      if ZonesExist(I) then
+         Pages_Compare(AZLSampleDoc.Pages(I),pXDoc.Pages(I),pLocator.Alternatives,pXDoc.CDoc.Pages(I).XRes,pXDoc.CDoc.Pages(I).YRes)
+      else
+         pLocator.Alternatives.Add.Confidence=1.00
+         pLocator.Alternatives.Add.Confidence=1.00
+      end if
    Next
 End Sub
 
