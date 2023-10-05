@@ -48,3 +48,58 @@ Private Sub SL_CalculatePageShift_LocateAlternatives(ByVal pXDoc As CASCADELib.C
       end if
    Next
 End Sub
+Public Sub Zones_Shift(AZLZones As CscAdvZoneLocZones, Shifts As CscXDocFieldAlternatives, Rep As CscXDocRepresentation)
+   Dim Z As Long, XDocZone As CscXDocZone
+   While Rep.Zones.Count>0
+      Rep.Zones.Remove(0)
+   Wend
+   For Z=0 To AZLZones.Count-1
+      Set XDocZone=Zone_Shift(AZLZones(Z),Shifts,Rep)
+      Rep.Zones.Append(XDocZone)
+   Next
+End Sub
+
+Public Function Zone_Shift(AZLZone As CscAdvZoneLocZone, Shifts As CscXDocFieldAlternatives, Rep As CscXDocRepresentation) As CscXDocZone
+   Dim XDocZone As CscXDocZone, X As Double, Y As Double, Right As Long, Bottom As Long
+   Set XDocZone=New CscXDocZone
+   XDocZone.PageNr=AZLZone.PageNr
+   XDocZone.Name=AZLZone.Name
+   'Shift the top right corner
+   X=AZLZone.Left+AZLZone.Width
+   Y=AZLZone.Top
+   Coordinate_Shift(X,Y,Shifts,AZLZone.PageNr)
+   Right=X
+   'Shift the bottom left corner
+   X=AZLZone.Left
+   Y=AZLZone.Top+AZLZone.Height
+   Coordinate_Shift(X,Y,Shifts,AZLZone.PageNr)
+   Bottom=Y
+   'Shift the Top Left corner
+   X=AZLZone.Left
+   Y=AZLZone.Top
+   Coordinate_Shift(X,Y,Shifts,AZLZone.PageNr)
+   XDocZone.Left=X
+   XDocZone.Top=Y
+   XDocZone.Width=Right-XDocZone.Left
+   XDocZone.Height=Bottom-XDocZone.Top
+   Return XDocZone
+End Function
+
+Public Sub Coordinate_Shift(ByRef X As Double, ByRef Y As Double, Shifts As CscXDocFieldAlternatives, page As Integer)
+   Dim XRes As Long, YRes As Long, xm As Double, xb As Double, ym As Double, yb As Double
+   With Shifts(page*2)
+      xm=.SubFields.ItemByName("Scale").Confidence
+      xb=.SubFields.ItemByName("Shift").Confidence
+      XRes=.SubFields.ItemByName("DPI").Confidence
+   End With
+   With Shifts(page*2+1)
+      ym=.SubFields.ItemByName("Scale").Confidence
+      yb=.SubFields.ItemByName("Shift").Confidence
+      YRes=.SubFields.ItemByName("DPI").Confidence
+   End With
+   X=X/25.4*XRes
+   Y=Y/25.4*YRes
+   X=xm*X+xb  'The Linear regression function gave us these slopes m and intercepts b.
+   Y=ym*Y+yb
+End Sub
+
