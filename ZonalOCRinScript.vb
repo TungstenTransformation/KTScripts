@@ -1,5 +1,5 @@
 Public Sub SL_CustomZones(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
-   'Script Locator
+   'Script Locator . This creates a zone at left=50,top=300, width=24, height = 25 and calls OCR Profile "FR_HandAlphanum".
    Dim Zone As New CscXDocFieldAlternative, OCR_Chars As CscXDocChars
    Set Zone= pLocator.Alternatives.Create
    Zone.PageIndex=0 ' First Page
@@ -10,7 +10,6 @@ Public Sub SL_CustomZones(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator
    Set OCR_Chars=XDocument_ZonalOCR(pXDoc,Zone,"FR_HandAlphanum")
    Zone.Text=OCR_Chars.Text
    Zone.Confidence=OCR_Chars.ConfAvg
-   End With
 End Sub
 
 Public Function XDocument_ZonalOCR(ByVal pXDoc As CscXDocument, zone As Object, ProfileName As String) As CscXDocChars
