@@ -43,8 +43,8 @@ Private Sub SL_CalculatePageShift_LocateAlternatives(ByVal pXDoc As CASCADELib.C
       if I < AZLSampleDoc.Pages.Count AndAlso ZonesExist(I) then
          Pages_Compare(AZLSampleDoc.Pages(I),pXDoc.Pages(I),pLocator.Alternatives,pXDoc.CDoc.Pages(I).XRes,pXDoc.CDoc.Pages(I).YRes)
       else
-         pLocator.Alternatives.Add.Confidence=1.00
-         pLocator.Alternatives.Add.Confidence=1.00
+         pLocator.Alternatives.Add.Confidence=1.0-(pLocator.Alternatives.Count-1)*0.000001
+         pLocator.Alternatives.Add.Confidence=1.0-(pLocator.Alternatives.Count-1)*0.000001
       end if
    Next
 End Sub
