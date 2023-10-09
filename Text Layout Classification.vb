@@ -1,3 +1,14 @@
+'#Language "WWB-COM"
+Option Explicit
+'This script classifies a page based on the position of EVERY uniqie word on the page.
+'It combines the power of text classification with the precision of word position.
+'it can detect subtle differences between two document types that differ by only a few words
+'   (perhaps one extra line of text was added or removed)
+' If a forms document has a very slight adjustment from version to version, this can distinguish them easily.
+
+' https://github.com/KofaxTransformation/KTScripts/blob/master/Text%20Layout%20Classification%20and%20Registration.md
+
+
 Private Sub Document_AfterClassifyXDoc(ByVal pXDoc As CASCADELib.CscXDocument)
    Document_Reclassify(pXDoc)
 End Sub

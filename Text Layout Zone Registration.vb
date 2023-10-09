@@ -1,6 +1,7 @@
 '#Language "WWB-COM"
-
 Option Explicit
+' https://github.com/KofaxTransformation/KTScripts/blob/master/Text%20Layout%20Classification%20and%20Registration.md
+
 'This script uses all unique words on a page to register OCR and OMR zones to subpixel accuracy.
 'It calculates the horizontal and vertical shifts required for each zone as well as the page scaling.
 'Horizontal and Vertical calculations are worked out indepedently.
