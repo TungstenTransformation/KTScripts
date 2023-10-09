@@ -1,3 +1,7 @@
+'This script is used by
+'Text Layout Classification and Text Layout Zone Registration.
+'https://github.com/KofaxTransformation/KTScripts/blob/master/Text%20Layout%20Classification%20and%20Registration.md
+
 Public Sub Pages_Compare(page1 As CscXDocPage, page2 As CscXDocPage,Results As CscXDocFieldAlternatives, XRes As Long, YRes As Long)
    'Find as many unique anchors between the two pages and work out the shift and scaling between them
    'This algorithm is very robust against OCR errors.
