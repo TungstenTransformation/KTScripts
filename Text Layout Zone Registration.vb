@@ -2,15 +2,16 @@
 
 Option Explicit
 'This script uses all unique words on a page to register OCR and OMR zones to subpixel accuracy.
+'It calculates the horizontal and vertical shifts required for each zone as well as the page scaling.
+'Horizontal and Vertical calculations are worked out indepedently.
+'The scaling can be any size. It will even work if a page is shrunk 50% (eg A4 printed as A5), or increased 5 times.
 '!!! IMPORTANT !!!!
 ' Add on Menu/Edit/References...
 '           "Microsoft Scripting Runtime" for Dictionary to find and match unique words
 '           "Kofax Cascade Advanced Zone Locator" for retrieving the Zone Definitions
 'Create One Locator
-'  SL_CalculatePageShift (used for debugging, with subfields Scale, Shift, Confidence, Words, DPI.)
-'  AZL (on the Registration Tab set to "None")
-
-' Class script: document
+'  SL_CalculatePageShift (with subfields Scale, Shift, Confidence, Words, DPI.)
+'  AZL (on the Registration Tab set Registration to "None")
 
 Private Sub Document_BeforeLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal LocatorName As String)
    If LocatorName = "AZL" Then
@@ -26,7 +27,7 @@ End Sub
 Private Sub SL_CalculatePageShift_LocateAlternatives(ByVal pXDoc As CASCADELib.CscXDocument, ByVal pLocator As CASCADELib.CscXDocField)
    'Your document MUST be classified before calling this locator, in order to be able to find the sample image in the AZL.
    'This function is purely here for debugging. it is so that you can see the unique words that are used for matching
-   Dim I As Long, StartWordIndexRef As Long, StartWordIndex As Long, EndWordIndexRef As Long, EndWordIndex As Long
+   Dim P As Long, Page as CSCXDocPage, StartWordIndexRef As Long, StartWordIndex As Long, EndWordIndexRef As Long, EndWordIndex As Long
    Dim AZLSampleDoc As CscXDocument, LeftShift As Double, DownShift As Double, Tolerance As Double, Confidence As Double
    Dim AZLSampleDocFileName As String
    AZLSampleDocFileName =Left(Project.FileName,InStrRev(Project.FileName,"\")) & "Samples\" & Class_GetClassPath(pXDoc.ExtractionClass) & "\Sample0.xdc"
@@ -39,9 +40,10 @@ Private Sub SL_CalculatePageShift_LocateAlternatives(ByVal pXDoc As CASCADELib.C
       For Z=0 To AZLDef.Zones.Count-1
          ZonesExist(AZLDef.Zones(Z).PageNr)=True
       Next
-   For I=0 To pXDoc.Pages.Count - 1
-      if I < AZLSampleDoc.Pages.Count AndAlso ZonesExist(I) then
-         Pages_Compare(AZLSampleDoc.Pages(I),pXDoc.Pages(I),pLocator.Alternatives,pXDoc.CDoc.Pages(I).XRes,pXDoc.CDoc.Pages(I).YRes)
+   For P=0 To pXDoc.Pages.Count - 1
+      if P < AZLSampleDoc.Pages.Count AndAlso ZonesExist(P) then
+         Set Page=pXDoc.Pages(P)
+         Pages_Compare(AZLSampleDoc.Pages(P),Page,pLocator.Alternatives,Page.XRes,Page.YRes)
       else
          pLocator.Alternatives.Add.Confidence=1.0-(pLocator.Alternatives.Count-1)*0.000001
          pLocator.Alternatives.Add.Confidence=1.0-(pLocator.Alternatives.Count-1)*0.000001
