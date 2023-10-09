@@ -1,4 +1,4 @@
-# Text Layout Algorithm (called "TL" below)
+# Text Layout Classification and Zone Registration
 Text Layout uses the location of **every unique word** on the page to either [classify a page](https://github.com/KofaxTransformation/KTScripts/blob/master/Text%20Layout%20Classification%20and%20Registration.md#text-layout-classification) or [register OCR zones](https://github.com/KofaxTransformation/KTScripts/blob/master/Text%20Layout%20Classification%20and%20Registration.md#text-layout-zone-registration).  
 
 Text Layout allows subpixel accuracy in **registering** OCR zones because we  use 100s of words on the page to do the registration.
