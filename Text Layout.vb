@@ -106,7 +106,6 @@ Public Sub LinearRegression(Vectors As CscXDocFieldAlternatives, Vector As Boole
    Result.Confidence=1.0-(AlternativeIndex*0.000001)
 End Sub
 
-
 Public Sub Line_RemoveOutliers(Vectors As CscXDocFieldAlternatives, Results As CscXDocFieldAlternatives, Tolerance As Double)
    Dim V As Long, Vector As CscXDocFieldAlternative, Result As CscXDocFieldAlternative
    Dim AverageDistance As Double
@@ -152,79 +151,6 @@ Public Function Line_Distance(A As Double, B As Double, LR As CscXDocFieldAltern
    Shift=LR.SubFields.ItemByName("Shift").Confidence
    Return Abs(Scale*A - B + Shift)/Sqr(Scale^2+Shift^2)
 End Function
-
-Public Function Page_GetUniqueWords(Page As CscXDocPage,StartWordIndex As Long,EndWordIndex As Long) As Dictionary
-   'Add Reference to "Microsoft Scripting Runtime" for Dictionary
-   'Find all words on the page that only appear once
-   Dim w As Long, Word As CscXDocWord, WordText As String
-   Dim Words As New Dictionary
-   For w=StartWordIndex To EndWordIndex
-      Set Word=Page.Words(w)
-      If Not Words.Exists(Word.Text) Then
-         Words.Add(Word.Text,New CscXDocWords)
-      End If
-      Words(Word.Text).Append(Word)
-   Next
-   For Each WordText In Words.Keys 'Remove the non-unique words
-      If Words(WordText).Count>1 Then Words.Remove(WordText)
-   Next
-   Return Words
-End Function
-
-Public Sub LinearRegression(Vectors As CscXDocFieldAlternatives, Horizontal As Boolean, Result As CscXDocFieldAlternative, Resolution As Long,AlternativeIndex As Double)
-   'http://en.wikipedia.org/wiki/Simple_linear_regression' https://www.easycalculation.com/statistics/learn-regression.php
-   'The 1st Alternative has the horizonatal Scaling=M, Shift=B, and Confidence=flatness of the paper.
-   'The 2nd Alternative has the vertical    Scaling=M, Shift=B, and Confidence=flatness of the paper.
-   Dim X As Double, Y As Double, Sx As Double, Sy As Double, Sxy As Double, Sxx As Double, Syy As Double, V As Long
-   Dim B As Double, M As Double, N As Long, R As Double
-   For V= 0 To Vectors.Count-1
-      If Horizontal Then
-         X=Vectors(V).Left
-         Y=Vectors(V).Width
-      Else
-         X=Vectors(V).Top
-         Y=Vectors(V).Height
-      End If
-      Sx=Sx+X
-      Sy=Sy+Y
-      Sxy=Sxy+X*Y
-      Sxx=Sxx+X^2
-      Syy=Syy+Y^2
-   Next
-   N=Vectors.Count
-   M=(N*Sxy-Sx*Sy)/(N*Sxx-Sx^2)  'slope of linear regression
-   B=(Sy-M*Sx)/N                 'y intercept of linear regression
-   R=(N*Sxy-Sx*Sy)/Sqr((N*Sxx-Sx^2)*(N*Syy-Sy^2))  'correlation 1.00=perfect fit= smooth paper
-   With Result.SubFields.Create("Scale")
-      .Confidence=M
-      .Text=Format(M,"0.000")
-   End With
-   With Result.SubFields.Create("Shift")
-      .Confidence=B
-      .Text=Format(B,"0.000")
-   End With
-   With Result.SubFields.Create("Confidence")
-      .Confidence=R
-      .Text=Format(R,"0.0000")
-   End With
-   With Result.SubFields.Create("Words")
-      .Confidence=N
-      .Text=CStr(N)
-   End With
-   With Result.SubFields.Create("DPI")
-      .Confidence=Resolution
-      .Text=CStr(Resolution)
-   End With
-   With Result.SubFields.Create("Direction")
-      .Confidence=1
-      .Text=IIf(Horizontal,"Horizontal","Vertical")
-   End With
-
-   ' Result.Confidence=IIf(Vector,1.1,1.0)
-
-'this was done To maintain the Right order For All the pages. Each page will have 2 alternatives (Horizontal And Vertical)
-   Result.Confidence=1.0-(AlternativeIndex*0.000001)
-End Sub
 
 Private Function Class_GetClassPath(ClassName As String) As String
    'Recursively work out the ClassPath
