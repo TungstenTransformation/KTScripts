@@ -1,9 +1,9 @@
-Public Function Pages_Compare(page1 As CscXDocPage, page2 As CscXDocPage,XRes As Long, YRes As Long) As CscXDocField
+Public Sub Pages_Compare(page1 As CscXDocPage, page2 As CscXDocPage,Results As CscXDocFieldAlternatives, XRes As Long, YRes As Long)
    'Find as many unique anchors between the two pages and work out the shift and scaling between them
    'This algorithm is very robust against OCR errors.
    'The algorithm has order of page.words.count, i.e. linear, so VERY FAST.
    Dim Words1 As Dictionary, Words2 As Dictionary, WordText As String, X() As Long, Y() As Long
-   Dim Word1 As CscXDocWord, Word2 As CscXDocWord, Results As New CscXDocField
+   Dim Word1 As CscXDocWord, Word2 As CscXDocWord
    Dim VectorField As CscXDocField, Result As CscXDocFieldAlternative, B As Long, C As Long
    Dim Vectors As CscXDocFieldAlternatives, Vector As CscXDocFieldAlternative
    Set VectorField=New CscXDocField
@@ -25,10 +25,16 @@ Public Function Pages_Compare(page1 As CscXDocPage, page2 As CscXDocPage,XRes As
          End If
     End If
    Next
-   LinearRegression(Vectors,True,Results.Alternatives.Create,XRes,Results.Alternatives.Count-1) 'Calculate horizontal shift, scale and smoothness
-   LinearRegression(Vectors,False,Results.Alternatives.Create,YRes,Results.Alternatives.Count-1) 'Calculate vertical shift, scale and smoothness
-   Return Results
-End Function
+   LinearRegression(Vectors,True,Results.Create,XRes,Results.Count-1) 'Calculate horizontal shift, scale and smoothness
+   LinearRegression(Vectors,False,Results.Create,YRes,Results.Count-1) 'Calculate vertical shift, scale and smoothness
+   Line_RemoveOutliers(Vectors,Results, 3.0) ' remove all outlier points (mismatched words) more than 3.0 times the average distance away.
+   While Results.Count>page1.Words(0).PageIndex
+      Results.Remove(Results.Count-1)
+   Wend
+   'recalculate the lines without the outlier points
+   LinearRegression(Vectors,True,Results.Create,XRes,Results.Count-1) 'Calculate horizontal shift, scale and smoothness
+   LinearRegression(Vectors,False,Results.Create,YRes,Results.Count-1) 'Calculate vertical shift, scale and smoothness
+End Sub
 
 Public Function Page_GetUniqueWords(Page As CscXDocPage,StartWordIndex As Long,EndWordIndex As Long) As Dictionary
    'Add Reference to "Microsoft Scripting Runtime" for Dictionary
@@ -100,46 +106,6 @@ Public Sub LinearRegression(Vectors As CscXDocFieldAlternatives, Vector As Boole
    Result.Confidence=1.0-(AlternativeIndex*0.000001)
 End Sub
 
-Public Sub Pages_Compare(page1 As CscXDocPage, page2 As CscXDocPage,Results As CscXDocFieldAlternatives, XRes As Long, YRes As Long)
-   'Find as many unique anchors between the two pages and work out the shift and scaling between them
-   'This algorithm is very robust against OCR errors.
-   'The algorithm has order of page.words.count, i.e. linear, so VERY FAST.
-   Dim Words1 As Dictionary, Words2 As Dictionary, WordText As String, X() As Long, Y() As Long
-   Dim Word1 As CscXDocWord, Word2 As CscXDocWord
-   Dim VectorField As CscXDocField, Result As CscXDocFieldAlternative, B As Long, C As Long
-   Dim Vectors As CscXDocFieldAlternatives, Vector As CscXDocFieldAlternative
-   Set VectorField=New CscXDocField
-   Set Vectors=VectorField.Alternatives
-   Set Words1=Page_GetUniqueWords(page1,0,page1.Words.Count-1)
-   Set Words2=Page_GetUniqueWords(page2,0,page2.Words.Count-1)
-   'Build a list of the unique words that appear on BOTH pages
-   'Open "C:\temp\words.txt" For Output As #1
-   For Each WordText In Words1.Keys
-     If Len(WordText) >= 6  And IsNumeric(WordText) = False Then 'only match words with 6 or more characters
-         If Words2.Exists(WordText) Then 'This unique word appears on both pages
-            Set Word1=Words1(WordText)(0)
-            Set Word2=Words2(WordText)(0)
-            Set Vector=Vectors.Create
-            Vector.Left=Word1.Left+Word1.Width/2
-            Vector.Top=Word1.Top+Word1.Height/2
-            Vector.Width=Word2.Left+Word2.Width/2
-            Vector.Height=Word2.Top+Word2.Height/2
-            Vector.Text=Word1.Text
-    '        Print #1, Vector.Text & vbTab & CStr(Vector.Left) & vbTab & CStr(Vector.Top) & vbTab & CStr(Vector.Width) & vbTab & CStr(Vector.Height)
-         End If
-    End If
-   Next
-   'Close #1
-   LinearRegression(Vectors,True,Results.Create,XRes,Results.Count-1) 'Calculate horizontal shift, scale and smoothness
-   LinearRegression(Vectors,False,Results.Create,YRes,Results.Count-1) 'Calculate vertical shift, scale and smoothness
-   Line_RemoveOutliers(Vectors,Results, 3.0) ' remove all outlier points (mismatched words) more than 3.0 times the average distance away.
-   While Results.Count>page1.words(0).pageIndex
-      Results.Remove(Results.Count-1)
-   Wend
-   'recalculate the lines without the outlier points
-   LinearRegression(Vectors,True,Results.Create,XRes,Results.Count-1) 'Calculate horizontal shift, scale and smoothness
-   LinearRegression(Vectors,False,Results.Create,YRes,Results.Count-1) 'Calculate vertical shift, scale and smoothness
-End Sub
 
 Public Sub Line_RemoveOutliers(Vectors As CscXDocFieldAlternatives, Results As CscXDocFieldAlternatives, Tolerance As Double)
    Dim V As Long, Vector As CscXDocFieldAlternative, Result As CscXDocFieldAlternative
