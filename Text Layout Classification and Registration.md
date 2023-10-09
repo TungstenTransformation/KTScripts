@@ -5,6 +5,8 @@ Text Layout allows subpixel accuracy in **registering** OCR zones because we  us
 
 Text Layout  allows **very precise classification** because if the documents are only slightly different then words don't have the same alignment with each other. This can easily detect when an extra line of text has been added to the middle of a document.
 
+Just add the script to your project. This is little else to do. You no longer need any anchors in the Advanced Zone Locator and can disable zone registration completely. This will automatically add hundreds of word anchors on EVERY page.
+
 Every unique word on the page is *aligned* to its corresponding word on the other document. This gives the precise vertical shift and stretch, and horizontal shift and stretch. Text Layout is VERY robust against OCR errors because even if 60% of the words had OCR errors, we would still find the correct alignment with the remaining 40% easily.  
 
 TL takes a fraction of a second for the comparison between the document and the training sample in the project class.
