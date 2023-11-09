@@ -20,6 +20,7 @@ Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, 
 * [Benchmarking](#benchmarking)
 * [Images](#images)
 * [Documents](#documents)
+* [Batches](#batches)
 * [Project Manipulation](#project-manipulation)
 * [File System functions](/File%20System.vb)
 
@@ -108,10 +109,12 @@ Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, 
 # Images
 * [Detect Page Size](Detect%20Page%20Size.md) *detects whether a page is A4, A3, US Letter, Foolscap, etc. Landscape vs Portrait. Works well on cropped images too*
 # Documents
-* [Text Deskew](Table%20to%20CSV.md) *If a document is not deskewed before or during OCR the textlines can be messed up. This calculates the page skew AFTER OCR and then realigns all the words into their correct text lines.
+* [Text Deskew](Table%20to%20CSV.md) *If a document is not deskewed before or during OCR the textlines can be messed up. This calculates the page skew AFTER OCR and then realigns all the words into their correct text lines.*
 * [Convert PDF to TIFF](PDFtoTiff.md) **VERY POWERFUL** *convert your PDF samples to TIFF while preserving the Text layer. Speeds locator testing x10 !*
 * [Gibberish/Nonsense/Bad OCR Detection](GibberishDetection.md) *check if a document is mostly unreadable OCR or corrupted/encrpyted PDF. Useful for language detection as well*
 * [How to read Russian Invoices](How%20to%20Read%20Russian%20Invoices.md)
+# Batches
+* [Merge documents based on field value](/Batch_MergeDocumentsByField.vb). *If two documents have the same field value, then merge them*. **KTM Only**.
 # Project Manipulation
 These are advanced scripting techniques to access to project and locator settings via script. This gives you the power to create, delete and edit classses, fields, locators, and almost any setting in the project. This is very dangerous and can destroy your projects. Also note that the Project Builder will not be updated with changes you make to the project and will cause GUI errors. Tread carefully and  - you are on your own - don't expect support from Tech Support!
 
