@@ -24,7 +24,7 @@ We have to be careful here because TextLine 1 and TextLine 2 overlap due to the 
 We will assume that the PO Number is found by either Order Group Locator, Trainable Group Locator, or is in an Advanced Evaluator. If you use a Format Locator to find it, then you should flow that into an Advanced Evaluator. Each of these locators contains the **OrderNumber** as a **SubField** and not an **Alternative**.  
 The script below does the following.
 * customizes the **OrderNumber** locator.
-* Find which OCR words were used in the subfield by calling the wonderful function **pXDoc.GetWordsInRectangle()** using the subfield's own coordinates. This will give us the three words "36800", "-", "000000" and all of their coordinates and importantly, their Text Line Index.
+* Finds which OCR words were used in the subfield by calling the wonderful function **pXDoc.GetWordsInRectangle()** using the subfield's own coordinates. This will give us the three words "36800", "-", "000000" and all of their coordinates and importantly, their Text Line Index.
 * Calculate the green rectangle by considering the **next** TextLine.  
 ![Alt text](images/greenrectangle.png) 
 * Run a Field Formatter on the Text. The OCR result is "36800 - 0000009744" but we need "36800 - 0000009744" because we want to measure the length of the value. We will use a Field Formatter called **RemoveSpaces** to do that. *See second script below for an example.*
