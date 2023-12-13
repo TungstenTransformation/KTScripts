@@ -10,7 +10,7 @@ If we open the XDoc in the XDocBrowser we can inspect the OCR Text Lines within 
 
 ![Alt text](images/XDocBrowserTextLines.png)
 
-We see that the PO Number is 3 words (**368000, -, 000000**) in line 0 and that **9744** is word 1 in textline 2.  
+We see that the PO Number is 3 words (**368000, -, 000000**) in line 1 and that **9744** is word 1 in textline 2.  
 In the OCR Settings, "-" is considered a word separation character, that is why the PO Number is 3 words long!
 ![Alt text](images/Omnipage_WordSepCharacters.png)
 
