@@ -41,8 +41,10 @@ Option Explicit
 ' Class script: NewClass1
 
 Private Sub Document_AfterLocate(ByVal pXDoc As CASCADELib.CscXDocument, ByVal LocatorName As String)
+   'This Sub allows us to customize any locator. This is called AFTER the locator has run and gives us full control to edit the results of the locator however we want. It is compatible with the 'Test' button in the Locator Configuration.
    Select Case LocatorName
-   Case "OGL"
+   Case "OGL"  ' This is the name of YOUR locator
+      'This is the name of the subfield, the expected length in characters and the optional name of the field formatter used to clean the subfield.
       SubField_CheckWordBelow(pXDoc,LocatorName,"OrderNumber", 16,"RemoveSpaces")
    End Select
 End Sub
