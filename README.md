@@ -65,6 +65,7 @@ Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, 
 # Locator Customization
 * [How to customize any locator](Customize%20Locators.md)
 * [Force Format Locator to search across multiple lines](Format%20Locator%20that%20ignores%20line%20wrapping.md) *the format locator only searches within each line of text. This makes it search further..*
+* Make a locator [multiline](/Locator_Multiline.md).
 # Database & Dictionary Scripts
 * [Fuzzy search a database from script](Database_FuzzySearch.vb)
 * [Database script functions](Database_Search.vb)
