@@ -27,7 +27,7 @@ The script below does the following.
 * Finds which OCR words were used in the subfield by calling the wonderful function **pXDoc.GetWordsInRectangle()** using the subfield's own coordinates. This will give us the three words "36800", "-", "000000" and all of their coordinates and importantly, their Text Line Index.
 * Calculate the green rectangle by considering the **next** TextLine.  
 ![Alt text](images/greenrectangle.png) 
-* Run a Field Formatter on the Text. The OCR result is "36800 - 0000009744" but we need "36800 - 0000009744" because we want to measure the length of the value. We will use a Field Formatter called **RemoveSpaces** to do that. *See second script below for an example.*
+* Run a Field Formatter on the Text. The OCR result is "36800 - 0000009744" but we need "36800-0000009744" because we want to measure the length of the value. We will use a Field Formatter called **RemoveSpaces** to do that. *See second script below for an example.*
 * Calculate if the subfield text is closer to 16 in length than the subfield text +green box text is. If the green box is "better" then **append** the green box words to the subfield. **Appending** words to a subfield or field expands the bounding box automatically so that the subfield highlighting shows correctly on the document in green.  
 ![Alt text](images/HighlightedOrderNumber.png)  
 * You can now simply click **Test** on the locator and see the result.
