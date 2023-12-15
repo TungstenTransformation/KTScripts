@@ -84,6 +84,7 @@ Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, 
 # Pages
 * [Page Classification](Page_Classification.md)
 * [Split a page horizontally or vertically](Split%20a%20Page.md)
+* [Image Cleanup and Custom OCR](/Page_ImageCleanup.md)
 # Geometry Functions
 * [Calculate Overlaps](Overlap.md) of fields, zones, rows etc. Fundamental to many geometry algorithms and custom table locators.
 * [Find Left Margin of a Page](Find%20Left%20Margin%20of%20Page.md) *very precise and fuzzy with sub-pixel accuracy for the left margin of a page. Useful for comparing two pages and paragraph detection*
@@ -109,6 +110,8 @@ Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, 
 * [Character Level Benchmark](Character_Level_Benchmark.md)
 # Images
 * [Detect Page Size](Detect%20Page%20Size.md) *detects whether a page is A4, A3, US Letter, Foolscap, etc. Landscape vs Portrait. Works well on cropped images too*
+* [Image Cleanup and Custom OCR](/Page_ImageCleanup.md) Use VRS and remove lines and dots before OCR.
+
 # Documents
 * [Text Deskew](Table%20to%20CSV.md) *If a document is not deskewed before or during OCR the textlines can be messed up. This calculates the page skew AFTER OCR and then realigns all the words into their correct text lines.*
 * [Convert PDF to TIFF](PDFtoTiff.md) **VERY POWERFUL** *convert your PDF samples to TIFF while preserving the Text layer. Speeds locator testing x10 !*
