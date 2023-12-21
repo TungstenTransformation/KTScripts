@@ -1,4 +1,12 @@
-Simple and fast JSON parser that converts a JSON file into a dictionary.  
+Simple and fast JSON parser that converts a JSON file into a dictionary.   
+**to do**:  improve this 
+* better & simpler [regex](https://regex101.com/r/gtAJps/1) that conforms to [json.org](https://json.org). "(?:[^"\\]|\\.)*"|-?(?:\d+)(?:\.\d*)?(?:[eE][+\-]?\d+)?|(?<d>true|false|null)|[\[\]{}:,]  
+* Handle embedded arrays and empty arrays/objects.
+* Handle unicode codes.
+* Correct number, boolean and null handling.
+* Support both json path and dictionary embedding for simpler usage and iteration.
+
+
 Adapted from [[StackOverflow article](https://stackoverflow.com/questions/6627652/parsing-json-in-excel-vba)] [[description by the original Author](https://medium.com/swlh/excel-vba-parse-json-easily-c2213f4d8e7a)].   
 The parser uses a single complex but fast regex to completely tokenize the JSON file, stripping out all structural whitespace and double quotes around strings.  It then uses select statements and recursion to parse objects and arrays. It creates a unique key for every element in the JSON and adds it to a dictionary.  
 ```json
