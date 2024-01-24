@@ -1,4 +1,4 @@
-Simple and fast JSON parser that converts a JSON file into a hierarchical dictionary and array object.  
+Simple and fast VB6 JSON parser that converts a JSON file into a hierarchical object that is easily read and looped through in vb6.  
 ### Jan 2024
 * rewritten JSON parser with a better & simpler [regular expression](https://regex101.com/r/gtAJps/1) that conforms 100% to [json.org](https://json.org).  
 * handles embedded arrays and objects. Empty arrays/objects will give .count=0.
@@ -7,7 +7,7 @@ Simple and fast JSON parser that converts a JSON file into a hierarchical dictio
 * builds a dictionary and array structure for easy VB6 reading.
 
 Adapted from [[StackOverflow article](https://stackoverflow.com/questions/6627652/parsing-json-in-excel-vba)] [[description by the original Author](https://medium.com/swlh/excel-vba-parse-json-easily-c2213f4d8e7a)].   
-The parser uses a single complex but fast regex to completely tokenize the JSON file.  It then reads the tokens and recurses to build the object structure into dictionaries and SortedLists. 
+The parser uses a single complex but fast regex to completely tokenize the JSON file.  It then reads the tokens and recurses to convert JSON objects into [Scripting.Dictionary](https://learn.microsoft.com/en-us/office/vba/Language/Reference/User-Interface-Help/dictionary-object) and Arrays into [System.Collections.Sortedlist](https://learn.microsoft.com/en-us/dotnet/api/system.collections.sortedlist?view=net-8.0), (a .Net Class usable from vb6 ). 
 ```json
 {"status":"succeeded","createdDateTime":"2023-08-07T13:53:55Z","analyzeResult":{"modelId":"prebuilt-document"}}
 ```
