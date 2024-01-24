@@ -7,17 +7,17 @@ Simple and fast VB6 JSON parser that converts a JSON file into a hierarchical ob
 * builds a dictionary and array structure for easy VB6 reading.
 
 Adapted from [[StackOverflow article](https://stackoverflow.com/questions/6627652/parsing-json-in-excel-vba)] [[description by the original Author](https://medium.com/swlh/excel-vba-parse-json-easily-c2213f4d8e7a)].   
-The parser uses a single complex but fast regex to completely tokenize the JSON file.  It then reads the tokens and recurses to convert JSON objects into [Scripting.Dictionary](https://learn.microsoft.com/en-us/office/vba/Language/Reference/User-Interface-Help/dictionary-object) and Arrays into [System.Collections.Sortedlist](https://learn.microsoft.com/en-us/dotnet/api/system.collections.sortedlist?view=net-8.0), (a .Net Class usable from vb6 ). 
+The parser uses a single complex but fast regex to completely tokenize the JSON file.  It then reads the tokens and recurses to convert JSON objects into [Scripting.Dictionary](https://learn.microsoft.com/en-us/office/vba/Language/Reference/User-Interface-Help/dictionary-object) and Arrays into [System.Collections.Sortedlist](https://learn.microsoft.com/en-us/dotnet/api/system.collections.sortedlist?view=net-8.0), (a .Net Class usable from vb6 ).  
+## Example  
 ```json
-{"status":"succeeded","createdDateTime":"2023-08-07T13:53:55Z","analyzeResult":{"modelId":"prebuilt-document"}}
+{"status":"succeeded","analyzeResult":{"readResults":[ { "page":1}]}}
 ```
 becomes
 |vb6|value|
 |---|-----|
-|js("status")|succeeded|
-|js("analyzeResult")("modelId")|prebuilt-document|
-|js("analyzeResult")("modelId")("pages")(0)("words")(43)("content")|address|
-|js("analyzeResult")("modelId")("pages")(0)("words").count|245 *(this is a Long, not a String)*|
+|js("status")|"succeeded"|
+|js("analyzeResult")("readResults")(0)("page")|1|
+|js("analyzeResult")("readResults")(0)("lines")(23)("words")(3)("confidence")|0.965 *(this is a Double, not a String)*|
 
 ```vb
 '-------------------------------------------------------------------
