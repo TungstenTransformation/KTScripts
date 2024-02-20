@@ -22,6 +22,6 @@ Let's say you want access to the **Mininum confidence** of the Database Locator.
     DBLocDef.
     ```
 2. You can now see the attributes of the locator and use them in your script.  
-*You can change locators, but you risk destroying your project. Be warned!!*
+*You can change locators, but you risk destroying your project. Be warned!! Any changes you make to the project will not be visible in the Designer. You need to save, close and reload your project to see any changes.*
 ![image](https://user-images.githubusercontent.com/103566874/224002612-bc9f11a4-0327-49e6-aa6c-7e3f3763be07.png)
 
