@@ -109,5 +109,5 @@ Kofax Transformation has support for adjusting the zones of a Zone Locator by sc
 * the **Confidence**, R, of the line, shows how well the dots fit on a straight line. 1.0000 shows perfect both horizontally and vertically.
 * This example used 75 unique words that matched between the two documents as anchors.   
 ![image](https://user-images.githubusercontent.com/47416964/191963050-dba951ae-575e-41cc-9547-626c4b9f9ba9.png)
-* After this each word will be tested to find it's distance from the line. Any word that is too far from the line will be removed.
+* After this each word will be tested to find its distance from the line. Any word that is too far from the line will be removed.
 * the line will be recalculated without the mismatched words.
