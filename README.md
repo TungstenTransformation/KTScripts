@@ -1,5 +1,5 @@
 # Kofax Transformation Script Library
-A collection ofvery useful scripts containing various algorithms.  
+A collection of very useful scripts containing various algorithms.  
 These scripts are provided as-is. There is no guarantee that they will work. You will need to understand them to use them in your projects.  
 Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, fixes, suggestions, and new scripts you want to share.
 # Index
