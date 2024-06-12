@@ -5,7 +5,7 @@ Calling a LLM is expensive and slow. This script caches resposes from a LLM for 
 The script generates a hash of the **text** of the document along with the **subfield names** and **descriptions**. If these remain unchanged then the locator is skipped and filled from the cache.  
 If anything changes in the text, field names or descriptions then the locator is executed.  
 
-##Instructions
+## Instructions
 1. Add an **AutoExtract Locator** to any document class in your project. It can have any name.  
 ![image](https://github.com/TungstenTransformation/KTScripts/assets/103566874/93974b98-5b36-47b9-b889-528bf4efa8bf)
 1. Assign it to any field.
