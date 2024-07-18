@@ -9,7 +9,8 @@ The script is fast and will find the optimal match - if the documents are very s
 If you want to see both documents, you will have to merge the images of the original documents together, or launch it with an external program...
 
 # Configuration
-* Add the following script to  the document class you want to compare or to any higher class.
+* Add the script below to the document class you want to compare or to any higher class.
+* In the Script editor add a refence to **Microsoft Scripting Runtime** in the Menu **Edit/References..**
 * Create a Table Model with 3 columns **Document**, **OK** and **Original**  
 ![image](https://user-images.githubusercontent.com/47416964/90763048-51be4180-e2e6-11ea-9896-3d1ae87ca7f0.png)
 * Add a Table Locator to the class called "TL_Diffs". The name is checked in the Sub *Document_AfterLocate* below, which customizes the table locator.

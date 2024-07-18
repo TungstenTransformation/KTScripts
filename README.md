@@ -113,6 +113,7 @@ Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, 
 * [Image Cleanup and Custom OCR](/Page_ImageCleanup.md) Use VRS and remove lines and dots before OCR.
 
 # Documents
+* [Compare 2 documents](Document%20Comparison.md) **POWERFUL** *script that detects all differences between two documents*
 * [Text Deskew](Table%20to%20CSV.md) *If a document is not deskewed before or during OCR the textlines can be messed up. This calculates the page skew AFTER OCR and then realigns all the words into their correct text lines.*
 * [Convert PDF to TIFF](PDFtoTiff.md) **VERY POWERFUL** *convert your PDF samples to TIFF while preserving the Text layer. Speeds locator testing x10 !*
 * [Gibberish/Nonsense/Bad OCR Detection](GibberishDetection.md) *check if a document is mostly unreadable OCR or corrupted/encrpyted PDF. Useful for language detection as well*
