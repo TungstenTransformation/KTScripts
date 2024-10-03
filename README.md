@@ -86,6 +86,7 @@ Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, 
 * [Split a page horizontally or vertically](Split%20a%20Page.md)
 * [Image Cleanup and Custom OCR](/Page_ImageCleanup.md)
 # Geometry Functions
+* Find a [blank space](FindBlankSpace.md) in a document for imprinting a barcode or signature.
 * [Calculate Overlaps](Overlap.md) of fields, zones, rows etc. Fundamental to many geometry algorithms and custom table locators.
 * [Find Left Margin of a Page](Find%20Left%20Margin%20of%20Page.md) *very precise and fuzzy with sub-pixel accuracy for the left margin of a page. Useful for comparing two pages and paragraph detection*
 # OCR scripts
