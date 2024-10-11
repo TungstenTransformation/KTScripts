@@ -75,6 +75,8 @@ Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, 
 # Validation Interface Script
 * Fast Table Lassoing [demo video](FastTableLassoing.avi) and [script](Interactive%20Fast%20Table%20Lassoing.vbs) *quickly and interactively select table columns and rows in the Validation Interface*
 # Classification
+* Must-read [guide to classification](Classification.md). Everything you need to know to prepare your classification project.
+* Convert your Xdocuments to text files [XDoc2text](./XDoc2Text.md)
 * [Custom Classification](Custom%20Classification.md)  
 * [Page Classification](Page_Classification.md)
 * [Page Locators](Page_Locators.md) **VERY POWERFUL** * write locators at the page level*
