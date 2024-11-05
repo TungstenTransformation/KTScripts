@@ -93,6 +93,7 @@ Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, 
 * [Find Left Margin of a Page](Find%20Left%20Margin%20of%20Page.md) *very precise and fuzzy with sub-pixel accuracy for the left margin of a page. Useful for comparing two pages and paragraph detection*
 # OCR scripts
 * [Change_OCR_Characters.md](Change_OCR_Characters.md)
+*  Use [Microsoft Document Imaging](https://github.com/TungstenTransformation/MicrosoftOCR/blob/main/Readme.md) as OCR engine and for feeding locators.
 # Functions
 * [Field Copy](Field_Copy.vb) **VERY POWERFUL** *This is the most important KT script! intelligently & recursively copy a field, locator, alternative, subfield, cell, row, xdoc into another. This script will dramitically simplify your own scripts and make them much more readable.*
 * [File System](File%20System.vb) *Get All files, File_Exists, Dir_Exists, File_NameWithoutExtension etc*
