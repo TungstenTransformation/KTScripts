@@ -94,13 +94,16 @@ Please use [issues](https://github.com/KofaxRPA/KTScripts/issues) for requests, 
 # OCR scripts
 * [Change_OCR_Characters.md](Change_OCR_Characters.md)
 *  Use [Microsoft Document Imaging](https://github.com/TungstenTransformation/MicrosoftOCR/blob/main/Readme.md) as OCR engine and for feeding locators.
+# JSON
+* [JSON Parser](JSON.md) *fully compliant JSON parser*
+* [JSON Table Exporter](./JSON_TableExport.md) Script to export all tables in a document in JSON format.
 # Functions
 * [Field Copy](Field_Copy.vb) **VERY POWERFUL** *This is the most important KT script! intelligently & recursively copy a field, locator, alternative, subfield, cell, row, xdoc into another. This script will dramitically simplify your own scripts and make them much more readable.*
 * [File System](File%20System.vb) *Get All files, File_Exists, Dir_Exists, File_NameWithoutExtension etc*
 * [Sorting Alternatives](Alternatives%20Sort.md)
 * [Fuzzy Match Text](FuzzyMatch.vb) **VERY POWERFUL** *fuzzy match any two pieces of text. 0%=no match, 100%=exact match*
 * [IBAN validation](IBAN.md)
-* [JSON](JSON.md) *quick and dirty JSON parser*
+* [JSON PArser](JSON.md) *fully compliant JSON parser*
 * [Quicksort](QuickSort.vb) **VERY POWERFUL** *sort alternatives fast by confidence, alphabetically, coordinates, page, textline, etc.*
 * [String Regex](String_Regex.vb) *Split a string via regex. eg "2004-12-23" into "2004","12","23"
 * [Numbers to Text](TurkishNumbers.md) *Convert numbers to text eg "1234" to "one thousand two hundred and thirty four". Useful for checking that numbers match their text form*
